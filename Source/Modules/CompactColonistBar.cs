@@ -11,9 +11,11 @@ namespace VanillaTuneUp
     /// <summary>
     /// Shrinks every colonist bar entry to two thirds of its height while the mouse is away from the bar, and
     /// restores it while the mouse is over the bar's area (all entries plus the group frame margin). The rows move
-    /// closer together too, so the whole bar takes less screen space. Collapsed entries keep the portrait where it
-    /// was and cut it off at the shortened edges, so the head stays visible. Names, status icons and weapon icons
-    /// are hidden while collapsed unless turned back on in the settings.
+    /// closer together too, so the whole bar takes less screen space. Each row opens on its own: the row under the
+    /// mouse and every row below it open, rows above stay collapsed until the mouse reaches them, so the entry under
+    /// the mouse never moves away from it. Collapsed entries keep the portrait where it was and cut it off at the
+    /// shortened edges, so the head stays visible. Weapon icons are hidden while collapsed and names and status icons
+    /// shown, each changeable in the settings.
     /// Optionally also gives the bar taller entries with a closer camera, so each portrait shows the whole pawn
     /// inside its entry (left to [NL] Custom Portraits when that mod is active).
     /// </summary>
@@ -45,62 +47,123 @@ namespace VanillaTuneUp
             ModLister.GetActiveModWithIdentifier(CustomPortraitsPackageId, ignorePostfix: true) != null;
         private static bool portraitSizeDirty = true;
 
-        private static float openness;
         private static float lastHoverTime = float.NegativeInfinity;
+        // Topmost row the mouse reached since it entered the bar; this row and all rows below it are open.
+        private static int anchorRow = int.MaxValue;
 
-        // Vanilla draw locations of the last recache; the bar's own list holds them moved for the current openness.
+        // Vanilla draw locations of the last recache with the row of each entry; the bar's own list holds the
+        // locations moved for the current row openness.
         private static readonly List<Vector2> baseDrawLocs = new List<Vector2>();
+        private static readonly List<int> entryRows = new List<int>();
         private static List<Vector2> barDrawLocs;
+        private static float barScale = 1f;
+
+        // Per row: openness (0 collapsed, 1 open), top edge, entry height and gap above in the current layout.
+        private static readonly List<float> rowOpenness = new List<float>();
+        private static readonly List<float> rowTops = new List<float>();
+        private static readonly List<float> rowHeights = new List<float>();
+        private static readonly List<float> rowGapsAbove = new List<float>();
+
+        // Openness of the entry being drawn, set when its portrait is drawn and used for its name, icons and weapon.
+        private static float drawingEntryOpenness = 1f;
 
         private static readonly Action<ColonistBarColonistDrawer, Rect, Pawn> DrawIconsOriginal =
             AccessTools.MethodDelegate<Action<ColonistBarColonistDrawer, Rect, Pawn>>(
                 AccessTools.Method(typeof(ColonistBarColonistDrawer), "DrawIcons"));
 
-        private static bool FullyOpen => openness >= 1f;
+        private static bool DrawingEntryOpen => drawingEntryOpenness >= 1f;
 
-        /// <summary>Entry size used for drawing and hit testing in place of ColonistBar.Size.</summary>
-        public static Vector2 EntrySize(ColonistBar bar)
+        /// <summary>Gap under a row with the given openness, in unscaled units; it holds the name and weapon.</summary>
+        private static float RowGapFor(float openness)
         {
-            Vector2 size = ColonistBar.BaseSize * bar.Scale;
-            size.y *= Mathf.Lerp(CollapsedHeightFactor, 1f, openness);
-            return size;
-        }
-
-        /// <summary>Gap above each entry in unscaled units; the portrait may extend into it.</summary>
-        private static float CurrentRowGap
-        {
-            get
-            {
-                TuneUpSettings settings = VanillaTuneUpMod.Settings;
-                bool weapons = Prefs.ShowWeaponsUnderPortraitMode != ShowWeaponsUnderPortraitMode.Never;
-                float weaponGap = UseCustomPortraits ? WeaponRowGap : RowGap;
-                float expandedGap = weapons ? weaponGap : RowGap;
-                float collapsedGap = weapons && settings.compactBarShowWeapons ? weaponGap
-                    : settings.compactBarShowLabels ? RowGap : CollapsedRowGap;
-                return Mathf.Lerp(collapsedGap, expandedGap, openness);
-            }
+            TuneUpSettings settings = VanillaTuneUpMod.Settings;
+            bool weapons = Prefs.ShowWeaponsUnderPortraitMode != ShowWeaponsUnderPortraitMode.Never;
+            float weaponGap = UseCustomPortraits ? WeaponRowGap : RowGap;
+            float expandedGap = weapons ? weaponGap : RowGap;
+            float collapsedGap = weapons && settings.compactBarShowWeapons ? weaponGap
+                : settings.compactBarShowLabels ? RowGap : CollapsedRowGap;
+            return Mathf.Lerp(collapsedGap, expandedGap, openness);
         }
 
         /// <summary>Remembers freshly calculated vanilla draw locations and moves them for the current openness.</summary>
-        public static void Notify_DrawLocsCalculated(List<Vector2> drawLocs)
+        public static void Notify_DrawLocsCalculated(List<Vector2> drawLocs, float scale)
         {
             barDrawLocs = drawLocs;
+            barScale = scale;
             baseDrawLocs.Clear();
             baseDrawLocs.AddRange(drawLocs);
-            ApplyRowSpacing();
+            // Vanilla puts every row at the same height in all groups, so rows are the distinct heights in order.
+            var rowYs = new List<float>();
+            foreach (Vector2 loc in drawLocs)
+            {
+                if (!rowYs.Exists(y => Mathf.Abs(y - loc.y) < 0.5f))
+                    rowYs.Add(loc.y);
+            }
+            rowYs.Sort();
+            entryRows.Clear();
+            foreach (Vector2 loc in drawLocs)
+                entryRows.Add(rowYs.FindIndex(y => Mathf.Abs(y - loc.y) < 0.5f));
+            while (rowOpenness.Count < rowYs.Count)
+                rowOpenness.Add(rowOpenness.Count > 0 ? rowOpenness[rowOpenness.Count - 1] : 0f);
+            if (rowOpenness.Count > rowYs.Count)
+                rowOpenness.RemoveRange(rowYs.Count, rowOpenness.Count - rowYs.Count);
+            ApplyLayout();
         }
 
-        private static void ApplyRowSpacing()
+        private static void ApplyLayout()
         {
+            rowTops.Clear();
+            rowHeights.Clear();
+            rowGapsAbove.Clear();
+            float top = MarginTop;
+            for (int row = 0; row < rowOpenness.Count; row++)
+            {
+                float openness = rowOpenness[row];
+                float height = ColonistBar.BaseSize.y * Mathf.Lerp(CollapsedHeightFactor, 1f, openness) * barScale;
+                rowTops.Add(top);
+                rowHeights.Add(height);
+                // The first row has the screen edge above it; it is clipped like the rows below for a uniform look.
+                rowGapsAbove.Add(RowGapFor(row > 0 ? rowOpenness[row - 1] : openness));
+                top += height + RowGapFor(openness) * barScale;
+            }
             if (barDrawLocs == null || barDrawLocs.Count != baseDrawLocs.Count)
                 return;
-            float rowStep = ColonistBar.BaseSize.y + RowGap;
-            float ratio = (ColonistBar.BaseSize.y * Mathf.Lerp(CollapsedHeightFactor, 1f, openness) + CurrentRowGap) / rowStep;
             for (int i = 0; i < baseDrawLocs.Count; i++)
+                barDrawLocs[i] = new Vector2(baseDrawLocs[i].x, rowTops[entryRows[i]]);
+        }
+
+        /// <summary>Row whose entries start at <paramref name="y"/> in the current layout, or -1.</summary>
+        private static int RowAtTop(float y)
+        {
+            for (int row = 0; row < rowTops.Count; row++)
             {
-                Vector2 loc = baseDrawLocs[i];
-                barDrawLocs[i] = new Vector2(loc.x, MarginTop + (loc.y - MarginTop) * ratio);
+                if (Mathf.Abs(rowTops[row] - y) < 0.01f)
+                    return row;
             }
+            return -1;
+        }
+
+        /// <summary>Entry rect for the entry at (x, y): the height comes from the entry's row.</summary>
+        public static Rect EntryRect(float x, float y, float width, float height)
+        {
+            int row = RowAtTop(y);
+            return new Rect(x, y, width, row >= 0 ? rowHeights[row] : height);
+        }
+
+        public static void InitEntryRect(ref Rect rect, float x, float y, float width, float height) =>
+            rect = EntryRect(x, y, width, height);
+
+        /// <summary>Bottom edge of a group's entries in the current layout, for its frame.</summary>
+        public static float GroupBottom(int group)
+        {
+            List<ColonistBar.Entry> entries = Find.ColonistBar.Entries;
+            float bottom = 0f;
+            for (int i = 0; i < entries.Count && i < entryRows.Count && i < barDrawLocs.Count; i++)
+            {
+                if (entries[i].group == group)
+                    bottom = Mathf.Max(bottom, barDrawLocs[i].y + rowHeights[entryRows[i]]);
+            }
+            return bottom;
         }
 
         private static bool UseCustomPortraits => VanillaTuneUpMod.Settings.compactBarCustomPortraits && !CustomPortraitsModActive;
@@ -133,31 +196,43 @@ namespace VanillaTuneUp
             size *= 2f;
         }
 
-        /// <summary>Updates the open/closed state once per frame from the mouse position.</summary>
+        /// <summary>Updates the open/closed state of every row once per frame from the mouse position.</summary>
         public static void Update(ColonistBar bar)
         {
             List<ColonistBar.Entry> entries = bar.Entries;
-            List<Vector2> drawLocs = bar.DrawLocs;
+            if (barDrawLocs == null || entries.Count == 0 || entryRows.Count != entries.Count)
+                return;
             float now = Time.realtimeSinceStartup;
-            if (entries.Count > 0 && drawLocs.Count == entries.Count && HoverArea(bar, drawLocs).Contains(UI.MousePositionOnUIInverted))
+            Vector2 mouse = UI.MousePositionOnUIInverted;
+            if (HoverArea().Contains(mouse))
+            {
                 lastHoverTime = now;
-            float target = now - lastHoverTime <= CollapseDelaySeconds ? 1f : 0f;
-            openness = Mathf.MoveTowards(openness, target, Time.unscaledDeltaTime / AnimationSeconds);
-            // Rewritten every frame: cheap, and also picks up settings changes that alter the collapsed gap.
-            ApplyRowSpacing();
+                // The gap under a row belongs to that row: it holds the row's names and weapons.
+                int row = 0;
+                while (row + 1 < rowTops.Count && mouse.y >= rowTops[row + 1])
+                    row++;
+                anchorRow = Mathf.Min(anchorRow, row);
+            }
+            else if (now - lastHoverTime > CollapseDelaySeconds)
+                anchorRow = int.MaxValue;
+            float step = Time.unscaledDeltaTime / AnimationSeconds;
+            for (int row = 0; row < rowOpenness.Count; row++)
+                rowOpenness[row] = Mathf.MoveTowards(rowOpenness[row], row >= anchorRow ? 1f : 0f, step);
+            // Rewritten every frame: cheap, and also picks up settings changes that alter the gaps.
+            ApplyLayout();
         }
 
-        private static Rect HoverArea(ColonistBar bar, List<Vector2> drawLocs)
+        private static Rect HoverArea()
         {
-            Vector2 size = EntrySize(bar);
             float xMin = float.MaxValue, xMax = float.MinValue, yMax = 0f;
-            for (int i = 0; i < drawLocs.Count; i++)
+            float width = ColonistBar.BaseSize.x * barScale;
+            for (int i = 0; i < barDrawLocs.Count; i++)
             {
-                xMin = Mathf.Min(xMin, drawLocs[i].x);
-                xMax = Mathf.Max(xMax, drawLocs[i].x + size.x);
-                yMax = Mathf.Max(yMax, drawLocs[i].y + size.y);
+                xMin = Mathf.Min(xMin, barDrawLocs[i].x);
+                xMax = Mathf.Max(xMax, barDrawLocs[i].x + width);
+                yMax = Mathf.Max(yMax, barDrawLocs[i].y + rowHeights[entryRows[i]]);
             }
-            return Rect.MinMaxRect(xMin, 0f, xMax, yMax).ExpandedBy(HoverMargin * bar.Scale);
+            return Rect.MinMaxRect(xMin, 0f, xMax, yMax).ExpandedBy(HoverMargin * barScale);
         }
 
         /// <summary>
@@ -166,8 +241,11 @@ namespace VanillaTuneUp
         /// </summary>
         public static void DrawPortrait(Rect textureRect, Texture texture, Rect entryRect)
         {
+            int row = RowAtTop(entryRect.y);
+            drawingEntryOpenness = row >= 0 ? rowOpenness[row] : 1f;
+            float gapAbove = row >= 0 ? rowGapsAbove[row] : RowGap;
             float bottom = Mathf.Min(textureRect.yMax, entryRect.yMax - 1f);
-            float top = Mathf.Max(textureRect.y, entryRect.y - (CurrentRowGap - 2f) * Find.ColonistBar.Scale);
+            float top = Mathf.Max(textureRect.y, entryRect.y - (gapAbove - 2f) * Find.ColonistBar.Scale);
             if (bottom >= textureRect.yMax && top <= textureRect.y)
             {
                 GUI.DrawTexture(textureRect, texture);
@@ -185,13 +263,13 @@ namespace VanillaTuneUp
         public static void DrawLabel(Pawn pawn, Vector2 pos, float alpha, float truncateToWidth,
             Dictionary<string, string> truncatedLabelsCache, GameFont font, bool alwaysDrawBg, bool alignCenter)
         {
-            if (FullyOpen || VanillaTuneUpMod.Settings.compactBarShowLabels)
+            if (DrawingEntryOpen || VanillaTuneUpMod.Settings.compactBarShowLabels)
                 GenMapUI.DrawPawnLabel(pawn, pos, alpha, truncateToWidth, truncatedLabelsCache, font, alwaysDrawBg, alignCenter);
         }
 
         public static void DrawIcons(ColonistBarColonistDrawer drawer, Rect rect, Pawn colonist)
         {
-            if (FullyOpen || VanillaTuneUpMod.Settings.compactBarShowIcons)
+            if (DrawingEntryOpen || VanillaTuneUpMod.Settings.compactBarShowIcons)
                 DrawIconsOriginal(drawer, rect, colonist);
         }
 
@@ -216,7 +294,7 @@ namespace VanillaTuneUp
 
         public static ShowWeaponsUnderPortraitMode WeaponMode()
         {
-            if (FullyOpen || VanillaTuneUpMod.Settings.compactBarShowWeapons)
+            if (DrawingEntryOpen || VanillaTuneUpMod.Settings.compactBarShowWeapons)
                 return Prefs.ShowWeaponsUnderPortraitMode;
             return ShowWeaponsUnderPortraitMode.Never;
         }
@@ -296,24 +374,27 @@ namespace VanillaTuneUp
             return changed;
         }
 
-        /// <summary>Replaces every ColonistBar.Size read in the method with EntrySize.</summary>
-        public static IEnumerable<CodeInstruction> ReplaceSize(IEnumerable<CodeInstruction> instructions, MethodBase original)
+        /// <summary>
+        /// Replaces the first Rect construction in the method, the entry rect built from a draw location and
+        /// ColonistBar.Size, with EntryRect so each entry gets the height of its row.
+        /// </summary>
+        public static IEnumerable<CodeInstruction> ReplaceEntryRect(IEnumerable<CodeInstruction> instructions, MethodBase original)
         {
-            MethodInfo getter = AccessTools.PropertyGetter(typeof(ColonistBar), nameof(ColonistBar.Size));
-            MethodInfo replacement = AccessTools.Method(typeof(CompactColonistBar), nameof(EntrySize));
-            int count = 0;
+            bool done = false;
             foreach (CodeInstruction code in instructions)
             {
-                if (code.Calls(getter))
+                if (!done && code.operand is ConstructorInfo ctor && ctor.DeclaringType == typeof(Rect) && ctor.GetParameters().Length == 4)
                 {
-                    yield return new CodeInstruction(System.Reflection.Emit.OpCodes.Call, replacement).WithLabels(code.labels).WithBlocks(code.blocks);
-                    count++;
+                    // newobj leaves the Rect on the stack; call initializes the Rect at an address below the arguments.
+                    string method = code.opcode == System.Reflection.Emit.OpCodes.Newobj ? nameof(EntryRect) : nameof(InitEntryRect);
+                    code.opcode = System.Reflection.Emit.OpCodes.Call;
+                    code.operand = AccessTools.Method(typeof(CompactColonistBar), method);
+                    done = true;
                 }
-                else
-                    yield return code;
+                yield return code;
             }
-            if (count == 0)
-                throw new Exception($"ColonistBar.Size not found in {original.DeclaringType.Name}.{original.Name}");
+            if (!done)
+                throw new Exception($"Entry rect not found in {original.DeclaringType.Name}.{original.Name}");
         }
 
         /// <summary>Replaces the first call to <paramref name="target"/> with a static method taking the same stack.</summary>
@@ -345,7 +426,7 @@ namespace VanillaTuneUp
             // The weapon icon rect is the only ScaledBy in the method.
             MethodInfo scaledBy = AccessTools.Method(typeof(GenUI), nameof(GenUI.ScaledBy));
             bool weaponRect = false;
-            foreach (CodeInstruction code in CompactColonistBar.ReplaceSize(instructions, original))
+            foreach (CodeInstruction code in CompactColonistBar.ReplaceEntryRect(instructions, original))
             {
                 if (code.Calls(weaponMode))
                     code.operand = replacement;
@@ -375,7 +456,7 @@ namespace VanillaTuneUp
         new[] { ArgumentType.Normal, ArgumentType.Out, ArgumentType.Normal })]
     public static class Patch_ColonistBarDrawLocsFinder_CalculateDrawLocs
     {
-        public static void Postfix(List<Vector2> outDrawLocs) => CompactColonistBar.Notify_DrawLocsCalculated(outDrawLocs);
+        public static void Postfix(List<Vector2> outDrawLocs, ref float scale) => CompactColonistBar.Notify_DrawLocsCalculated(outDrawLocs, scale);
     }
 
     [HarmonyPatchCategory("CompactColonistBar")]
@@ -386,11 +467,19 @@ namespace VanillaTuneUp
         {
             yield return AccessTools.Method(typeof(ColonistBar), nameof(ColonistBar.TryGetEntryAt));
             yield return AccessTools.Method(typeof(ColonistBar), nameof(ColonistBar.ColonistsOrCorpsesInScreenRect));
-            yield return AccessTools.Method(typeof(ColonistBarColonistDrawer), "GroupFrameRect");
         }
 
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase original) =>
-            CompactColonistBar.ReplaceSize(instructions, original);
+            CompactColonistBar.ReplaceEntryRect(instructions, original);
+    }
+
+    [HarmonyPatchCategory("CompactColonistBar")]
+    [HarmonyPatch(typeof(ColonistBarColonistDrawer), "GroupFrameRect")]
+    public static class Patch_ColonistBarColonistDrawer_GroupFrameRect
+    {
+        // Vanilla adds ColonistBar.Size.y to every entry; rows can have different heights here.
+        public static void Postfix(int group, ref Rect __result) =>
+            __result.yMax = CompactColonistBar.GroupBottom(group) + 12f * Find.ColonistBar.Scale;
     }
 
     [HarmonyPatchCategory("CompactColonistBar")]
