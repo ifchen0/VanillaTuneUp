@@ -1,0 +1,50 @@
+Small fixes and optional tweaks for vanilla RimWorld, collected in one mod. Every part has its own toggle.
+
+[h2]How it works[/h2][list]
+[*]Each fix and tweak can be turned on or off in [i]Options > Mod settings > Vanilla Tune-Up[/i]. Changes take effect after restarting the game.
+[*]Fixes are on by default. Tweaks change how the game plays or sounds, so they are off until you turn them on.
+[*]If one part fails to load (for example after a game update), only that part is turned off and the rest keep working.
+[/list]
+
+[h2]Fixes[/h2][list]
+[*][b]Faction leaders:[/b] fixes the [i]Faction leader for X is null[/i] error after loading a save. A new leader is generated the same way vanilla replaces a leader who died.
+[*][b]History graph:[/b] removes the History tab lag in long-running colonies. Curves and event marks are drawn once into a texture and redrawn only when the data or the shown range changes. In a colony with 21,900 records per curve and 2,500 event marks, the tab went from 15-19 ms to under 1 ms per frame. The graph looks the same.
+[*][b]Right-click menu:[/b] stops the stutter while a right-click menu is open on the map. Options are re-checked every 5 seconds instead of every 4th frame; choosing an option is still checked as in vanilla.
+[*][b]Trade setup:[/b] removes the long freeze when a trade window opens in a colony with many items. With Auto Seller, its trades no longer rebuild the trade list a second time (11 seconds to 0.3 seconds per trade with about 3,000 item stacks).
+[*][b]Mechs in sieges:[/b] fixes the error spam ([i]Exception while ticking lord with job RimWorld.LordJob_Siege[/i]) when a sieging group contains mechs added by other mods. Pawns without skills defend the camp instead of being picked as builders.
+[*][b]Food policy during mental breaks:[/b] wardens no longer bring restricted food to a prisoner having a mental break. A pawn in a mental break that feeds itself behaves as in vanilla.
+[*][b]Tend bleeding prisoners first:[/b] wardens skip feeding and food delivery while a prisoner is still bleeding, so they can move on to tending. Manual feeding orders still work.
+[/list]
+
+[h2]Tweaks[/h2][list]
+[*][b]Xenogerm queue[/b] (Biotech): a bill-style queue for the gene assembler. Each entry can be done X times, until you have X, or forever. Skipping an entry keeps its progress.
+[*][b]Drag to reorder:[/b] hold the right mouse button and drag to reorder the bottom bar, the architect categories and the buildings inside them. A plain right click still works as before.
+[*][b]Mute labor and birth sounds[/b] (Biotech): mutes the labor (early/late) and birth sounds. Other baby sounds are unchanged.
+[/list]
+
+[h2]Coming from the standalone mods[/h2]This mod replaces these standalone mods, which will not be updated further:
+[list]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3812508568]Faction Leader Fix[/url]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3814466333]History Graph Performance Fix[/url]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3814590552]Right-Click Menu Lag Fix[/url]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3812694216]Trade Performance Fix[/url]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3814052029]Siege Builder Fix (Mechs in Sieges)[/url]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3813854507]Prisoner Handling Fixes[/url]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3814169515]Xenogerm Queue[/url]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3815397911]Drag Reorder: Bottom Bar & Architect[/url]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3811852002]Mute Birth Sounds[/url]
+[/list]
+[list]
+[*]You can switch at any time. While a standalone mod is still active, its part here is skipped automatically, so nothing is applied twice.
+[*]A tweak whose standalone mod you were using is turned on for you, so it keeps working after you unsubscribe from the old mod.
+[*]Saved xenogerm queues and your Drag Reorder orders carry over.
+[*]The History graph part goes further than the standalone mod (see above).
+[/list]
+
+[h2]Notes[/h2][list]
+[*]Safe to add to or remove from an existing save. Removing it only drops xenogerm queues; a xenogerm in progress continues as normal.
+[*]Load after Harmony.
+[*]English and Traditional Chinese translations included.
+[/list]
+[hr][/hr]
+This mod was developed with the help of AI coding tools (Claude Code). Full source code is included in the Source folder and on [url=https://github.com/ifchen0/VanillaTuneUp]GitHub[/url] for review.
