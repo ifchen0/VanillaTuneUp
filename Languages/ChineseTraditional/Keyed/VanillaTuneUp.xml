@@ -28,6 +28,8 @@
   <VTU_DragReorder_Desc>按住滑鼠右鍵拖曳，即可重新排列底部工作列、建築分類與分類內的建築。</VTU_DragReorder_Desc>
   <VTU_MuteBirthSounds>靜音分娩與出生音效</VTU_MuteBirthSounds>
   <VTU_MuteBirthSounds_Desc>靜音分娩（早期／後期）與出生音效，其他嬰兒音效不變。</VTU_MuteBirthSounds_Desc>
+  <VTU_HybridXenotype>混種後代沿用相符的種族</VTU_HybridXenotype>
+  <VTU_HybridXenotype_Desc>被標為「混合」的後代，若種系基因與某個可遺傳種族的相符度超過 80%（依基因複雜度加權，不計膚色與髮色），就改為該種族；同分時隨機選一個。出生時與每次讀檔都會檢查；基因本身不變，帶有異種基因的 pawn 不處理。</VTU_HybridXenotype_Desc>
 
   <!-- Xenogerm queue -->
   <VTU_XQ_AddToQueue>加入佇列</VTU_XQ_AddToQueue>

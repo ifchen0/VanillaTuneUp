@@ -20,6 +20,7 @@ Small fixes and optional tweaks for vanilla RimWorld, collected in one mod. Ever
 [*][b]Xenogerm queue[/b] (Biotech): a bill-style queue for the gene assembler. Each entry can be done X times, until you have X, or forever. Skipping an entry keeps its progress.
 [*][b]Drag to reorder:[/b] hold the right mouse button and drag to reorder the bottom bar, the architect categories and the buildings inside them. A plain right click still works as before.
 [*][b]Mute labor and birth sounds[/b] (Biotech): mutes the labor (early/late) and birth sounds. Other baby sounds are unchanged.
+[*][b]Hybrid children keep a matching xenotype[/b] (Biotech): a child labeled Hybrid whose germline genes match one heritable xenotype by more than 80% (genes weighted by complexity, skin and hair color ignored) gets that xenotype instead (a tie is decided at random), so the name carries on to later generations. Checked at birth and on every load, so existing hybrids are covered too. Genes are never changed, and pawns with xenogenes are skipped.
 [/list]
 
 [h2]Coming from the standalone mods[/h2]This mod replaces these standalone mods, which will not be updated further:

@@ -72,6 +72,11 @@ namespace VanillaTuneUp
                 IsAvailable = () => ModsConfig.BiotechActive,
                 UnavailableKey = "VTU_RequiresBiotech"
             },
+            new TuneUpModule("HybridXenotype", true, null)
+            {
+                IsAvailable = () => ModsConfig.BiotechActive,
+                UnavailableKey = "VTU_RequiresBiotech"
+            },
         };
 
         public static TuneUpModule Get(string id) => All.Find(m => m.Id == id);

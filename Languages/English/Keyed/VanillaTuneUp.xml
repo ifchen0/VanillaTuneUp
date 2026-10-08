@@ -28,6 +28,8 @@
   <VTU_DragReorder_Desc>Hold the right mouse button and drag to reorder the bottom bar, the architect categories and the buildings inside them.</VTU_DragReorder_Desc>
   <VTU_MuteBirthSounds>Mute labor and birth sounds</VTU_MuteBirthSounds>
   <VTU_MuteBirthSounds_Desc>Mutes the labor (early/late) and birth sounds. Other baby sounds are unchanged.</VTU_MuteBirthSounds_Desc>
+  <VTU_HybridXenotype>Hybrid children keep a matching xenotype</VTU_HybridXenotype>
+  <VTU_HybridXenotype_Desc>A child labeled Hybrid whose germline genes match one heritable xenotype by more than 80% (genes weighted by complexity, skin and hair color ignored) gets that xenotype instead; a tie is decided at random. Checked at birth and on every load; genes are not changed, and pawns with xenogenes are skipped.</VTU_HybridXenotype_Desc>
 
   <!-- Xenogerm queue -->
   <VTU_XQ_AddToQueue>Add to queue</VTU_XQ_AddToQueue>
