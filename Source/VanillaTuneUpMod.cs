@@ -77,6 +77,10 @@ namespace VanillaTuneUp
                 IsAvailable = () => ModsConfig.BiotechActive,
                 UnavailableKey = "VTU_RequiresBiotech"
             },
+            new TuneUpModule("CompactColonistBar", true, null)
+            {
+                DrawSettings = CompactColonistBar.DrawSettings
+            },
         };
 
         public static TuneUpModule Get(string id) => All.Find(m => m.Id == id);
@@ -91,6 +95,58 @@ namespace VanillaTuneUp
 
         public DragReorderSettings dragReorder = new DragReorderSettings();
         public bool dragReorderMigrated;
+
+        // Compact colonist bar: what stays visible while the bar is collapsed.
+        public bool compactBarShowLabels = true;
+        public bool compactBarShowIcons = true;
+        public bool compactBarShowWeapons;
+        // Taller entries with a closer portrait camera; defaults match the author's [NL] Custom Portraits setup.
+        public bool compactBarCustomPortraits = true;
+        public float compactBarPortraitHeight = DefaultPortraitHeight;
+        public float compactBarPortraitZoom = DefaultPortraitZoom;
+        public float compactBarPortraitOffset = DefaultPortraitOffset;
+        private const float DefaultPortraitHeight = 96f;
+        private const float DefaultPortraitZoom = 2.3f;
+        private const float DefaultPortraitOffset = -0.11f;
+
+        // Per-race zoom on top of compactBarPortraitZoom; only values that differ from the default are stored.
+        private Dictionary<string, float> compactBarRaceZoom = new Dictionary<string, float>();
+        // Miho draw their heads at 0.75 size, so their portraits look small without extra zoom.
+        private static readonly Dictionary<string, float> DefaultRaceZoom = new Dictionary<string, float> { { "Alien_Miho", 1.2f } };
+
+        public float RaceZoom(string defName)
+        {
+            if (defName == null)
+                return 1f;
+            if (compactBarRaceZoom.TryGetValue(defName, out float zoom))
+                return zoom;
+            return DefaultRaceZoom.TryGetValue(defName, out zoom) ? zoom : 1f;
+        }
+
+        public void SetRaceZoom(string defName, float zoom)
+        {
+            float fallback = DefaultRaceZoom.TryGetValue(defName, out float d) ? d : 1f;
+            if (Mathf.Approximately(zoom, fallback))
+                compactBarRaceZoom.Remove(defName);
+            else
+                compactBarRaceZoom[defName] = zoom;
+        }
+
+        public IEnumerable<string> RaceZoomDefNames()
+        {
+            foreach (string defName in DefaultRaceZoom.Keys)
+                yield return defName;
+            foreach (string defName in compactBarRaceZoom.Keys)
+                yield return defName;
+        }
+
+        public void ResetCompactBarPortraits()
+        {
+            compactBarPortraitHeight = DefaultPortraitHeight;
+            compactBarPortraitZoom = DefaultPortraitZoom;
+            compactBarPortraitOffset = DefaultPortraitOffset;
+            compactBarRaceZoom.Clear();
+        }
 
         public bool IsEnabled(TuneUpModule module) =>
             overrides.TryGetValue(module.Id, out bool on) ? on : module.DefaultOn;
@@ -110,9 +166,18 @@ namespace VanillaTuneUp
             Scribe_Collections.Look(ref overrides, "overrides", LookMode.Value, LookMode.Value);
             Scribe_Deep.Look(ref dragReorder, "dragReorder");
             Scribe_Values.Look(ref dragReorderMigrated, "dragReorderMigrated", false);
+            Scribe_Values.Look(ref compactBarShowLabels, "compactBarShowLabels", true);
+            Scribe_Values.Look(ref compactBarShowIcons, "compactBarShowIcons", true);
+            Scribe_Values.Look(ref compactBarShowWeapons, "compactBarShowWeapons", false);
+            Scribe_Values.Look(ref compactBarCustomPortraits, "compactBarCustomPortraits", true);
+            Scribe_Values.Look(ref compactBarPortraitHeight, "compactBarPortraitHeight", DefaultPortraitHeight);
+            Scribe_Values.Look(ref compactBarPortraitZoom, "compactBarPortraitZoom", DefaultPortraitZoom);
+            Scribe_Values.Look(ref compactBarPortraitOffset, "compactBarPortraitOffset", DefaultPortraitOffset);
+            Scribe_Collections.Look(ref compactBarRaceZoom, "compactBarRaceZoom", LookMode.Value, LookMode.Value);
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
                 overrides ??= new Dictionary<string, bool>();
+                compactBarRaceZoom ??= new Dictionary<string, float>();
                 dragReorder ??= new DragReorderSettings();
             }
         }

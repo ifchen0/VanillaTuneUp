@@ -30,6 +30,8 @@
   <VTU_MuteBirthSounds_Desc>靜音分娩（早期／後期）與出生音效，其他嬰兒音效不變。</VTU_MuteBirthSounds_Desc>
   <VTU_HybridXenotype>混種後代沿用相符的種族</VTU_HybridXenotype>
   <VTU_HybridXenotype_Desc>被標為「混合」的後代，若種系基因與某個可遺傳種族的相符度超過 80%（依基因複雜度加權，不計膚色與髮色），就改為該種族；同分時隨機選一個。出生時與每次讀檔都會檢查；基因本身不變，帶有異種基因的 pawn 不處理。</VTU_HybridXenotype_Desc>
+  <VTU_CompactColonistBar>精簡殖民者肖像列</VTU_CompactColonistBar>
+  <VTU_CompactColonistBar_Desc>滑鼠不在肖像列上時，肖像高度縮成三分之二、排與排之間也會靠攏；滑鼠移到肖像列上就展開回原本大小。收合時只顯示頭部。</VTU_CompactColonistBar_Desc>
 
   <!-- Xenogerm queue -->
   <VTU_XQ_AddToQueue>加入佇列</VTU_XQ_AddToQueue>
@@ -65,4 +67,19 @@
   <VTU_DR_ResetMainButtons>重設底部工作列順序</VTU_DR_ResetMainButtons>
   <VTU_DR_ResetCategories>重設建築分類順序</VTU_DR_ResetCategories>
   <VTU_DR_ResetDesignators>重設所有分類內的建築順序</VTU_DR_ResetDesignators>
+
+  <!-- Compact colonist bar -->
+  <VTU_CB_WhileCollapsed>收合時仍顯示：</VTU_CB_WhileCollapsed>
+  <VTU_CB_ShowLabels>名稱</VTU_CB_ShowLabels>
+  <VTU_CB_ShowIcons>狀態圖示（睡覺、閒置、精神崩潰、職位等）</VTU_CB_ShowIcons>
+  <VTU_CB_ShowWeapons>武器（遊戲選項中有開啟肖像下顯示武器時）</VTU_CB_ShowWeapons>
+  <VTU_CB_CustomPortraits>加高肖像</VTU_CB_CustomPortraits>
+  <VTU_CB_CustomPortraits_Desc>加高肖像列的格子並拉近肖像鏡頭，讓每格完整顯示整個角色。關閉時為原版尺寸。</VTU_CB_CustomPortraits_Desc>
+  <VTU_CB_PortraitHeight>格子高度：{0}</VTU_CB_PortraitHeight>
+  <VTU_CB_PortraitZoom>肖像縮放：{0}</VTU_CB_PortraitZoom>
+  <VTU_CB_PortraitOffset>肖像垂直偏移：{0}</VTU_CB_PortraitOffset>
+  <VTU_CB_PortraitReset>重設肖像尺寸</VTU_CB_PortraitReset>
+  <VTU_CB_PortraitsByCustomPortraits>[NL] Custom Portraits 啟用時，肖像尺寸由它控制。</VTU_CB_PortraitsByCustomPortraits>
+  <VTU_CB_RaceZoom>各種族額外縮放（肖像列上出現的種族）：</VTU_CB_RaceZoom>
+  <VTU_CB_RaceZoomEntry>{0}：×{1}</VTU_CB_RaceZoomEntry>
 </LanguageData>

@@ -30,6 +30,8 @@
   <VTU_MuteBirthSounds_Desc>Mutes the labor (early/late) and birth sounds. Other baby sounds are unchanged.</VTU_MuteBirthSounds_Desc>
   <VTU_HybridXenotype>Hybrid children keep a matching xenotype</VTU_HybridXenotype>
   <VTU_HybridXenotype_Desc>A child labeled Hybrid whose germline genes match one heritable xenotype by more than 80% (genes weighted by complexity, skin and hair color ignored) gets that xenotype instead; a tie is decided at random. Checked at birth and on every load; genes are not changed, and pawns with xenogenes are skipped.</VTU_HybridXenotype_Desc>
+  <VTU_CompactColonistBar>Compact colonist bar</VTU_CompactColonistBar>
+  <VTU_CompactColonistBar_Desc>Colonist bar portraits shrink to two thirds of their height and the rows move closer together while the mouse is away and expand again when the mouse moves over the bar. Collapsed portraits show the head only.</VTU_CompactColonistBar_Desc>
 
   <!-- Xenogerm queue -->
   <VTU_XQ_AddToQueue>Add to queue</VTU_XQ_AddToQueue>
@@ -65,4 +67,19 @@
   <VTU_DR_ResetMainButtons>Reset bottom bar order</VTU_DR_ResetMainButtons>
   <VTU_DR_ResetCategories>Reset architect category order</VTU_DR_ResetCategories>
   <VTU_DR_ResetDesignators>Reset building order in all categories</VTU_DR_ResetDesignators>
+
+  <!-- Compact colonist bar -->
+  <VTU_CB_WhileCollapsed>Show while collapsed:</VTU_CB_WhileCollapsed>
+  <VTU_CB_ShowLabels>Names</VTU_CB_ShowLabels>
+  <VTU_CB_ShowIcons>Status icons (sleeping, idle, mental break, role...)</VTU_CB_ShowIcons>
+  <VTU_CB_ShowWeapons>Weapons (when shown under portraits in the game options)</VTU_CB_ShowWeapons>
+  <VTU_CB_CustomPortraits>Taller portraits</VTU_CB_CustomPortraits>
+  <VTU_CB_CustomPortraits_Desc>Makes colonist bar entries taller and moves the portrait camera closer, so each entry shows the whole pawn inside its frame. Off: vanilla size.</VTU_CB_CustomPortraits_Desc>
+  <VTU_CB_PortraitHeight>Entry height: {0}</VTU_CB_PortraitHeight>
+  <VTU_CB_PortraitZoom>Portrait zoom: {0}</VTU_CB_PortraitZoom>
+  <VTU_CB_PortraitOffset>Portrait vertical offset: {0}</VTU_CB_PortraitOffset>
+  <VTU_CB_PortraitReset>Reset portrait size</VTU_CB_PortraitReset>
+  <VTU_CB_PortraitsByCustomPortraits>Portrait size is controlled by [NL] Custom Portraits while it is active.</VTU_CB_PortraitsByCustomPortraits>
+  <VTU_CB_RaceZoom>Extra zoom per race (races on the colonist bar):</VTU_CB_RaceZoom>
+  <VTU_CB_RaceZoomEntry>{0}: x{1}</VTU_CB_RaceZoomEntry>
 </LanguageData>
