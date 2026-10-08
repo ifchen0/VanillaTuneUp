@@ -171,6 +171,7 @@ namespace VanillaTuneUp
     // is shown. The History tab's marks are rasterized into one texture (one dot per pixel and
     // color), and tooltips are looked up only for marks near the mouse. Each mark under the mouse
     // still gets its own tooltip region, as in vanilla.
+    [StaticConstructorOnStartup]
     [HarmonyPatchCategory("HistoryGraph")]
     [HarmonyPatch(typeof(SimpleCurveDrawer), nameof(SimpleCurveDrawer.DrawCurveMarks))]
     public static class DrawCurveMarksPatch

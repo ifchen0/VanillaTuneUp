@@ -9,11 +9,36 @@ using Verse.Sound;
 
 namespace VanillaTuneUp
 {
+    /// <summary>
+    /// Loaded on first use from the gizmo: the recombine icon ships with Biotech, so loading it at startup
+    /// would log a missing-texture error for players without the DLC. The attribute only satisfies RimWorld's
+    /// startup check for static texture fields; there is no field initializer, so nothing is loaded then.
+    /// </summary>
     [StaticConstructorOnStartup]
     public static class XenogermQueueTextures
     {
-        public static readonly Texture2D QueueIcon = ContentFinder<Texture2D>.Get("UI/Gizmos/RecombineGenes");
-        public static readonly Texture2D QueueBadge = ContentFinder<Texture2D>.Get("UI/VanillaTuneUp/XenogermQueueBadge");
+        private static Texture2D queueIcon;
+        private static Texture2D queueBadge;
+
+        public static Texture2D QueueIcon
+        {
+            get
+            {
+                if (queueIcon == null)
+                    queueIcon = ContentFinder<Texture2D>.Get("UI/Gizmos/RecombineGenes");
+                return queueIcon;
+            }
+        }
+
+        public static Texture2D QueueBadge
+        {
+            get
+            {
+                if (queueBadge == null)
+                    queueBadge = ContentFinder<Texture2D>.Get("UI/VanillaTuneUp/XenogermQueueBadge");
+                return queueBadge;
+            }
+        }
     }
 
     public enum RepeatMode
