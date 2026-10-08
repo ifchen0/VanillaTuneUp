@@ -117,6 +117,8 @@ namespace VanillaTuneUp
     {
         public static VanillaTuneUpMod Instance;
         public static TuneUpSettings Settings;
+        private const float DescriptionIndent = 12f;
+        private const float CheckboxColumn = 36f;
         private Vector2 scroll;
         private float viewHeight;
 
@@ -193,13 +195,17 @@ namespace VanillaTuneUp
                     listing.Label("VTU_RestartRequired".Translate());
                 }
             }
+            // Indent only moves the start, so narrow the column too: keeps the text clear of the checkbox column.
+            float width = listing.ColumnWidth;
+            listing.ColumnWidth = width - DescriptionIndent - CheckboxColumn;
+            listing.Indent(DescriptionIndent);
             GUI.color = Color.gray;
-            listing.Indent();
             listing.Label(module.Description);
             GUI.color = Color.white;
             if (module.IsActive && module.DrawSettings != null)
                 module.DrawSettings(listing);
-            listing.Outdent();
+            listing.Outdent(DescriptionIndent);
+            listing.ColumnWidth = width;
             listing.Gap(6f);
         }
     }
