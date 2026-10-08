@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <VTU_RestartNote>可個別開關每一項修正或調整，變更在重新啟動遊戲後生效。</VTU_RestartNote>
+  <VTU_Fixes>修正</VTU_Fixes>
+  <VTU_Tweaks>調整</VTU_Tweaks>
+  <VTU_RestartRequired>重新啟動遊戲後才會套用這項變更。</VTU_RestartRequired>
+  <VTU_Failed>無法套用（詳見記錄），本次遊戲中此項目已關閉。</VTU_Failed>
+  <VTU_ProvidedByLegacy>（已略過：獨立版 mod「{0}」已提供此功能）</VTU_ProvidedByLegacy>
+
+  <VTU_FactionLeader>補回遺失的派系領袖</VTU_FactionLeader>
+  <VTU_FactionLeader_Desc>修正「Faction leader for X is null」錯誤，以原版領袖死亡時的方式產生新領袖。</VTU_FactionLeader_Desc>
+  <VTU_HistoryGraph>歷史圖表效能</VTU_HistoryGraph>
+  <VTU_HistoryGraph_Desc>消除長期殖民地開啟歷史分頁時的卡頓。圖表外觀不變，高峰與低谷仍會顯示。</VTU_HistoryGraph_Desc>
+  <VTU_RightClickMenu>右鍵選單卡頓</VTU_RightClickMenu>
+  <VTU_RightClickMenu_Desc>消除地圖上開著右鍵選單時的卡頓。選項改為每 5 秒重新檢查一次（原版每 4 幀一次），點選時仍會即時檢查。</VTU_RightClickMenu_Desc>
+</LanguageData>

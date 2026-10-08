@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <VTU_RestartNote>Turn each fix or tweak on or off. Changes take effect after restarting the game.</VTU_RestartNote>
+  <VTU_Fixes>Fixes</VTU_Fixes>
+  <VTU_Tweaks>Tweaks</VTU_Tweaks>
+  <VTU_RestartRequired>Restart the game to apply this change.</VTU_RestartRequired>
+  <VTU_Failed>Could not be applied (see the log); this module is off for this session.</VTU_Failed>
+  <VTU_ProvidedByLegacy>(skipped: already provided by the standalone mod "{0}")</VTU_ProvidedByLegacy>
+
+  <VTU_FactionLeader>Restore missing faction leaders</VTU_FactionLeader>
+  <VTU_FactionLeader_Desc>Fixes the "Faction leader for X is null" error by generating a new leader the way vanilla does when a leader dies.</VTU_FactionLeader_Desc>
+  <VTU_HistoryGraph>History graph performance</VTU_HistoryGraph>
+  <VTU_HistoryGraph_Desc>Removes the History tab lag in long-running colonies. The graph looks the same; peaks and dips stay visible.</VTU_HistoryGraph_Desc>
+  <VTU_RightClickMenu>Right-click menu lag</VTU_RightClickMenu>
+  <VTU_RightClickMenu_Desc>Stops the stutter while a right-click menu is open on the map. Options are re-checked every 5 seconds instead of every 4th frame, and still on click.</VTU_RightClickMenu_Desc>
+</LanguageData>

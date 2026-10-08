@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+  <name>Vanilla Tune-Up: Fixes &amp; Tweaks</name>
+  <author>ifchen0</author>
+  <packageId>ifchen0.vanillatuneup</packageId>
+  <url>https://github.com/ifchen0/VanillaTuneUp</url>
+  <supportedVersions><li>1.6</li></supportedVersions>
+  <description>A collection of small fixes and optional tweaks for vanilla RimWorld. Every part can be turned on or off in the mod settings (restart required). Fixes are on by default, tweaks are off.
+
+Fixes:
+- Restore missing faction leaders: fixes the "Faction leader for X is null" error.
+- History graph performance: removes the History tab lag in long-running colonies.
+- Right-click menu lag: stops the stutter while a right-click menu is open on the map.
+
+Replaces these standalone mods by the same author. If one of them is still active, its part here is skipped automatically, so having both does not apply anything twice:
+- Faction Leader Fix
+- History Graph Performance Fix
+- Right-Click Menu Lag Fix
+
+Safe to add to or remove from an existing save. Load after Harmony.
+
+This mod was developed with the help of AI coding tools (Claude Code). Full source code is included in the Source folder for review.</description>
+  <modDependencies>
+    <li><packageId>brrainz.harmony</packageId><displayName>Harmony</displayName><steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl></li>
+  </modDependencies>
+  <loadAfter>
+    <li>brrainz.harmony</li>
+  </loadAfter>
+</ModMetaData>
