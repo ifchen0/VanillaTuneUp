@@ -8,14 +8,29 @@
   <description>A collection of small fixes and optional tweaks for vanilla RimWorld. Every part can be turned on or off in the mod settings (restart required). Fixes are on by default, tweaks are off.
 
 Fixes:
-- Restore missing faction leaders: fixes the "Faction leader for X is null" error.
-- History graph performance: removes the History tab lag in long-running colonies.
-- Right-click menu lag: stops the stutter while a right-click menu is open on the map.
+- Faction leaders: fixes the "Faction leader for X is null" error.
+- History graph: removes the History tab lag in long-running colonies.
+- Right-click menu: stops the stutter while a right-click menu is open on the map.
+- Trade setup: removes the long freeze when a trade window opens with many items (and with Auto Seller).
+- Mechs in sieges: fixes the error spam when a sieging group contains mechs added by other mods.
+- Prisoners in a mental break: wardens respect their food policy.
+- Bleeding prisoners: wardens tend them before feeding them.
 
-Replaces these standalone mods by the same author. If one of them is still active, its part here is skipped automatically, so having both does not apply anything twice:
+Tweaks:
+- Xenogerm queue: a bill-style queue for the gene assembler (Biotech).
+- Drag to reorder: right-drag the bottom bar, architect categories and buildings into your own order.
+- Mute labor and birth sounds (Biotech).
+
+Replaces these standalone mods by the same author. If one of them is still active, its part here is skipped automatically, so having both does not apply anything twice. Saved xenogerm queues and Drag Reorder orders carry over.
 - Faction Leader Fix
 - History Graph Performance Fix
 - Right-Click Menu Lag Fix
+- Trade Performance Fix
+- Siege Builder Fix (Mechs in Sieges)
+- Prisoner Handling Fixes
+- Xenogerm Queue
+- Drag Reorder: Bottom Bar &amp; Architect
+- Mute Birth Sounds
 
 Safe to add to or remove from an existing save. Load after Harmony.
 

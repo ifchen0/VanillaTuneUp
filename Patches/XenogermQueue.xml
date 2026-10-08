@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!-- Added even while the module is off, so a saved queue is kept; the comp does nothing until it is switched on. -->
+  <Operation Class="VanillaTuneUp.PatchOperationTuneUp">
+    <module>XenogermQueue</module>
+    <evenWhenOff>true</evenWhenOff>
+    <operations>
+      <li Class="PatchOperationAdd">
+        <success>Always</success>
+        <xpath>Defs/ThingDef[defName="GeneAssembler"]/comps</xpath>
+        <value>
+          <li>
+            <compClass>VanillaTuneUp.CompXenogermQueue</compClass>
+          </li>
+        </value>
+      </li>
+    </operations>
+  </Operation>
+</Patch>

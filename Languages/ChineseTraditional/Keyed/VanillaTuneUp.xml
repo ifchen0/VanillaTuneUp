@@ -6,6 +6,7 @@
   <VTU_RestartRequired>重新啟動遊戲後才會套用這項變更。</VTU_RestartRequired>
   <VTU_Failed>無法套用（詳見記錄），本次遊戲中此項目已關閉。</VTU_Failed>
   <VTU_ProvidedByLegacy>（已略過：獨立版 mod「{0}」已提供此功能）</VTU_ProvidedByLegacy>
+  <VTU_RequiresBiotech>（需要 Biotech）</VTU_RequiresBiotech>
 
   <VTU_FactionLeader>補回遺失的派系領袖</VTU_FactionLeader>
   <VTU_FactionLeader_Desc>修正「Faction leader for X is null」錯誤，以原版領袖死亡時的方式產生新領袖。</VTU_FactionLeader_Desc>
@@ -13,4 +14,53 @@
   <VTU_HistoryGraph_Desc>消除長期殖民地開啟歷史分頁時的卡頓。圖表外觀不變，高峰與低谷仍會顯示。</VTU_HistoryGraph_Desc>
   <VTU_RightClickMenu>右鍵選單卡頓</VTU_RightClickMenu>
   <VTU_RightClickMenu_Desc>消除地圖上開著右鍵選單時的卡頓。選項改為每 5 秒重新檢查一次（原版每 4 幀一次），點選時仍會即時檢查。</VTU_RightClickMenu_Desc>
+  <VTU_TradeDeal>交易開啟卡頓</VTU_TradeDeal>
+  <VTU_TradeDeal_Desc>消除物品很多的殖民地開啟交易視窗時的長時間凍結。搭配 Auto Seller 時，它的每筆交易也不會再重建第二次交易清單。</VTU_TradeDeal_Desc>
+  <VTU_SiegeBuilder>圍攻中的機械體</VTU_SiegeBuilder>
+  <VTU_SiegeBuilder_Desc>修正圍攻隊伍中有機械體（其他 mod 加入）時的錯誤洗版：沒有技能的單位改為防守營地，不再被指派建造。</VTU_SiegeBuilder_Desc>
+  <VTU_PrisonerFoodPolicy>精神崩潰時的飲食政策</VTU_PrisonerFoodPolicy>
+  <VTU_PrisonerFoodPolicy_Desc>獄卒不會再把受限制的食物送給正在精神崩潰的囚犯。精神崩潰的角色自己進食時，行為與原版相同。</VTU_PrisonerFoodPolicy_Desc>
+  <VTU_PrisonerBleeding>先治療流血的囚犯再餵食</VTU_PrisonerBleeding>
+  <VTU_PrisonerBleeding_Desc>囚犯仍在流血時，獄卒會略過餵食和送餐，改去做治療等其他工作。手動下令餵食仍然有效。</VTU_PrisonerBleeding_Desc>
+  <VTU_XenogermQueue>異種細胞佇列</VTU_XenogermQueue>
+  <VTU_XenogermQueue_Desc>為基因組裝機加入像工作台帳單的佇列：製造 X 次、製造直到有 X 個，或永遠重複。跳過的項目會保留進度。</VTU_XenogermQueue_Desc>
+  <VTU_DragReorder>拖曳排序</VTU_DragReorder>
+  <VTU_DragReorder_Desc>按住滑鼠右鍵拖曳，即可重新排列底部工作列、建築分類與分類內的建築。</VTU_DragReorder_Desc>
+  <VTU_MuteBirthSounds>靜音分娩與出生音效</VTU_MuteBirthSounds>
+  <VTU_MuteBirthSounds_Desc>靜音分娩（早期／後期）與出生音效，其他嬰兒音效不變。</VTU_MuteBirthSounds_Desc>
+
+  <!-- Xenogerm queue -->
+  <VTU_XQ_AddToQueue>加入佇列</VTU_XQ_AddToQueue>
+  <VTU_XQ_AddToQueueDesc>把這個異種細胞加入組裝機的佇列，而不是取代目前的工作。佇列中的項目會像工作台帳單一樣依序自動開始。</VTU_XQ_AddToQueueDesc>
+  <VTU_XQ_QueueGizmo>異種細胞佇列</VTU_XQ_QueueGizmo>
+  <VTU_XQ_QueueGizmoDesc>檢視並編輯這台組裝機要自動製作的異種細胞佇列。</VTU_XQ_QueueGizmoDesc>
+  <VTU_XQ_InspectQueue>佇列中的異種細胞：{0}</VTU_XQ_InspectQueue>
+  <VTU_XQ_Paused>已暫停</VTU_XQ_Paused>
+  <VTU_XQ_WindowTitle>異種細胞佇列</VTU_XQ_WindowTitle>
+  <VTU_XQ_Pause>暫停佇列</VTU_XQ_Pause>
+  <VTU_XQ_Resume>繼續佇列</VTU_XQ_Resume>
+  <VTU_XQ_PausedHint>佇列已暫停，恢復前不會開始新的異種細胞。</VTU_XQ_PausedHint>
+  <VTU_XQ_Empty>佇列是空的。請在重組視窗中按「加入佇列」。</VTU_XQ_Empty>
+  <VTU_XQ_ModeCount>製造 X 次</VTU_XQ_ModeCount>
+  <VTU_XQ_ModeUntilHave>製造直到有 X 個</VTU_XQ_ModeUntilHave>
+  <VTU_XQ_ModeForever>永遠重複</VTU_XQ_ModeForever>
+  <VTU_XQ_TimesLeft>剩 {0} 次</VTU_XQ_TimesLeft>
+  <VTU_XQ_StatusMissing>基因包遺失</VTU_XQ_StatusMissing>
+  <VTU_XQ_StatusRunning>製作中（{0}）</VTU_XQ_StatusRunning>
+  <VTU_XQ_StatusSatisfied>已達目標數量</VTU_XQ_StatusSatisfied>
+  <VTU_XQ_StatusHeld>已達目標數量，暫停於 {0}</VTU_XQ_StatusHeld>
+  <VTU_XQ_HeldTargetReached>已達佇列目標數量</VTU_XQ_HeldTargetReached>
+  <VTU_XQ_StatusSaved>已跳過，進度保留</VTU_XQ_StatusSaved>
+  <VTU_XQ_Skip>跳過</VTU_XQ_Skip>
+  <VTU_XQ_SkipDesc>先擱置這個異種細胞，開始佇列中的下一筆。進度會保留，下次輪到時繼續。已放入的古神膠囊會掉在組裝機旁。</VTU_XQ_SkipDesc>
+  <VTU_XQ_SkipNoNext>目前沒有其他可以開始的佇列項目。</VTU_XQ_SkipNoNext>
+  <VTU_XQ_DeleteRunningDesc>從佇列移除。正在製作的異種細胞不會被取消。</VTU_XQ_DeleteRunningDesc>
+  <VTU_XQ_MissingGenepacks>異種細胞佇列：略過 {0}，部分基因包已不在連接的基因庫中。</VTU_XQ_MissingGenepacks>
+  <VTU_XQ_QueuePaused>目前的異種細胞已被取消，異種細胞佇列已暫停。</VTU_XQ_QueuePaused>
+
+  <!-- Drag reorder -->
+  <VTU_DR_Hint>在底部工作列按鈕、建築分類或建築上按住滑鼠右鍵，拖到另一個按鈕上放開，即可移到該位置。</VTU_DR_Hint>
+  <VTU_DR_ResetMainButtons>重設底部工作列順序</VTU_DR_ResetMainButtons>
+  <VTU_DR_ResetCategories>重設建築分類順序</VTU_DR_ResetCategories>
+  <VTU_DR_ResetDesignators>重設所有分類內的建築順序</VTU_DR_ResetDesignators>
 </LanguageData>

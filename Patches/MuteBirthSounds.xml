@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!-- Mutes the Biotech labor (early/late) and birth sounds by setting their volume to 0. -->
+  <Operation Class="VanillaTuneUp.PatchOperationTuneUp">
+    <module>MuteBirthSounds</module>
+    <operations>
+      <!-- Drop existing volume settings so the added ones below are the only values -->
+      <li Class="PatchOperationRemove">
+        <xpath>Defs/SoundDef[defName="LaborEarly" or defName="LaborLate"]/subSounds/li/volumeRange</xpath>
+      </li>
+      <li Class="PatchOperationAdd">
+        <xpath>Defs/SoundDef[defName="LaborEarly" or defName="LaborLate" or defName="Birth"]/subSounds/li</xpath>
+        <value>
+          <volumeRange>0</volumeRange>
+        </value>
+      </li>
+    </operations>
+  </Operation>
+</Patch>

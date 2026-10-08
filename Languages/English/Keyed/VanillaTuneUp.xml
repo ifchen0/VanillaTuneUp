@@ -6,6 +6,7 @@
   <VTU_RestartRequired>Restart the game to apply this change.</VTU_RestartRequired>
   <VTU_Failed>Could not be applied (see the log); this module is off for this session.</VTU_Failed>
   <VTU_ProvidedByLegacy>(skipped: already provided by the standalone mod "{0}")</VTU_ProvidedByLegacy>
+  <VTU_RequiresBiotech>(requires Biotech)</VTU_RequiresBiotech>
 
   <VTU_FactionLeader>Restore missing faction leaders</VTU_FactionLeader>
   <VTU_FactionLeader_Desc>Fixes the "Faction leader for X is null" error by generating a new leader the way vanilla does when a leader dies.</VTU_FactionLeader_Desc>
@@ -13,4 +14,53 @@
   <VTU_HistoryGraph_Desc>Removes the History tab lag in long-running colonies. The graph looks the same; peaks and dips stay visible.</VTU_HistoryGraph_Desc>
   <VTU_RightClickMenu>Right-click menu lag</VTU_RightClickMenu>
   <VTU_RightClickMenu_Desc>Stops the stutter while a right-click menu is open on the map. Options are re-checked every 5 seconds instead of every 4th frame, and still on click.</VTU_RightClickMenu_Desc>
+  <VTU_TradeDeal>Trade setup freeze</VTU_TradeDeal>
+  <VTU_TradeDeal_Desc>Removes the long freeze when a trade window opens in a colony with many items. With Auto Seller, its trades no longer rebuild the trade list a second time.</VTU_TradeDeal_Desc>
+  <VTU_SiegeBuilder>Mechs in sieges</VTU_SiegeBuilder>
+  <VTU_SiegeBuilder_Desc>Fixes the error spam when a sieging group contains mechs (added by other mods): pawns without skills defend the camp instead of building it.</VTU_SiegeBuilder_Desc>
+  <VTU_PrisonerFoodPolicy>Food policy during mental breaks</VTU_PrisonerFoodPolicy>
+  <VTU_PrisonerFoodPolicy_Desc>Wardens no longer bring restricted food to a prisoner having a mental break. A pawn in a mental break that feeds itself behaves as in vanilla.</VTU_PrisonerFoodPolicy_Desc>
+  <VTU_PrisonerBleeding>Tend bleeding prisoners before feeding</VTU_PrisonerBleeding>
+  <VTU_PrisonerBleeding_Desc>Wardens skip feeding and food delivery while a prisoner is still bleeding, so they can move on to tending. Manual feeding orders still work.</VTU_PrisonerBleeding_Desc>
+  <VTU_XenogermQueue>Xenogerm queue</VTU_XenogermQueue>
+  <VTU_XenogermQueue_Desc>Adds a bill-style queue to the gene assembler: do X times, until you have X, or forever. Skipping an entry keeps its progress.</VTU_XenogermQueue_Desc>
+  <VTU_DragReorder>Drag to reorder</VTU_DragReorder>
+  <VTU_DragReorder_Desc>Hold the right mouse button and drag to reorder the bottom bar, the architect categories and the buildings inside them.</VTU_DragReorder_Desc>
+  <VTU_MuteBirthSounds>Mute labor and birth sounds</VTU_MuteBirthSounds>
+  <VTU_MuteBirthSounds_Desc>Mutes the labor (early/late) and birth sounds. Other baby sounds are unchanged.</VTU_MuteBirthSounds_Desc>
+
+  <!-- Xenogerm queue -->
+  <VTU_XQ_AddToQueue>Add to queue</VTU_XQ_AddToQueue>
+  <VTU_XQ_AddToQueueDesc>Add this xenogerm to the assembler's queue instead of replacing the current job. Queued xenogerms start automatically one after another, like workbench bills.</VTU_XQ_AddToQueueDesc>
+  <VTU_XQ_QueueGizmo>Xenogerm queue</VTU_XQ_QueueGizmo>
+  <VTU_XQ_QueueGizmoDesc>View and edit the queue of xenogerms this assembler will create automatically.</VTU_XQ_QueueGizmoDesc>
+  <VTU_XQ_InspectQueue>Queued xenogerms: {0}</VTU_XQ_InspectQueue>
+  <VTU_XQ_Paused>paused</VTU_XQ_Paused>
+  <VTU_XQ_WindowTitle>Xenogerm queue</VTU_XQ_WindowTitle>
+  <VTU_XQ_Pause>Pause queue</VTU_XQ_Pause>
+  <VTU_XQ_Resume>Resume queue</VTU_XQ_Resume>
+  <VTU_XQ_PausedHint>Queue is paused. No new xenogerm will be started until it is resumed.</VTU_XQ_PausedHint>
+  <VTU_XQ_Empty>The queue is empty. Use "Add to queue" in the recombine window.</VTU_XQ_Empty>
+  <VTU_XQ_ModeCount>Do X times</VTU_XQ_ModeCount>
+  <VTU_XQ_ModeUntilHave>Do until you have X</VTU_XQ_ModeUntilHave>
+  <VTU_XQ_ModeForever>Do forever</VTU_XQ_ModeForever>
+  <VTU_XQ_TimesLeft>{0} left</VTU_XQ_TimesLeft>
+  <VTU_XQ_StatusMissing>Genepacks missing</VTU_XQ_StatusMissing>
+  <VTU_XQ_StatusRunning>In progress ({0})</VTU_XQ_StatusRunning>
+  <VTU_XQ_StatusSatisfied>Target reached</VTU_XQ_StatusSatisfied>
+  <VTU_XQ_StatusHeld>Target reached, held at {0}</VTU_XQ_StatusHeld>
+  <VTU_XQ_HeldTargetReached>Queue target count reached</VTU_XQ_HeldTargetReached>
+  <VTU_XQ_StatusSaved>Skipped, progress kept</VTU_XQ_StatusSaved>
+  <VTU_XQ_Skip>Skip</VTU_XQ_Skip>
+  <VTU_XQ_SkipDesc>Set this xenogerm aside and start the next entry in the queue. Its progress is kept and continues when it comes up again. Inserted archite capsules are dropped next to the assembler.</VTU_XQ_SkipDesc>
+  <VTU_XQ_SkipNoNext>No other queue entry can be started right now.</VTU_XQ_SkipNoNext>
+  <VTU_XQ_DeleteRunningDesc>Remove from queue. The xenogerm in progress is not cancelled.</VTU_XQ_DeleteRunningDesc>
+  <VTU_XQ_MissingGenepacks>Xenogerm queue: skipping {0}, some genepacks are no longer in a connected gene bank.</VTU_XQ_MissingGenepacks>
+  <VTU_XQ_QueuePaused>Xenogerm queue paused because the current xenogerm was cancelled.</VTU_XQ_QueuePaused>
+
+  <!-- Drag reorder -->
+  <VTU_DR_Hint>Hold the right mouse button on a bottom bar button, an architect category or a building, drag it onto another one and release to move it there.</VTU_DR_Hint>
+  <VTU_DR_ResetMainButtons>Reset bottom bar order</VTU_DR_ResetMainButtons>
+  <VTU_DR_ResetCategories>Reset architect category order</VTU_DR_ResetCategories>
+  <VTU_DR_ResetDesignators>Reset building order in all categories</VTU_DR_ResetDesignators>
 </LanguageData>
