@@ -65,6 +65,8 @@ namespace VanillaTuneUp
         private static float pendingSince;
         // Per entry: how far it is widened (0 to 1). The flag is set while a widened portrait is fetched.
         private static readonly List<float> magnifyAmounts = new List<float>();
+        // Pawn of each entry at the last recache, to carry magnification over a recache.
+        private static readonly List<Pawn> magnifyPawns = new List<Pawn>();
         private static bool magnifyingPortrait;
 
         // Vanilla draw locations of the last recache with the row of each entry; the bar's own list holds the
@@ -106,9 +108,26 @@ namespace VanillaTuneUp
         {
             barDrawLocs = drawLocs;
             barScale = scale;
-            // Entries may have moved, so no entry stays magnified.
+            // Vanilla recaches often (pawn state changes) without moving anything, so an entry whose pawn stays at
+            // the same place keeps its magnification; entries that moved start unmagnified.
+            List<ColonistBar.Entry> entries = Find.ColonistBar.Entries;
+            var amounts = new float[drawLocs.Count];
+            for (int i = 0; i < drawLocs.Count && i < entries.Count; i++)
+            {
+                Pawn pawn = entries[i].pawn;
+                if (pawn == null)
+                    continue;
+                for (int j = 0; j < magnifyPawns.Count && j < baseDrawLocs.Count && j < magnifyAmounts.Count; j++)
+                {
+                    if (magnifyPawns[j] == pawn && (baseDrawLocs[j] - drawLocs[i]).sqrMagnitude < 0.0001f)
+                        amounts[i] = magnifyAmounts[j];
+                }
+            }
             magnifyAmounts.Clear();
-            magnifyAmounts.AddRange(new float[drawLocs.Count]);
+            magnifyAmounts.AddRange(amounts);
+            magnifyPawns.Clear();
+            for (int i = 0; i < drawLocs.Count; i++)
+                magnifyPawns.Add(i < entries.Count ? entries[i].pawn : null);
             baseDrawLocs.Clear();
             baseDrawLocs.AddRange(drawLocs);
             // Vanilla puts every row at the same height in all groups, so rows are the distinct heights in order.
