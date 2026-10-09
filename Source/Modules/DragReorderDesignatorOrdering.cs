@@ -121,6 +121,7 @@ namespace VanillaTuneUp
             gizmos.SortStable(comparator);
             if (activeCategory == null)
             {
+                // A shared hotkey goes to the first button drawn, so it follows the user's order on purpose.
                 if (InspectOrdering.Active)
                     InspectOrdering.Sort(gizmos);
                 return;

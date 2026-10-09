@@ -85,9 +85,10 @@ namespace VanillaTuneUp
 
         /// <summary>
         /// Builds the final order: saved keys first, then any key the save does not know about,
-        /// placed right after the key that precedes it in the default order.
+        /// placed right after the key that precedes it in the default order. With keepAbsent, saved keys
+        /// missing from the default order are kept too (for a save shared by several lists).
         /// </summary>
-        public static List<string> Merge(IList<string> defaultOrder, List<string> saved)
+        public static List<string> Merge(IList<string> defaultOrder, List<string> saved, bool keepAbsent = false)
         {
             var result = new List<string>();
             if (!saved.NullOrEmpty())
@@ -95,7 +96,7 @@ namespace VanillaTuneUp
                 var present = new HashSet<string>(defaultOrder);
                 foreach (string key in saved)
                 {
-                    if (present.Contains(key) && !result.Contains(key))
+                    if ((keepAbsent || present.Contains(key)) && !result.Contains(key))
                         result.Add(key);
                 }
             }
