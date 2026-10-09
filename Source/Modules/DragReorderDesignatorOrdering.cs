@@ -14,7 +14,8 @@ namespace VanillaTuneUp
     /// <summary>
     /// Right-drag reordering of the buildings inside an architect category. The gizmo grid sorts by
     /// Gizmo.Order every draw, so the sort call in DrawGizmoGrid is redirected and re-sorted by the saved
-    /// order while an architect category is being drawn; every other gizmo grid keeps the vanilla sort.
+    /// order while an architect category is being drawn; the selection's command buttons are handed to
+    /// InspectOrdering, and every other gizmo grid keeps the vanilla sort.
     /// </summary>
     [HarmonyPatchCategory("DragReorder")]
     [HarmonyPatch]
@@ -87,7 +88,8 @@ namespace VanillaTuneUp
         private static IEnumerable<CodeInstruction> DrawGizmoGrid_Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             MethodInfo gizmoOnGUI = AccessTools.Method(typeof(Gizmo), nameof(Gizmo.GizmoOnGUI));
-            int sorts = 0, draws = 0;
+            MethodInfo gizmoOnGUIShrunk = AccessTools.Method(typeof(Command), nameof(Command.GizmoOnGUIShrunk));
+            int sorts = 0, draws = 0, shrunkDraws = 0;
             foreach (CodeInstruction ci in instructions)
             {
                 if (ci.operand is MethodInfo m && m.Name == nameof(GenCollection.SortStable) && m.DeclaringType == typeof(GenCollection))
@@ -102,17 +104,27 @@ namespace VanillaTuneUp
                     ci.operand = AccessTools.Method(typeof(DesignatorOrdering), nameof(DrawGizmo));
                     draws++;
                 }
+                else if (ci.Calls(gizmoOnGUIShrunk))
+                {
+                    ci.opcode = OpCodes.Call;
+                    ci.operand = AccessTools.Method(typeof(DesignatorOrdering), nameof(DrawGizmoShrunk));
+                    shrunkDraws++;
+                }
                 yield return ci;
             }
-            if (sorts != 1 || draws != 1)
-                Log.Warning($"[Vanilla Tune-Up] GizmoGridDrawer.DrawGizmoGrid has changed (sort calls {sorts}, draw calls {draws}); building reordering may not work.");
+            if (sorts != 1 || draws != 1 || shrunkDraws != 1)
+                Log.Warning($"[Vanilla Tune-Up] GizmoGridDrawer.DrawGizmoGrid has changed (sort calls {sorts}, draw calls {draws}, shrunk draw calls {shrunkDraws}); building and command button reordering may not work.");
         }
 
         private static void SortGizmos(IList<Gizmo> gizmos, Func<Gizmo, Gizmo, int> comparator)
         {
             gizmos.SortStable(comparator);
             if (activeCategory == null)
+            {
+                if (InspectOrdering.Active)
+                    InspectOrdering.Sort(gizmos);
                 return;
+            }
             Rects.Clear();
             List<string> saved = VanillaTuneUpMod.Settings.dragReorder.DesignatorKeys(activeCategory.defName);
             if (!saved.NullOrEmpty())
@@ -134,6 +146,16 @@ namespace VanillaTuneUp
             GizmoResult result = gizmo.GizmoOnGUI(topLeft, maxWidth, parms);
             if (activeCategory != null && gizmo is Designator des)
                 Rects.Add((des, new Rect(topLeft.x, topLeft.y, gizmo.GetWidth(maxWidth), 75f)));
+            else if (InspectOrdering.Active)
+                InspectOrdering.Record(gizmo, new Rect(topLeft.x, topLeft.y, gizmo.GetWidth(maxWidth), 75f));
+            return result;
+        }
+
+        private static GizmoResult DrawGizmoShrunk(Command command, Vector2 topLeft, float size, GizmoRenderParms parms)
+        {
+            GizmoResult result = command.GizmoOnGUIShrunk(topLeft, size, parms);
+            if (activeCategory == null && InspectOrdering.Active)
+                InspectOrdering.Record(command, new Rect(topLeft.x, topLeft.y, size, size));
             return result;
         }
 

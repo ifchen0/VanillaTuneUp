@@ -63,10 +63,11 @@
   <VTU_XQ_QueuePaused>目前的異種細胞已被取消，異種細胞佇列已暫停。</VTU_XQ_QueuePaused>
 
   <!-- Drag reorder -->
-  <VTU_DR_Hint>在底部工作列按鈕、建築分類或建築上按住滑鼠右鍵，拖到另一個按鈕上放開，即可移到該位置。</VTU_DR_Hint>
+  <VTU_DR_Hint>在底部工作列按鈕、建築分類、建築或選取物件的指令按鈕上按住滑鼠右鍵，拖到另一個按鈕上放開，即可移到該位置。指令按鈕的順序由小人、建築和動物共用。</VTU_DR_Hint>
   <VTU_DR_ResetMainButtons>重設底部工作列順序</VTU_DR_ResetMainButtons>
   <VTU_DR_ResetCategories>重設建築分類順序</VTU_DR_ResetCategories>
   <VTU_DR_ResetDesignators>重設所有分類內的建築順序</VTU_DR_ResetDesignators>
+  <VTU_DR_ResetInspectGizmos>重設指令按鈕順序</VTU_DR_ResetInspectGizmos>
 
   <!-- Compact colonist bar -->
   <VTU_CB_WhileCollapsed>收合時仍顯示：</VTU_CB_WhileCollapsed>

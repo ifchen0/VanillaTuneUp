@@ -27,17 +27,20 @@ namespace VanillaTuneUp
         public List<string> mainButtons = new List<string>();
         public List<string> categories = new List<string>();
         public List<DesignatorOrder> designators = new List<DesignatorOrder>();
+        public List<string> inspectGizmos = new List<string>();
 
         public void ExposeData()
         {
             Scribe_Collections.Look(ref mainButtons, "mainButtons", LookMode.Value);
             Scribe_Collections.Look(ref categories, "categories", LookMode.Value);
             Scribe_Collections.Look(ref designators, "designators", LookMode.Deep);
+            Scribe_Collections.Look(ref inspectGizmos, "inspectGizmos", LookMode.Value);
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
                 mainButtons ??= new List<string>();
                 categories ??= new List<string>();
                 designators ??= new List<DesignatorOrder>();
+                inspectGizmos ??= new List<string>();
                 designators.RemoveAll(d => d == null || d.category.NullOrEmpty());
             }
         }
@@ -80,6 +83,12 @@ namespace VanillaTuneUp
                 VanillaTuneUpMod.Save();
                 DesignatorOrdering.Invalidate();
             }
+            if (listing.ButtonText("VTU_DR_ResetInspectGizmos".Translate()))
+            {
+                settings.inspectGizmos.Clear();
+                VanillaTuneUpMod.Save();
+                InspectOrdering.Invalidate();
+            }
         }
 
         /// <summary>
@@ -99,7 +108,9 @@ namespace VanillaTuneUp
                     : null;
                 if (file != null)
                 {
+                    List<string> inspectGizmos = settings.dragReorder.inspectGizmos;
                     settings.dragReorder = Read(file);
+                    settings.dragReorder.inspectGizmos = inspectGizmos;
                     Log.Message($"[Vanilla Tune-Up] Drag Reorder: copied saved orders from {Path.GetFileName(file)}.");
                 }
             }

@@ -63,10 +63,11 @@
   <VTU_XQ_QueuePaused>Xenogerm queue paused because the current xenogerm was cancelled.</VTU_XQ_QueuePaused>
 
   <!-- Drag reorder -->
-  <VTU_DR_Hint>Hold the right mouse button on a bottom bar button, an architect category or a building, drag it onto another one and release to move it there.</VTU_DR_Hint>
+  <VTU_DR_Hint>Hold the right mouse button on a bottom bar button, an architect category, a building or a command button of the selection, drag it onto another one and release to move it there. Command buttons share one order across pawns, buildings and animals.</VTU_DR_Hint>
   <VTU_DR_ResetMainButtons>Reset bottom bar order</VTU_DR_ResetMainButtons>
   <VTU_DR_ResetCategories>Reset architect category order</VTU_DR_ResetCategories>
   <VTU_DR_ResetDesignators>Reset building order in all categories</VTU_DR_ResetDesignators>
+  <VTU_DR_ResetInspectGizmos>Reset command button order</VTU_DR_ResetInspectGizmos>
 
   <!-- Compact colonist bar -->
   <VTU_CB_WhileCollapsed>Show while collapsed:</VTU_CB_WhileCollapsed>
