@@ -73,6 +73,8 @@
   <VTU_CB_ShowLabels>Names</VTU_CB_ShowLabels>
   <VTU_CB_ShowIcons>Status icons (sleeping, idle, mental break, role...)</VTU_CB_ShowIcons>
   <VTU_CB_ShowWeapons>Weapons (when shown under portraits in the game options)</VTU_CB_ShowWeapons>
+  <VTU_CB_MagnifyHovered>Enlarge the portrait under the mouse (experimental)</VTU_CB_MagnifyHovered>
+  <VTU_CB_MagnifyHovered_Desc>The entry under the mouse becomes a bit wider and its portrait a bit larger; the head stays in view and the feet are cut off. Clicks in the gap next to a portrait also go to that portrait.</VTU_CB_MagnifyHovered_Desc>
   <VTU_CB_CustomPortraits>Taller portraits</VTU_CB_CustomPortraits>
   <VTU_CB_CustomPortraits_Desc>Makes colonist bar entries taller and moves the portrait camera closer, so each entry shows the whole pawn inside its frame. Off: vanilla size.</VTU_CB_CustomPortraits_Desc>
   <VTU_CB_PortraitHeight>Entry height: {0}</VTU_CB_PortraitHeight>

@@ -13,9 +13,13 @@ namespace VanillaTuneUp
     /// restores it while the mouse is over the bar's area (all entries plus the group frame margin). The rows move
     /// closer together too, so the whole bar takes less screen space. Each row opens on its own: the row under the
     /// mouse and every row below it open, rows above stay collapsed until the mouse reaches them, so the entry under
-    /// the mouse never moves away from it. Collapsed entries keep the portrait where it was and cut it off at the
+    /// the mouse never moves away from it. A row opens only once the mouse has stayed on it for a moment, so rows
+    /// do not move while the mouse is still on its way to a portrait.
+    /// Collapsed entries keep the portrait where it was and cut it off at the
     /// shortened edges, so the head stays visible. Weapon icons are hidden while collapsed and names and status icons
-    /// shown, each changeable in the settings.
+    /// shown, each changeable in the settings. The entry under the mouse widens into the gap between entries, with
+    /// its portrait enlarged to match (the top stays, the feet are cut off), starting together with the row opening; the
+    /// gaps next to an entry count as that entry for hovering and clicking.
     /// Optionally also gives the bar taller entries with a closer camera, so each portrait shows the whole pawn
     /// inside its entry (left to [NL] Custom Portraits when that mod is active).
     /// </summary>
@@ -33,6 +37,12 @@ namespace VanillaTuneUp
         private const float WeaponRowGap = 54f;
         private const float AnimationSeconds = 0.12f;
         private const float CollapseDelaySeconds = 0.3f;
+        // How long the mouse has to stay on a row before that row opens.
+        private const float OpenDelaySeconds = 0.3f;
+        // Width and portrait scale of the entry under the mouse; the extra width fits in the 24 gap between entries.
+        private const float MagnifyFactor = 1.35f;
+        // Camera zoom vanilla passes for colonist bar portraits.
+        private const float VanillaPortraitZoom = 1.28205f;
         // Same margin the vanilla group frame draws around its entries.
         private const float HoverMargin = 12f;
 
@@ -50,6 +60,12 @@ namespace VanillaTuneUp
         private static float lastHoverTime = float.NegativeInfinity;
         // Topmost row the mouse reached since it entered the bar; this row and all rows below it are open.
         private static int anchorRow = int.MaxValue;
+        // Row the mouse is on and since when; it becomes the anchor row after OpenDelaySeconds.
+        private static int pendingRow = -1;
+        private static float pendingSince;
+        // Per entry: how far it is widened (0 to 1). The flag is set while a widened portrait is fetched.
+        private static readonly List<float> magnifyAmounts = new List<float>();
+        private static bool magnifyingPortrait;
 
         // Vanilla draw locations of the last recache with the row of each entry; the bar's own list holds the
         // locations moved for the current row openness.
@@ -90,6 +106,9 @@ namespace VanillaTuneUp
         {
             barDrawLocs = drawLocs;
             barScale = scale;
+            // Entries may have moved, so no entry stays magnified.
+            magnifyAmounts.Clear();
+            magnifyAmounts.AddRange(new float[drawLocs.Count]);
             baseDrawLocs.Clear();
             baseDrawLocs.AddRange(drawLocs);
             // Vanilla puts every row at the same height in all groups, so rows are the distinct heights in order.
@@ -147,11 +166,63 @@ namespace VanillaTuneUp
         public static Rect EntryRect(float x, float y, float width, float height)
         {
             int row = RowAtTop(y);
-            return new Rect(x, y, width, row >= 0 ? rowHeights[row] : height);
+            var rect = new Rect(x, y, width, row >= 0 ? rowHeights[row] : height);
+            if (barDrawLocs == null || magnifyAmounts.Count != barDrawLocs.Count)
+                return rect;
+            for (int i = 0; i < magnifyAmounts.Count; i++)
+            {
+                if (magnifyAmounts[i] > 0f && Mathf.Abs(barDrawLocs[i].x - x) < 0.01f && Mathf.Abs(barDrawLocs[i].y - y) < 0.01f)
+                    return Magnified(rect, magnifyAmounts[i]);
+            }
+            return rect;
+        }
+
+        private static Rect Magnified(Rect rect, float amount)
+        {
+            float extra = rect.width * (MagnifyFactor - 1f) * amount;
+            return new Rect(rect.x - extra / 2f, rect.y, rect.width + extra, rect.height);
+        }
+
+        /// <summary>
+        /// Area that counts as the entry for the mouse: the entry plus half the gap on either side, so the areas of
+        /// neighbouring entries meet and the mouse is never between two entries. It holds a magnified entry too.
+        /// </summary>
+        private static Rect HitRect(Rect rect)
+        {
+            if (!VanillaTuneUpMod.Settings.compactBarMagnifyHovered)
+                return rect;
+            float full = (ColonistBar.BaseSize.x + ColonistBar.BaseSpaceBetweenColonistsHorizontal) * barScale;
+            if (rect.width >= full)
+                return rect;
+            float extra = (full - rect.width) / 2f;
+            return new Rect(rect.x - extra, rect.y, full, rect.height);
+        }
+
+        /// <summary>Entry under the mouse, or -1.</summary>
+        private static int EntryUnderMouse(Vector2 mouse)
+        {
+            float width = ColonistBar.BaseSize.x * barScale;
+            for (int i = 0; i < barDrawLocs.Count; i++)
+            {
+                if (HitRect(new Rect(barDrawLocs[i].x, barDrawLocs[i].y, width, rowHeights[entryRows[i]])).Contains(mouse))
+                    return i;
+            }
+            return -1;
         }
 
         public static void InitEntryRect(ref Rect rect, float x, float y, float width, float height) =>
             rect = EntryRect(x, y, width, height);
+
+        /// <summary>Entry rect for hit testing: clicks in the gap next to an entry go to that entry.</summary>
+        public static Rect HitEntryRect(float x, float y, float width, float height) => HitRect(EntryRect(x, y, width, height));
+
+        public static void InitHitEntryRect(ref Rect rect, float x, float y, float width, float height) =>
+            rect = HitEntryRect(x, y, width, height);
+
+        /// <summary>Vanilla click handling (double click, right-drag reorder) with the entry's hit area.</summary>
+        public static void HandleClicks(ColonistBarColonistDrawer drawer, Rect rect, Pawn colonist, int reorderableGroup,
+            out bool reordering) =>
+            drawer.HandleClicks(HitRect(rect), colonist, reorderableGroup, out reordering);
 
         /// <summary>Bottom edge of a group's entries in the current layout, for its frame.</summary>
         public static float GroupBottom(int group)
@@ -188,12 +259,18 @@ namespace VanillaTuneUp
         /// <summary>Moves the camera closer for colonist bar portraits and renders them at double resolution.</summary>
         public static void AdjustPortraitCamera(Pawn pawn, ref Vector2 size, ref Vector3 cameraOffset, ref float cameraZoom)
         {
-            if (!UseCustomPortraits || cameraOffset != ColonistBarColonistDrawer.PawnTextureCameraOffset)
+            if (cameraOffset != ColonistBarColonistDrawer.PawnTextureCameraOffset)
                 return;
-            TuneUpSettings settings = VanillaTuneUpMod.Settings;
-            cameraOffset.z += settings.compactBarPortraitOffset;
-            cameraZoom = settings.compactBarPortraitZoom * settings.RaceZoom(pawn?.def?.defName);
-            size *= 2f;
+            // The magnified entry's portrait is wider by the extra width of a fully magnified entry.
+            if (magnifyingPortrait)
+                size.x += ColonistBar.BaseSize.x * (MagnifyFactor - 1f);
+            if (UseCustomPortraits)
+            {
+                TuneUpSettings settings = VanillaTuneUpMod.Settings;
+                cameraOffset.z += settings.compactBarPortraitOffset;
+                cameraZoom = settings.compactBarPortraitZoom * settings.RaceZoom(pawn?.def?.defName);
+                size *= 2f;
+            }
         }
 
         /// <summary>Updates the open/closed state of every row once per frame from the mouse position.</summary>
@@ -211,15 +288,34 @@ namespace VanillaTuneUp
                 int row = 0;
                 while (row + 1 < rowTops.Count && mouse.y >= rowTops[row + 1])
                     row++;
-                anchorRow = Mathf.Min(anchorRow, row);
+                if (row >= anchorRow)
+                    pendingRow = -1;
+                else if (row != pendingRow)
+                {
+                    pendingRow = row;
+                    pendingSince = now;
+                }
+                else if (now - pendingSince >= OpenDelaySeconds)
+                    anchorRow = row;
             }
-            else if (now - lastHoverTime > CollapseDelaySeconds)
-                anchorRow = int.MaxValue;
+            else
+            {
+                pendingRow = -1;
+                if (now - lastHoverTime > CollapseDelaySeconds)
+                    anchorRow = int.MaxValue;
+            }
             float step = Time.unscaledDeltaTime / AnimationSeconds;
             for (int row = 0; row < rowOpenness.Count; row++)
                 rowOpenness[row] = Mathf.MoveTowards(rowOpenness[row], row >= anchorRow ? 1f : 0f, step);
             // Rewritten every frame: cheap, and also picks up settings changes that alter the gaps.
             ApplyLayout();
+            // An entry widens once its row starts to open, so both animations play together.
+            int hovered = VanillaTuneUpMod.Settings.compactBarMagnifyHovered ? EntryUnderMouse(mouse) : -1;
+            for (int i = 0; i < magnifyAmounts.Count; i++)
+            {
+                bool widen = i == hovered && entryRows[i] >= anchorRow;
+                magnifyAmounts[i] = Mathf.MoveTowards(magnifyAmounts[i], widen ? 1f : 0f, step);
+            }
         }
 
         private static Rect HoverArea()
@@ -237,10 +333,34 @@ namespace VanillaTuneUp
 
         /// <summary>
         /// Draws the portrait at its full-height position, cut off at the bottom of a shortened entry and at the
-        /// top of the narrowed row gap, so it does not cover the row above.
+        /// top of the narrowed row gap, so it does not cover the row above. A magnified entry gets a wider portrait
+        /// instead of the one vanilla fetched, of which it shows the top middle part enlarged as far as it is widened.
         /// </summary>
-        public static void DrawPortrait(Rect textureRect, Texture texture, Rect entryRect)
+        public static void DrawPortrait(Rect textureRect, Texture texture, Rect entryRect, Pawn pawn)
         {
+            var uv = new Rect(0f, 0f, 1f, 1f);
+            // Vanilla places the texture from the entry's left edge with its usual width.
+            float extra = entryRect.width - Find.ColonistBar.Size.x;
+            if (extra > 0.01f)
+            {
+                float fullExtra = Find.ColonistBar.Size.x * (MagnifyFactor - 1f);
+                float zoom = 1f + (MagnifyFactor - 1f) * Mathf.Clamp01(extra / fullExtra);
+                float fullWidth = textureRect.width + fullExtra;
+                textureRect.width += extra;
+                // Texture coordinates start at the bottom edge; the top edge stays and the feet are cut off.
+                float uWidth = textureRect.width / zoom / fullWidth;
+                uv = new Rect(0.5f - uWidth / 2f, 1f - 1f / zoom, uWidth, 1f / zoom);
+                magnifyingPortrait = true;
+                try
+                {
+                    texture = PortraitsCache.Get(pawn, ColonistBarColonistDrawer.PawnTextureSize, Rot4.South,
+                        ColonistBarColonistDrawer.PawnTextureCameraOffset, VanillaPortraitZoom);
+                }
+                finally
+                {
+                    magnifyingPortrait = false;
+                }
+            }
             int row = RowAtTop(entryRect.y);
             drawingEntryOpenness = row >= 0 ? rowOpenness[row] : 1f;
             float gapAbove = row >= 0 ? rowGapsAbove[row] : RowGap;
@@ -248,7 +368,7 @@ namespace VanillaTuneUp
             float top = Mathf.Max(textureRect.y, entryRect.y - (gapAbove - 2f) * Find.ColonistBar.Scale);
             if (bottom >= textureRect.yMax && top <= textureRect.y)
             {
-                GUI.DrawTexture(textureRect, texture);
+                GUI.DrawTextureWithTexCoords(textureRect, texture, uv);
                 return;
             }
             if (bottom <= top)
@@ -257,7 +377,7 @@ namespace VanillaTuneUp
             float vMin = (textureRect.yMax - bottom) / textureRect.height;
             float vMax = (textureRect.yMax - top) / textureRect.height;
             GUI.DrawTextureWithTexCoords(Rect.MinMaxRect(textureRect.x, top, textureRect.xMax, bottom),
-                texture, new Rect(0f, vMin, 1f, vMax - vMin));
+                texture, new Rect(uv.x, uv.y + uv.height * vMin, uv.width, uv.height * (vMax - vMin)));
         }
 
         public static void DrawLabel(Pawn pawn, Vector2 pos, float alpha, float truncateToWidth,
@@ -308,6 +428,8 @@ namespace VanillaTuneUp
             listing.CheckboxLabeled("VTU_CB_ShowIcons".Translate(), ref settings.compactBarShowIcons);
             listing.CheckboxLabeled("VTU_CB_ShowWeapons".Translate(), ref settings.compactBarShowWeapons);
             listing.Gap(6f);
+            listing.CheckboxLabeled("VTU_CB_MagnifyHovered".Translate(), ref settings.compactBarMagnifyHovered,
+                "VTU_CB_MagnifyHovered_Desc".Translate());
             if (CustomPortraitsModActive)
             {
                 GUI.color = Color.gray;
@@ -376,9 +498,11 @@ namespace VanillaTuneUp
 
         /// <summary>
         /// Replaces the first Rect construction in the method, the entry rect built from a draw location and
-        /// ColonistBar.Size, with EntryRect so each entry gets the height of its row.
+        /// ColonistBar.Size, with EntryRect so each entry gets the height of its row, or with HitEntryRect so it also
+        /// takes clicks in the gaps next to it.
         /// </summary>
-        public static IEnumerable<CodeInstruction> ReplaceEntryRect(IEnumerable<CodeInstruction> instructions, MethodBase original)
+        public static IEnumerable<CodeInstruction> ReplaceEntryRect(IEnumerable<CodeInstruction> instructions, MethodBase original,
+            bool hitArea = false)
         {
             bool done = false;
             foreach (CodeInstruction code in instructions)
@@ -386,7 +510,9 @@ namespace VanillaTuneUp
                 if (!done && code.operand is ConstructorInfo ctor && ctor.DeclaringType == typeof(Rect) && ctor.GetParameters().Length == 4)
                 {
                     // newobj leaves the Rect on the stack; call initializes the Rect at an address below the arguments.
-                    string method = code.opcode == System.Reflection.Emit.OpCodes.Newobj ? nameof(EntryRect) : nameof(InitEntryRect);
+                    string method = code.opcode == System.Reflection.Emit.OpCodes.Newobj
+                        ? hitArea ? nameof(HitEntryRect) : nameof(EntryRect)
+                        : hitArea ? nameof(InitHitEntryRect) : nameof(InitEntryRect);
                     code.opcode = System.Reflection.Emit.OpCodes.Call;
                     code.operand = AccessTools.Method(typeof(CompactColonistBar), method);
                     done = true;
@@ -425,11 +551,18 @@ namespace VanillaTuneUp
             MethodInfo replacement = AccessTools.Method(typeof(CompactColonistBar), nameof(CompactColonistBar.WeaponMode));
             // The weapon icon rect is the only ScaledBy in the method.
             MethodInfo scaledBy = AccessTools.Method(typeof(GenUI), nameof(GenUI.ScaledBy));
-            bool weaponRect = false;
+            MethodInfo handleClicks = AccessTools.Method(typeof(ColonistBarColonistDrawer), nameof(ColonistBarColonistDrawer.HandleClicks));
+            bool weaponRect = false, clicks = false;
             foreach (CodeInstruction code in CompactColonistBar.ReplaceEntryRect(instructions, original))
             {
                 if (code.Calls(weaponMode))
                     code.operand = replacement;
+                else if (code.Calls(handleClicks))
+                {
+                    code.opcode = System.Reflection.Emit.OpCodes.Call;
+                    code.operand = AccessTools.Method(typeof(CompactColonistBar), nameof(CompactColonistBar.HandleClicks));
+                    clicks = true;
+                }
                 yield return code;
                 if (code.Calls(scaledBy) && !weaponRect)
                 {
@@ -439,6 +572,8 @@ namespace VanillaTuneUp
             }
             if (!weaponRect)
                 Log.Warning("[Vanilla Tune-Up] Weapon icon rect not found in ColonistBar.ColonistBarOnGUI; weapons keep their vanilla position.");
+            if (!clicks)
+                Log.Warning("[Vanilla Tune-Up] HandleClicks not found in ColonistBar.ColonistBarOnGUI; double clicks keep the drawn entry area.");
         }
     }
 
@@ -469,8 +604,9 @@ namespace VanillaTuneUp
             yield return AccessTools.Method(typeof(ColonistBar), nameof(ColonistBar.ColonistsOrCorpsesInScreenRect));
         }
 
+        // Clicks (TryGetEntryAt) also count in the gaps next to an entry; drag boxes keep the drawn entry.
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase original) =>
-            CompactColonistBar.ReplaceEntryRect(instructions, original);
+            CompactColonistBar.ReplaceEntryRect(instructions, original, original.Name == nameof(ColonistBar.TryGetEntryAt));
     }
 
     [HarmonyPatchCategory("CompactColonistBar")]
@@ -497,7 +633,11 @@ namespace VanillaTuneUp
             if (get < 0 || get + 1 >= codes.Count || !codes[get + 1].Calls(drawTexture))
                 throw new Exception("Portrait draw not found in ColonistBarColonistDrawer.DrawColonist");
             codes[get + 1].operand = AccessTools.Method(type, nameof(CompactColonistBar.DrawPortrait));
-            codes.Insert(get + 1, new CodeInstruction(System.Reflection.Emit.OpCodes.Ldarg_1));
+            codes.InsertRange(get + 1, new[]
+            {
+                new CodeInstruction(System.Reflection.Emit.OpCodes.Ldarg_1),
+                new CodeInstruction(System.Reflection.Emit.OpCodes.Ldarg_2)
+            });
 
             MethodInfo drawLabel = AccessTools.Method(typeof(GenMapUI), nameof(GenMapUI.DrawPawnLabel), new[]
             {

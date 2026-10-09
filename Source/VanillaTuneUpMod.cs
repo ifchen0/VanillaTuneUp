@@ -100,6 +100,7 @@ namespace VanillaTuneUp
         public bool compactBarShowLabels = true;
         public bool compactBarShowIcons = true;
         public bool compactBarShowWeapons;
+        public bool compactBarMagnifyHovered = true;
         // Taller entries with a closer portrait camera; defaults match the author's [NL] Custom Portraits setup.
         public bool compactBarCustomPortraits = true;
         public float compactBarPortraitHeight = DefaultPortraitHeight;
@@ -169,6 +170,7 @@ namespace VanillaTuneUp
             Scribe_Values.Look(ref compactBarShowLabels, "compactBarShowLabels", true);
             Scribe_Values.Look(ref compactBarShowIcons, "compactBarShowIcons", true);
             Scribe_Values.Look(ref compactBarShowWeapons, "compactBarShowWeapons", false);
+            Scribe_Values.Look(ref compactBarMagnifyHovered, "compactBarMagnifyHovered", true);
             Scribe_Values.Look(ref compactBarCustomPortraits, "compactBarCustomPortraits", true);
             Scribe_Values.Look(ref compactBarPortraitHeight, "compactBarPortraitHeight", DefaultPortraitHeight);
             Scribe_Values.Look(ref compactBarPortraitZoom, "compactBarPortraitZoom", DefaultPortraitZoom);
