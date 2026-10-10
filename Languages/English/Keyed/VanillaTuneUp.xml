@@ -22,6 +22,8 @@
   <VTU_PrisonerFoodPolicy_Desc>Wardens no longer bring restricted food to a prisoner having a mental break. A pawn in a mental break that feeds itself behaves as in vanilla.</VTU_PrisonerFoodPolicy_Desc>
   <VTU_PrisonerBleeding>Tend bleeding prisoners before feeding</VTU_PrisonerBleeding>
   <VTU_PrisonerBleeding_Desc>Wardens skip feeding and food delivery while a prisoner is still bleeding, so they can move on to tending. Manual feeding orders still work.</VTU_PrisonerBleeding_Desc>
+  <VTU_QuestFactionRules>Quest text in translations</VTU_QuestFactionRules>
+  <VTU_QuestFactionRules_Desc>Fixes quest names and descriptions shown as "ERR:" with raw [tags] when a translation misspells a faction in its quest text (Traditional Chinese: mech cluster outposts with a climate adjuster, weather controller or similar).</VTU_QuestFactionRules_Desc>
   <VTU_XenogermQueue>Xenogerm queue</VTU_XenogermQueue>
   <VTU_XenogermQueue_Desc>Adds a bill-style queue to the gene assembler: do X times, until you have X, or forever. Skipping an entry keeps its progress.</VTU_XenogermQueue_Desc>
   <VTU_DragReorder>Drag to reorder</VTU_DragReorder>

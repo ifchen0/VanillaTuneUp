@@ -14,6 +14,7 @@ Small fixes and optional tweaks for vanilla RimWorld, collected in one mod. Ever
 [*][b]Mechs in sieges:[/b] fixes the error spam ([i]Exception while ticking lord with job RimWorld.LordJob_Siege[/i]) when a sieging group contains mechs added by other mods. Pawns without skills defend the camp instead of being picked as builders.
 [*][b]Food policy during mental breaks:[/b] wardens no longer bring restricted food to a prisoner having a mental break. A pawn in a mental break that feeds itself behaves as in vanilla.
 [*][b]Tend bleeding prisoners first:[/b] wardens skip feeding and food delivery while a prisoner is still bleeding, so they can move on to tending. Manual feeding orders still work.
+[*][b]Quest text in translations:[/b] fixes quest names and descriptions shown as [i]ERR:[/i] with raw [i][tags][/i] when a translation misspells a faction in its quest text. Currently covers Traditional Chinese, where mech cluster outposts with a climate adjuster, weather controller or similar were affected. Quests already offered keep their old text; new ones are fixed.
 [/list]
 
 [h2]Tweaks[/h2][list]

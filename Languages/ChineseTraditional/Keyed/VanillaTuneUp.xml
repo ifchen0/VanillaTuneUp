@@ -22,6 +22,8 @@
   <VTU_PrisonerFoodPolicy_Desc>獄卒不會再把受限制的食物送給正在精神崩潰的囚犯。精神崩潰的角色自己進食時，行為與原版相同。</VTU_PrisonerFoodPolicy_Desc>
   <VTU_PrisonerBleeding>先治療流血的囚犯再餵食</VTU_PrisonerBleeding>
   <VTU_PrisonerBleeding_Desc>囚犯仍在流血時，獄卒會略過餵食和送餐，改去做治療等其他工作。手動下令餵食仍然有效。</VTU_PrisonerBleeding_Desc>
+  <VTU_QuestFactionRules>翻譯版任務文字</VTU_QuestFactionRules>
+  <VTU_QuestFactionRules_Desc>修正翻譯把任務文字裡的派系名稱拼錯，導致任務名稱和描述顯示成「ERR:」加上 [標籤] 的問題（繁體中文：帶有氣候調節器、天氣控制器等裝置的機械軍團哨站任務）。</VTU_QuestFactionRules_Desc>
   <VTU_XenogermQueue>異種細胞佇列</VTU_XenogermQueue>
   <VTU_XenogermQueue_Desc>為基因組裝機加入像工作台帳單的佇列：製造 X 次、製造直到有 X 個，或永遠重複。跳過的項目會保留進度。</VTU_XenogermQueue_Desc>
   <VTU_DragReorder>拖曳排序</VTU_DragReorder>

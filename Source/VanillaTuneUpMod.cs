@@ -27,6 +27,9 @@ namespace VanillaTuneUp
         /// <summary>Extra settings drawn under the module while it is active.</summary>
         public Action<Listing_Standard> DrawSettings;
 
+        /// <summary>Runs once after the module's patches are applied at startup.</summary>
+        public Action OnActivated;
+
         public ModuleState State;
         public string LegacyName;
 
@@ -58,6 +61,11 @@ namespace VanillaTuneUp
             new TuneUpModule("SiegeBuilder", false, "ifchen0.siegebuilderfix"),
             new TuneUpModule("PrisonerFoodPolicy", false, "ifchen0.prisonpatch"),
             new TuneUpModule("PrisonerBleeding", false, "ifchen0.prisonpatch"),
+            new TuneUpModule("QuestFactionRules", false, null)
+            {
+                // Translations are already injected by the time patches are applied.
+                OnActivated = QuestFactionRules.Apply
+            },
             new TuneUpModule("XenogermQueue", true, "ifchen0.xenogermqueue")
             {
                 IsAvailable = () => ModsConfig.BiotechActive,
@@ -320,6 +328,7 @@ namespace VanillaTuneUp
                 try
                 {
                     harmony.PatchCategory(module.Id);
+                    module.OnActivated?.Invoke();
                     module.State = ModuleState.Active;
                 }
                 catch (Exception e)
