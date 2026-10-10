@@ -63,10 +63,6 @@ namespace VanillaTuneUp
                 IsAvailable = () => ModsConfig.BiotechActive,
                 UnavailableKey = "VTU_RequiresBiotech"
             },
-            new TuneUpModule("DragReorder", true, "ifchen0.dragreorder")
-            {
-                DrawSettings = DragReorderSettings.Draw
-            },
             new TuneUpModule("MuteBirthSounds", true, "ifchen0.mutebirthsounds")
             {
                 IsAvailable = () => ModsConfig.BiotechActive,
@@ -76,6 +72,12 @@ namespace VanillaTuneUp
             {
                 IsAvailable = () => ModsConfig.BiotechActive,
                 UnavailableKey = "VTU_RequiresBiotech"
+            },
+            new TuneUpModule("RemoveFogOfWar", true, null),
+            // Modules with extra settings go last, the longest at the end, so plain toggles stay near the top.
+            new TuneUpModule("DragReorder", true, "ifchen0.dragreorder")
+            {
+                DrawSettings = DragReorderSettings.Draw
             },
             new TuneUpModule("CompactColonistBar", true, null)
             {

@@ -32,6 +32,8 @@
   <VTU_HybridXenotype_Desc>被標為「混合」的後代，若種系基因與某個可遺傳種族的相符度超過 80%（依基因複雜度加權，不計膚色與髮色），就改為該種族；同分時隨機選一個。出生時與每次讀檔都會檢查；基因本身不變，帶有異種基因的 pawn 不處理。</VTU_HybridXenotype_Desc>
   <VTU_CompactColonistBar>精簡殖民者肖像列（實驗性）</VTU_CompactColonistBar>
   <VTU_CompactColonistBar_Desc>滑鼠不在肖像列上時，肖像高度縮成三分之二、排與排之間也會靠攏；滑鼠移到肖像列上就展開回原本大小。收合時只顯示頭部。</VTU_CompactColonistBar_Desc>
+  <VTU_RemoveFogOfWar>移除戰爭迷霧</VTU_RemoveFogOfWar>
+  <VTU_RemoveFogOfWar_Desc>地圖產生或讀檔時揭開整張地圖。若揭開會觸發事件（古代危險等沉睡的敵人、任務或揭露訊號、實體圖鑑或隱藏物品的發現），該地圖就維持迷霧，照 vanilla 進行。迷宮這類口袋地圖一律不揭開。</VTU_RemoveFogOfWar_Desc>
 
   <!-- Xenogerm queue -->
   <VTU_XQ_AddToQueue>加入佇列</VTU_XQ_AddToQueue>
