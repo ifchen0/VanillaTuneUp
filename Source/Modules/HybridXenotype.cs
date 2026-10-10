@@ -8,10 +8,13 @@ namespace VanillaTuneUp
 {
     /// <summary>
     /// Vanilla labels every child of two different heritable xenotypes "Hybrid", even when the inherited germline
-    /// genes are almost exactly one xenotype's. A hybrid with no xenogenes whose germline genes match one heritable
-    /// xenotype by more than 80% is given that xenotype instead; equal best matches are picked at random. The match is
-    /// shared / combined genes, each weighted by its complexity (at least 1, so cosmetic genes still count), with skin
-    /// color, hair color and Inbred ignored like vanilla's own same-xenotype check. Genes are never changed.
+    /// genes are almost exactly one xenotype's. A hybrid whose genes (germline and xenogenes alike, since a xenotype
+    /// def does not split them) match one xenotype by more than 80% is given that xenotype and is no longer a hybrid;
+    /// equal best matches are picked at random. The match is shared / combined genes, each weighted by its complexity
+    /// (at least 1, so cosmetic genes still count), with skin color, hair color and Inbred ignored like vanilla's own
+    /// same-xenotype check. Genes are never changed; the hybrid flag only affects the label and children's labels.
+    /// Optionally (off by default) a Baseliner with a custom xenotype name, such as one implanted with a xenogerm, is
+    /// matched the same way when it still has the default faceless icon; mutants keep their name.
     /// </summary>
     public static class HybridXenotype
     {
@@ -30,21 +33,39 @@ namespace VanillaTuneUp
 
         private static List<KeyValuePair<XenotypeDef, HashSet<GeneDef>>> Candidates =>
             candidates ??= DefDatabase<XenotypeDef>.AllDefs
-                .Where(x => x.inheritable)
                 .Select(x => new KeyValuePair<XenotypeDef, HashSet<GeneDef>>(
                     x, new HashSet<GeneDef>(x.genes.Where(Comparable))))
                 .ToList();
+
+        /// <summary>
+        /// A Baseliner shown with the default faceless icon, when the option is on. Hybrids and xenogerms without a
+        /// chosen icon show it, a plain Baseliner shows its own icon, and a custom xenotype given its own icon is skipped.
+        /// </summary>
+        private static bool IsNamedBaseliner(Pawn pawn)
+        {
+            Pawn_GeneTracker genes = pawn.genes;
+            return VanillaTuneUpMod.Settings.hybridIncludeNamed && !pawn.IsMutant
+                && genes.Xenotype == XenotypeDefOf.Baseliner
+                && genes.XenotypeIcon == XenotypeIconDefOf.Basic.Icon;
+        }
+
+        public static void DrawSettings(Listing_Standard listing)
+        {
+            // The settings window writes the settings when it closes.
+            listing.CheckboxLabeled("VTU_HybridIncludeNamed".Translate(),
+                ref VanillaTuneUpMod.Settings.hybridIncludeNamed, "VTU_HybridIncludeNamed_Desc".Translate());
+        }
 
         /// <summary>Gives a qualifying hybrid its best-matching xenotype. Returns that xenotype, or null.</summary>
         public static XenotypeDef TryResolve(Pawn pawn)
         {
             Pawn_GeneTracker genes = pawn?.genes;
-            if (genes == null || !genes.hybrid || genes.Xenogenes.Count > 0)
+            if (genes == null || !(genes.hybrid || IsNamedBaseliner(pawn)))
                 return null;
 
             tmpGenes.Clear();
             int pawnWeight = 0;
-            foreach (Gene gene in genes.Endogenes)
+            foreach (Gene gene in genes.GenesListForReading)
             {
                 if (Comparable(gene.def) && tmpGenes.Add(gene.def))
                     pawnWeight += Weight(gene.def);
@@ -90,6 +111,14 @@ namespace VanillaTuneUp
         }
     }
 
+    /// <summary>Checks a hybrid right after a xenogerm is implanted, instead of waiting for the next load.</summary>
+    [HarmonyPatchCategory("HybridXenotype")]
+    [HarmonyPatch(typeof(GeneUtility), nameof(GeneUtility.ImplantXenogermItem))]
+    public static class Patch_GeneUtility_ImplantXenogermItem
+    {
+        public static void Postfix(Pawn pawn) => HybridXenotype.TryResolve(pawn);
+    }
+
     [HarmonyPatchCategory("HybridXenotype")]
     [HarmonyPatch(typeof(PregnancyUtility), nameof(PregnancyUtility.ApplyBirthOutcome))]
     public static class Patch_PregnancyUtility_ApplyBirthOutcome
@@ -116,7 +145,7 @@ namespace VanillaTuneUp
                     resolved.Add($"{pawn.LabelShort} ({xenotype.defName})");
             }
             if (resolved.Count > 0)
-                Log.Message($"[Vanilla Tune-Up] Gave {resolved.Count} hybrid pawn(s) their matching xenotype: {string.Join(", ", resolved)}");
+                Log.Message($"[Vanilla Tune-Up] Gave {resolved.Count} pawn(s) their matching xenotype: {string.Join(", ", resolved)}");
         }
     }
 }
