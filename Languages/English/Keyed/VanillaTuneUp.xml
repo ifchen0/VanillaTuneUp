@@ -33,7 +33,7 @@
   <VTU_CompactColonistBar>Compact colonist bar (experimental)</VTU_CompactColonistBar>
   <VTU_CompactColonistBar_Desc>Colonist bar portraits shrink to two thirds of their height and the rows move closer together while the mouse is away and expand again when the mouse moves over the bar. Collapsed portraits show the head only.</VTU_CompactColonistBar_Desc>
   <VTU_RemoveFogOfWar>Remove fog of war</VTU_RemoveFogOfWar>
-  <VTU_RemoveFogOfWar_Desc>Reveals the whole map when it is generated or loaded. A map stays fogged if revealing it would set something off (sleeping enemies such as ancient dangers, quest or reveal signals, entity codex or hidden item discoveries), so those maps play as in vanilla. Pocket maps such as the labyrinth are never revealed.</VTU_RemoveFogOfWar_Desc>
+  <VTU_RemoveFogOfWar_Desc>Reveals the whole map when it is generated or loaded. A map stays fogged if revealing it would set something off (sleeping enemies such as ancient dangers, quest or reveal signals, entity codex or hidden item discoveries), so those maps play as in vanilla. Rock, ore and collapsed rocks stay hidden until they are reached by mining, and pocket maps such as the labyrinth are never revealed.</VTU_RemoveFogOfWar_Desc>
 
   <!-- Xenogerm queue -->
   <VTU_XQ_AddToQueue>Add to queue</VTU_XQ_AddToQueue>

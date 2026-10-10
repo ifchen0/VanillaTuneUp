@@ -11,7 +11,8 @@ namespace VanillaTuneUp
     /// Clears the fog of war on every map when it is generated or loaded, unless revealing it would set something off:
     /// a dormant or sleeping pawn (ancient dangers wake when unfogged), a TriggerUnfogged signal, a quest target, a
     /// letter-on-reveal thing, an undiscovered entity codex entry or a hidden item. Such maps are left untouched, so
-    /// they play exactly as in vanilla. Pocket maps (labyrinth, undercave and so on) are always skipped.
+    /// they play exactly as in vanilla. Mineable cells (rock, ore, collapsed rocks) always keep their fog, and pocket maps (labyrinth,
+    /// undercave and so on) are always skipped.
     /// </summary>
     public static class RemoveFogOfWar
     {
@@ -28,7 +29,8 @@ namespace VanillaTuneUp
             tmpFogged.Clear();
             foreach (IntVec3 cell in map.AllCells)
             {
-                if (fogGrid.IsFogged(cell))
+                // Anything mineable (rock, ore, collapsed rocks) stays hidden, so finding it by mining works as in vanilla.
+                if (fogGrid.IsFogged(cell) && cell.GetEdifice(map)?.def.mineable != true)
                     tmpFogged.Add(cell);
             }
             if (tmpFogged.Count == 0)
