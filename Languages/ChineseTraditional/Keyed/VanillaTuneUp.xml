@@ -29,9 +29,9 @@
   <VTU_MuteBirthSounds>靜音分娩與出生音效</VTU_MuteBirthSounds>
   <VTU_MuteBirthSounds_Desc>靜音分娩（早期／後期）與出生音效，其他嬰兒音效不變。</VTU_MuteBirthSounds_Desc>
   <VTU_HybridXenotype>混種後代沿用相符的種族</VTU_HybridXenotype>
-  <VTU_HybridXenotype_Desc>被標為「混合」的 pawn，若身上基因（種系與異種基因一起算）與某個種族的相符度超過 80%（依基因複雜度加權，不計膚色與髮色），就改為該種族；同分時隨機選一個。出生時、植入異種基因後與每次讀檔都會檢查；基因本身不變。</VTU_HybridXenotype_Desc>
-  <VTU_HybridIncludeNamed>也檢查有自訂種族名稱的 pawn</VTU_HybridIncludeNamed>
-  <VTU_HybridIncludeNamed_Desc>也拿顯示自訂種族名稱、且仍是預設無臉頭像的基準人（例如植入過異種基因的 pawn）來比對，相符就改成該種族。有另選頭像的自訂種族與變異體不處理。</VTU_HybridIncludeNamed_Desc>
+  <VTU_HybridXenotype_Desc>被標為「混合」的後代，若種系基因與某個可遺傳種族的相符度超過 80%（依基因複雜度加權，不計膚色與髮色），就改為該種族；同分時隨機選一個。出生時與每次讀檔都會檢查；基因本身不變，除非開啟下方選項，否則帶有異種基因的 pawn 不處理。</VTU_HybridXenotype_Desc>
+  <VTU_HybridIncludeXenogenes>也檢查經過改造的 pawn</VTU_HybridIncludeXenogenes>
+  <VTU_HybridIncludeXenogenes_Desc>種系與異種基因一起算，跟所有種族（不分是否可遺傳）比對。也會處理帶有異種基因的混種，以及仍顯示預設無臉頭像的基準人（例如植入過異種基因的 pawn），植入異種基因後也會立即檢查。有另選頭像的自訂種族與變異體不處理。</VTU_HybridIncludeXenogenes_Desc>
   <VTU_CompactColonistBar>精簡殖民者肖像列（實驗性）</VTU_CompactColonistBar>
   <VTU_CompactColonistBar_Desc>滑鼠不在肖像列上時，肖像高度縮成三分之二、排與排之間也會靠攏；滑鼠移到肖像列上就展開回原本大小。收合時只顯示頭部。</VTU_CompactColonistBar_Desc>
   <VTU_RemoveFogOfWar>移除戰爭迷霧</VTU_RemoveFogOfWar>

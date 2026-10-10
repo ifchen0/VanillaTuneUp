@@ -8,13 +8,14 @@ namespace VanillaTuneUp
 {
     /// <summary>
     /// Vanilla labels every child of two different heritable xenotypes "Hybrid", even when the inherited germline
-    /// genes are almost exactly one xenotype's. A hybrid whose genes (germline and xenogenes alike, since a xenotype
-    /// def does not split them) match one xenotype by more than 80% is given that xenotype and is no longer a hybrid;
-    /// equal best matches are picked at random. The match is shared / combined genes, each weighted by its complexity
-    /// (at least 1, so cosmetic genes still count), with skin color, hair color and Inbred ignored like vanilla's own
-    /// same-xenotype check. Genes are never changed; the hybrid flag only affects the label and children's labels.
-    /// Optionally (off by default) a Baseliner with a custom xenotype name, such as one implanted with a xenogerm, is
-    /// matched the same way when it still has the default faceless icon; mutants keep their name.
+    /// genes are almost exactly one xenotype's. A hybrid with no xenogenes whose germline genes match one heritable
+    /// xenotype by more than 80% is given that xenotype and is no longer a hybrid; equal best matches are picked at
+    /// random. The match is shared / combined genes, each weighted by its complexity (at least 1, so cosmetic genes
+    /// still count), with skin color, hair color and Inbred ignored like vanilla's own same-xenotype check. Genes are
+    /// never changed; the hybrid flag only affects the label and children's labels.
+    /// An option (off by default) also takes modified pawns into account: all genes (germline and xenogenes alike,
+    /// since a xenotype def does not split them) are matched against every xenotype, for hybrids with xenogenes and
+    /// for Baseliners still shown with the default faceless icon, such as xenogerm implants. Mutants keep their name.
     /// </summary>
     public static class HybridXenotype
     {
@@ -38,34 +39,34 @@ namespace VanillaTuneUp
                 .ToList();
 
         /// <summary>
-        /// A Baseliner shown with the default faceless icon, when the option is on. Hybrids and xenogerms without a
-        /// chosen icon show it, a plain Baseliner shows its own icon, and a custom xenotype given its own icon is skipped.
+        /// A Baseliner shown with the default faceless icon. Hybrids and xenogerms without a chosen icon show it, a
+        /// plain Baseliner shows its own icon, and a custom xenotype given its own icon is skipped.
         /// </summary>
-        private static bool IsNamedBaseliner(Pawn pawn)
-        {
-            Pawn_GeneTracker genes = pawn.genes;
-            return VanillaTuneUpMod.Settings.hybridIncludeNamed && !pawn.IsMutant
-                && genes.Xenotype == XenotypeDefOf.Baseliner
-                && genes.XenotypeIcon == XenotypeIconDefOf.Basic.Icon;
-        }
+        private static bool IsFacelessBaseliner(Pawn pawn) =>
+            !pawn.IsMutant
+            && pawn.genes.Xenotype == XenotypeDefOf.Baseliner
+            && pawn.genes.XenotypeIcon == XenotypeIconDefOf.Basic.Icon;
 
         public static void DrawSettings(Listing_Standard listing)
         {
             // The settings window writes the settings when it closes.
-            listing.CheckboxLabeled("VTU_HybridIncludeNamed".Translate(),
-                ref VanillaTuneUpMod.Settings.hybridIncludeNamed, "VTU_HybridIncludeNamed_Desc".Translate());
+            listing.CheckboxLabeled("VTU_HybridIncludeXenogenes".Translate(),
+                ref VanillaTuneUpMod.Settings.hybridIncludeXenogenes, "VTU_HybridIncludeXenogenes_Desc".Translate());
         }
 
         /// <summary>Gives a qualifying hybrid its best-matching xenotype. Returns that xenotype, or null.</summary>
         public static XenotypeDef TryResolve(Pawn pawn)
         {
             Pawn_GeneTracker genes = pawn?.genes;
-            if (genes == null || !(genes.hybrid || IsNamedBaseliner(pawn)))
+            if (genes == null)
+                return null;
+            bool includeXenogenes = VanillaTuneUpMod.Settings.hybridIncludeXenogenes;
+            if (includeXenogenes ? !(genes.hybrid || IsFacelessBaseliner(pawn)) : !genes.hybrid || genes.Xenogenes.Count > 0)
                 return null;
 
             tmpGenes.Clear();
             int pawnWeight = 0;
-            foreach (Gene gene in genes.GenesListForReading)
+            foreach (Gene gene in includeXenogenes ? genes.GenesListForReading : genes.Endogenes)
             {
                 if (Comparable(gene.def) && tmpGenes.Add(gene.def))
                     pawnWeight += Weight(gene.def);
@@ -75,6 +76,8 @@ namespace VanillaTuneUp
             tmpBest.Clear();
             foreach (var candidate in Candidates)
             {
+                if (!includeXenogenes && !candidate.Key.inheritable)
+                    continue;
                 int shared = 0, xenotypeWeight = 0;
                 foreach (GeneDef gene in candidate.Value)
                 {
@@ -111,7 +114,10 @@ namespace VanillaTuneUp
         }
     }
 
-    /// <summary>Checks a hybrid right after a xenogerm is implanted, instead of waiting for the next load.</summary>
+    /// <summary>
+    /// With the option on, checks a pawn right after a xenogerm is implanted instead of waiting for the next load.
+    /// With it off the pawn now has xenogenes, so it is skipped.
+    /// </summary>
     [HarmonyPatchCategory("HybridXenotype")]
     [HarmonyPatch(typeof(GeneUtility), nameof(GeneUtility.ImplantXenogermItem))]
     public static class Patch_GeneUtility_ImplantXenogermItem

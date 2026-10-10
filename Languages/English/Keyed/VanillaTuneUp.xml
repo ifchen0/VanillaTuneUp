@@ -29,9 +29,9 @@
   <VTU_MuteBirthSounds>Mute labor and birth sounds</VTU_MuteBirthSounds>
   <VTU_MuteBirthSounds_Desc>Mutes the labor (early/late) and birth sounds. Other baby sounds are unchanged.</VTU_MuteBirthSounds_Desc>
   <VTU_HybridXenotype>Hybrid children keep a matching xenotype</VTU_HybridXenotype>
-  <VTU_HybridXenotype_Desc>A pawn labeled Hybrid whose genes (germline and xenogenes alike) match one xenotype by more than 80% (genes weighted by complexity, skin and hair color ignored) gets that xenotype instead; a tie is decided at random. Checked at birth, after a xenogerm is implanted and on every load; genes are not changed.</VTU_HybridXenotype_Desc>
-  <VTU_HybridIncludeNamed>Also check custom-named pawns</VTU_HybridIncludeNamed>
-  <VTU_HybridIncludeNamed_Desc>Also match Baseliners shown under a custom xenotype name with the default faceless icon, such as pawns implanted with a xenogerm, and rename them to the matching xenotype. Custom xenotypes given their own icon, and mutants, are left alone.</VTU_HybridIncludeNamed_Desc>
+  <VTU_HybridXenotype_Desc>A child labeled Hybrid whose germline genes match one heritable xenotype by more than 80% (genes weighted by complexity, skin and hair color ignored) gets that xenotype instead; a tie is decided at random. Checked at birth and on every load; genes are not changed, and pawns with xenogenes are skipped unless the option below is on.</VTU_HybridXenotype_Desc>
+  <VTU_HybridIncludeXenogenes>Also check modified pawns</VTU_HybridIncludeXenogenes>
+  <VTU_HybridIncludeXenogenes_Desc>Match all genes, germline and xenogenes alike, against every xenotype (heritable or not). Also covers hybrids with xenogenes and Baseliners still shown with the default faceless icon, such as pawns implanted with a xenogerm, and checks them again right after a xenogerm is implanted. Custom xenotypes given their own icon, and mutants, are left alone.</VTU_HybridIncludeXenogenes_Desc>
   <VTU_CompactColonistBar>Compact colonist bar (experimental)</VTU_CompactColonistBar>
   <VTU_CompactColonistBar_Desc>Colonist bar portraits shrink to two thirds of their height and the rows move closer together while the mouse is away and expand again when the mouse moves over the bar. Collapsed portraits show the head only.</VTU_CompactColonistBar_Desc>
   <VTU_RemoveFogOfWar>Remove fog of war</VTU_RemoveFogOfWar>

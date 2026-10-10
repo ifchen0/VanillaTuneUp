@@ -20,7 +20,7 @@ Tweaks:
 - Xenogerm queue: a bill-style queue for the gene assembler (Biotech).
 - Drag to reorder: right-drag the bottom bar, architect categories, buildings and the command buttons of the selection into your own order.
 - Mute labor and birth sounds (Biotech).
-- Hybrid xenotype: a hybrid whose genes (germline and xenogenes alike) closely match one xenotype (weighted by gene complexity) gets that xenotype (Biotech).
+- Hybrid xenotype: a hybrid child whose germline genes closely match one heritable xenotype (weighted by gene complexity) gets that xenotype; an option also covers pawns with xenogenes (Biotech).
 - Compact colonist bar (experimental): the colonist bar shrinks while the mouse is away and expands on hover; optional taller portraits with adjustable size and per-race zoom.
 
 Replaces these standalone mods by the same author. If one of them is still active, its part here is skipped automatically, so having both does not apply anything twice. Saved xenogerm queues and Drag Reorder orders carry over.

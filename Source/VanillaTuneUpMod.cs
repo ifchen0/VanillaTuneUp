@@ -98,7 +98,7 @@ namespace VanillaTuneUp
 
         public DragReorderSettings dragReorder = new DragReorderSettings();
         public bool dragReorderMigrated;
-        public bool hybridIncludeNamed;
+        public bool hybridIncludeXenogenes;
 
         // Compact colonist bar: what stays visible while the bar is collapsed.
         public bool compactBarShowLabels = true;
@@ -171,7 +171,7 @@ namespace VanillaTuneUp
             Scribe_Collections.Look(ref overrides, "overrides", LookMode.Value, LookMode.Value);
             Scribe_Deep.Look(ref dragReorder, "dragReorder");
             Scribe_Values.Look(ref dragReorderMigrated, "dragReorderMigrated", false);
-            Scribe_Values.Look(ref hybridIncludeNamed, "hybridIncludeNamed", false);
+            Scribe_Values.Look(ref hybridIncludeXenogenes, "hybridIncludeXenogenes", false);
             Scribe_Values.Look(ref compactBarShowLabels, "compactBarShowLabels", true);
             Scribe_Values.Look(ref compactBarShowIcons, "compactBarShowIcons", true);
             Scribe_Values.Look(ref compactBarShowWeapons, "compactBarShowWeapons", false);
