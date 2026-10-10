@@ -41,11 +41,18 @@ namespace VanillaTuneUp
         /// <summary>
         /// A Baseliner shown with the default faceless icon. Hybrids and xenogerms without a chosen icon show it, a
         /// plain Baseliner shows its own icon, and a custom xenotype given its own icon is skipped.
+        /// Mirrors Pawn_GeneTracker.XenotypeIcon by def and path: FinalizeInit runs off the main thread during loading,
+        /// where loading the textures fails and every icon compares equal as null.
         /// </summary>
-        private static bool IsFacelessBaseliner(Pawn pawn) =>
-            !pawn.IsMutant
-            && pawn.genes.Xenotype == XenotypeDefOf.Baseliner
-            && pawn.genes.XenotypeIcon == XenotypeIconDefOf.Basic.Icon;
+        private static bool IsFacelessBaseliner(Pawn pawn)
+        {
+            Pawn_GeneTracker genes = pawn.genes;
+            if (pawn.IsMutant || genes.Xenotype != XenotypeDefOf.Baseliner)
+                return false;
+            if (genes.iconDef != null)
+                return genes.iconDef == XenotypeIconDefOf.Basic;
+            return genes.UniqueXenotype || genes.Xenotype.iconPath == XenotypeIconDefOf.Basic.texPath;
+        }
 
         public static void DrawSettings(Listing_Standard listing)
         {
