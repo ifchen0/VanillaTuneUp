@@ -15,6 +15,7 @@ Fixes:
 - Mechs in sieges: fixes the error spam when a sieging group contains mechs added by other mods.
 - Prisoners in a mental break: wardens respect their food policy.
 - Bleeding prisoners: wardens tend them before feeding them.
+- Prisoner food delivery: wardens bring food before prisoners get hungry, one trip for the whole cell.
 
 Tweaks:
 - Xenogerm queue: a bill-style queue for the gene assembler (Biotech).

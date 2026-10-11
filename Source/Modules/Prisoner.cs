@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
 using RimWorld;
+using UnityEngine;
 using Verse;
 using Verse.AI;
 
@@ -51,6 +53,184 @@ namespace VanillaTuneUp
                 return true;
             __result = null;
             return false;
+        }
+    }
+
+    /// <summary>
+    /// Vanilla starts a food delivery only once a prisoner is already 2% from Hungry and brings one prisoner's worth
+    /// per trip, so a crowded prison always has some prisoners waiting hungry. Deliver earlier, and bring enough for
+    /// every prisoner in the cell who will soon want food, one delivery per cell at a time unless someone there is
+    /// already Hungry.
+    /// </summary>
+    [HarmonyPatchCategory("PrisonerFoodDelivery")]
+    [HarmonyPatch(typeof(WorkGiver_Warden_DeliverFood), nameof(WorkGiver_Warden_DeliverFood.JobOnThing))]
+    public static class Patch_WardenDeliverFood_WholeRoom
+    {
+        // Prisoners start looking for food at FoodLevelPercentageWantEat (30% for humans); deliver before that.
+        private const float EarlyMargin = 0.1f;
+
+        // A full stack of simple meals (10 x 0.9), what one warden usually carries per trip.
+        private const float FullTripNutrition = 9f;
+
+        private static readonly Func<WorkGiver_Warden, Pawn, Thing, bool, bool> ShouldTakeCareOfPrisoner =
+            AccessTools.MethodDelegate<Func<WorkGiver_Warden, Pawn, Thing, bool, bool>>(
+                AccessTools.Method(typeof(WorkGiver_Warden), "ShouldTakeCareOfPrisoner"));
+
+        // Runs after the bleeding check, which may already have skipped the job.
+        [HarmonyPriority(Priority.Low)]
+        public static bool Prefix(WorkGiver_Warden_DeliverFood __instance, Pawn pawn, Thing t, bool forced, ref Job __result, bool __runOriginal)
+        {
+            if (!__runOriginal)
+                return false;
+            __result = MakeJob(__instance, pawn, t, forced);
+            return false;
+        }
+
+        private static Job MakeJob(WorkGiver_Warden giver, Pawn warden, Thing t, bool forced)
+        {
+            if (!ShouldTakeCareOfPrisoner(giver, warden, t, forced))
+                return null;
+            Pawn prisoner = (Pawn)t;
+            if (!prisoner.guest.CanBeBroughtFood || !prisoner.Position.IsInPrisonCell(prisoner.Map))
+                return null;
+            if (!WantsFoodSoon(prisoner) || WardenFeedUtility.ShouldBeFed(prisoner))
+                return null;
+            Room room = prisoner.GetRoom();
+            if (room == null)
+                return null;
+            Thing carried = prisoner.carryTracker.CarriedThing;
+            if (carried != null && NutritionAvailableForFrom(prisoner, carried) > 0f)
+                return null;
+
+            // Cheap room check before the expensive food search, the reverse of vanilla's order.
+            float shortfall = RoomShortfall(prisoner, room, out bool anyoneHungry);
+            if (shortfall <= 0f)
+                return null;
+
+            // One delivery per cell at a time: once it arrives, its food counts as supply for the next one.
+            // A prisoner already Hungry means single trips are falling behind (a very large cell), so allow as many
+            // as the shortfall needs full trips; food on the way is not counted, so this caps the overdelivery.
+            int allowed = anyoneHungry ? Mathf.CeilToInt(shortfall / FullTripNutrition) : 1;
+            if (DeliveriesUnderway(room, warden.Map) >= allowed)
+                return null;
+
+            if (!FoodUtility.TryFindBestFoodSourceFor(warden, prisoner, prisoner.needs.food.CurCategory == HungerCategory.Starving, out Thing foodSource, out ThingDef foodDef, canRefillDispenser: false, canUseInventory: true, canUsePackAnimalInventory: false, allowForbidden: false, allowCorpse: false, allowSociallyImproper: false, allowHarvest: false, forceScanWholeMap: false, ignoreReservations: false, calculateWantedStackCount: true))
+                return null;
+            if (foodSource.GetRoom() == room)
+                return null;
+
+            int count;
+            if (foodSource is Building_NutrientPasteDispenser)
+            {
+                // A dispenser hands out one meal per trip whatever the count says.
+                count = 1;
+            }
+            else
+            {
+                float nutrition = FoodUtility.GetNutrition(prisoner, foodSource, foodDef);
+                count = nutrition > 0f ? Mathf.CeilToInt(shortfall / nutrition) : 1;
+                count = Mathf.Min(count, foodSource.stackCount, warden.carryTracker.MaxStackSpaceEver(foodDef));
+                // Leave the part of the stack other pawns have already reserved, e.g. a warden feeding a bedridden prisoner.
+                if (foodSource.Spawned)
+                    count = Mathf.Min(count, warden.Map.reservationManager.CanReserveStack(warden, foodSource, 10));
+                count = Mathf.Max(count, 1);
+            }
+            Job job = JobMaker.MakeJob(JobDefOf.DeliverFood, foodSource, prisoner);
+            job.count = count;
+            job.targetC = RCellFinder.SpotToChewStandingNear(prisoner, foodSource);
+            return job;
+        }
+
+        private static bool WantsFoodSoon(Pawn p)
+        {
+            Need_Food food = p.needs?.food;
+            return food != null && food.CurLevelPercentage < p.RaceProps.FoodLevelPercentageWantEat + EarlyMargin;
+        }
+
+        /// <summary>Nutrition the cell still lacks for prisoners who will soon want food.</summary>
+        private static float RoomShortfall(Pawn prisoner, Room room, out bool anyoneHungry)
+        {
+            anyoneHungry = false;
+            float need = 0f;
+            float supply = 0f;
+            List<Region> regions = room.Regions;
+            for (int i = 0; i < regions.Count; i++)
+            {
+                List<Thing> foods = regions[i].ListerThings.ThingsInGroup(ThingRequestGroup.FoodSourceNotPlantOrTree);
+                for (int j = 0; j < foods.Count; j++)
+                {
+                    Thing thing = foods[j];
+                    // Same filter as vanilla: dispensers and anything better than kibble-grade food.
+                    if (!thing.def.IsIngestible || thing.def.ingestible.preferability > FoodPreferability.DesperateOnlyForHumanlikes)
+                        supply += NutritionAvailableForFrom(prisoner, thing);
+                }
+                List<Thing> pawns = regions[i].ListerThings.ThingsInGroup(ThingRequestGroup.Pawn);
+                for (int j = 0; j < pawns.Count; j++)
+                {
+                    Pawn p = (Pawn)pawns[j];
+                    if (!p.IsPrisonerOfColony || !WantsFoodSoon(p) || WardenFeedUtility.ShouldBeFed(p))
+                        continue;
+                    Thing held = p.carryTracker.CarriedThing;
+                    if (held != null && p.WillEat(held))
+                        continue;
+                    need += p.needs.food.NutritionWanted;
+                    if (p.needs.food.CurCategory >= HungerCategory.Hungry)
+                        anyoneHungry = true;
+                }
+            }
+            return need - supply;
+        }
+
+        /// <summary>Number of pawns bringing food to this cell right now, so wardens do not all fetch a full load.</summary>
+        private static int DeliveriesUnderway(Room room, Map map)
+        {
+            int count = 0;
+            List<Pawn> pawns = map.mapPawns.SpawnedPawnsInFaction(Faction.OfPlayer);
+            for (int i = 0; i < pawns.Count; i++)
+            {
+                Job job = pawns[i].CurJob;
+                if (job != null && job.def == JobDefOf.DeliverFood && job.targetB.Thing is Pawn deliveree && deliveree.GetRoom() == room)
+                    count++;
+            }
+            return count;
+        }
+
+        // Copy of the private vanilla WorkGiver_Warden_DeliverFood.NutritionAvailableForFrom.
+        private static float NutritionAvailableForFrom(Pawn p, Thing foodSource)
+        {
+            if (foodSource.def.IsNutritionGivingIngestible && p.WillEat(foodSource))
+                return foodSource.GetStatValue(StatDefOf.Nutrition) * foodSource.stackCount;
+            if (p.RaceProps.ToolUser && p.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation)
+                && foodSource is Building_NutrientPasteDispenser dispenser && dispenser.CanDispenseNow
+                && p.CanReach(dispenser.InteractionCell, PathEndMode.OnCell, Danger.Some))
+                return 99999f;
+            return 0f;
+        }
+    }
+
+    /// <summary>
+    /// Vanilla reserves only one prisoner's worth of the food stack for a delivery. Reserve the whole batched count
+    /// up front so another pawn cannot claim the part this warden is about to pick up.
+    /// </summary>
+    [HarmonyPatchCategory("PrisonerFoodDelivery")]
+    [HarmonyPatch(typeof(JobDriver_FoodDeliver), nameof(JobDriver_FoodDeliver.TryMakePreToilReservations))]
+    public static class Patch_FoodDeliver_ReserveBatch
+    {
+        public static void Postfix(JobDriver_FoodDeliver __instance, ref bool __result)
+        {
+            if (!__result)
+                return;
+            Job job = __instance.job;
+            Thing food = job.targetA.Thing;
+            if (job.count <= 1 || food == null || !food.Spawned || food is Building_NutrientPasteDispenser)
+                return;
+            Pawn pawn = __instance.pawn;
+            // Someone may have reserved part of the stack since the job was made; shrink the batch instead of failing.
+            int count = Mathf.Min(job.count, pawn.Map.reservationManager.CanReserveStack(pawn, food, 10));
+            if (count >= 1 && pawn.Reserve(food, job, 10, count, null, errorOnFailed: false))
+                job.count = count;
+            else
+                job.count = 1;
         }
     }
 }

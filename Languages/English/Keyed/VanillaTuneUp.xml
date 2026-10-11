@@ -22,6 +22,8 @@
   <VTU_PrisonerFoodPolicy_Desc>Wardens no longer bring restricted food to a prisoner having a mental break. A pawn in a mental break that feeds itself behaves as in vanilla.</VTU_PrisonerFoodPolicy_Desc>
   <VTU_PrisonerBleeding>Tend bleeding prisoners before feeding</VTU_PrisonerBleeding>
   <VTU_PrisonerBleeding_Desc>Wardens skip feeding and food delivery while a prisoner is still bleeding, so they can move on to tending. Manual feeding orders still work.</VTU_PrisonerBleeding_Desc>
+  <VTU_PrisonerFoodDelivery>Prisoner food delivery keeps up</VTU_PrisonerFoodDelivery>
+  <VTU_PrisonerFoodDelivery_Desc>Wardens bring food before prisoners get hungry, and one trip brings enough for everyone in the cell who will soon need it. Food already in the cell is counted, and only one warden delivers to a cell at a time, so wardens do not deliver twice. If a prisoner in the cell is already hungry, more wardens may deliver at once to catch up, as many as the missing food needs full trips.</VTU_PrisonerFoodDelivery_Desc>
   <VTU_QuestFactionRules>Quest text in translations</VTU_QuestFactionRules>
   <VTU_QuestFactionRules_Desc>Fixes quest names and descriptions shown as "ERR:" with raw [tags] when a translation misspells a faction in its quest text (Traditional Chinese: mech cluster outposts with a climate adjuster, weather controller or similar).</VTU_QuestFactionRules_Desc>
   <VTU_XenogermQueue>Xenogerm queue</VTU_XenogermQueue>
