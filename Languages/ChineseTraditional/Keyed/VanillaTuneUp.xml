@@ -36,6 +36,10 @@
   <VTU_HybridXenotype_Desc>被標為「混合」的後代，若種系基因與某個可遺傳種族的相符度超過 80%（依基因複雜度加權，不計膚色與髮色），就改為該種族；同分時隨機選一個。出生時與每次讀檔都會檢查；基因本身不變，除非開啟下方選項，否則帶有異種基因的 pawn 不處理。</VTU_HybridXenotype_Desc>
   <VTU_HybridIncludeXenogenes>也檢查經過改造的 pawn</VTU_HybridIncludeXenogenes>
   <VTU_HybridIncludeXenogenes_Desc>種系與異種基因一起算，跟所有種族（不分是否可遺傳）比對。也會處理帶有異種基因的混種，以及仍顯示預設無臉頭像的基準人（例如植入過異種基因的 pawn），植入異種基因後也會立即檢查。有另選頭像的自訂種族與變異體不處理。</VTU_HybridIncludeXenogenes_Desc>
+  <VTU_FactionColors>區分相近的陣營顏色</VTU_FactionColors>
+  <VTU_FactionColors_Desc>讀檔時，若世界地圖上有據點的陣營中，有兩個顏色看起來幾乎一樣，就把這些相近的顏色互相推開；每個陣營只移動到分辨得出為止，並盡量保持原本的色系。玩家陣營與帝國維持原色；沒有過於相近的顏色就不做任何變更。新顏色會跟著存檔保存。</VTU_FactionColors_Desc>
+  <VTU_FactionColorsMinDistance>最小顏色差異：{0}</VTU_FactionColorsMinDistance>
+  <VTU_FactionColorsMinDistance_Desc>兩個陣營顏色至少要差多少（OKLab 距離 x 100）。數值越高，會被調整的陣營越多。下次讀檔時生效。</VTU_FactionColorsMinDistance_Desc>
   <VTU_CompactColonistBar>精簡殖民者肖像列（實驗性）</VTU_CompactColonistBar>
   <VTU_CompactColonistBar_Desc>滑鼠不在肖像列上時，肖像高度縮成三分之二、排與排之間也會靠攏；滑鼠移到肖像列上就展開回原本大小。收合時只顯示頭部。</VTU_CompactColonistBar_Desc>
   <VTU_RemoveFogOfWar>移除戰爭迷霧</VTU_RemoveFogOfWar>

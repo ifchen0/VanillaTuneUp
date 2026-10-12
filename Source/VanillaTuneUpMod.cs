@@ -85,6 +85,10 @@ namespace VanillaTuneUp
                 UnavailableKey = "VTU_RequiresBiotech",
                 DrawSettings = HybridXenotype.DrawSettings
             },
+            new TuneUpModule("FactionColors", true, null)
+            {
+                DrawSettings = FactionColors.DrawSettings
+            },
             new TuneUpModule("DragReorder", true, "ifchen0.dragreorder")
             {
                 DrawSettings = DragReorderSettings.Draw
@@ -108,6 +112,7 @@ namespace VanillaTuneUp
         public DragReorderSettings dragReorder = new DragReorderSettings();
         public bool dragReorderMigrated;
         public bool hybridIncludeXenogenes;
+        public float factionColorMinDistance = FactionColors.DefaultMinDistance;
 
         // Compact colonist bar: what stays visible while the bar is collapsed.
         public bool compactBarShowLabels = true;
@@ -181,6 +186,7 @@ namespace VanillaTuneUp
             Scribe_Deep.Look(ref dragReorder, "dragReorder");
             Scribe_Values.Look(ref dragReorderMigrated, "dragReorderMigrated", false);
             Scribe_Values.Look(ref hybridIncludeXenogenes, "hybridIncludeXenogenes", false);
+            Scribe_Values.Look(ref factionColorMinDistance, "factionColorMinDistance", FactionColors.DefaultMinDistance);
             Scribe_Values.Look(ref compactBarShowLabels, "compactBarShowLabels", true);
             Scribe_Values.Look(ref compactBarShowIcons, "compactBarShowIcons", true);
             Scribe_Values.Look(ref compactBarShowWeapons, "compactBarShowWeapons", false);
