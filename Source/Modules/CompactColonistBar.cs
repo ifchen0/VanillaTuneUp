@@ -68,7 +68,6 @@ namespace VanillaTuneUp
         // Pawn of each entry at the last recache, to carry magnification over a recache.
         private static readonly List<Pawn> magnifyPawns = new List<Pawn>();
         private static bool magnifyingPortrait;
-
         // Vanilla draw locations of the last recache with the row of each entry; the bar's own list holds the
         // locations moved for the current row openness.
         private static readonly List<Vector2> baseDrawLocs = new List<Vector2>();
@@ -280,6 +279,12 @@ namespace VanillaTuneUp
         {
             if (cameraOffset != ColonistBarColonistDrawer.PawnTextureCameraOffset)
                 return;
+            // Vanilla callers may still pass the old PawnTextureSize: the JIT can fold static readonly fields into
+            // constants (seen on 1.7), so the reflection write does not reach every caller. Use the intended size.
+            if (!CustomPortraitsModActive)
+                size = UseCustomPortraits
+                    ? new Vector2(VanillaPawnTextureSize.x, VanillaTuneUpMod.Settings.compactBarPortraitHeight - 2f)
+                    : VanillaPawnTextureSize;
             // The magnified entry's portrait is wider by the extra width of a fully magnified entry.
             if (magnifyingPortrait)
                 size.x += ColonistBar.BaseSize.x * (MagnifyFactor - 1f);
