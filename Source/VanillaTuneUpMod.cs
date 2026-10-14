@@ -78,6 +78,7 @@ namespace VanillaTuneUp
                 UnavailableKey = "VTU_RequiresBiotech"
             },
             new TuneUpModule("RemoveFogOfWar", true, null),
+            new TuneUpModule("CaravanFactionIcon", true, null),
             // Modules with extra settings go last, the longest at the end, so plain toggles stay near the top.
             new TuneUpModule("HybridXenotype", true, null)
             {
