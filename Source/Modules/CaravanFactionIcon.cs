@@ -67,7 +67,9 @@ namespace VanillaTuneUp
                 return;
             labelX = VanillaLabelX;
             Faction faction = (trad.AnyThing as Pawn)?.Faction;
-            if (faction == null || faction.IsPlayer || faction.def.FactionIcon == null)
+            // Factions without an icon path get the red-cross BadTex from FactionDef.FactionIcon; leave those blank.
+            Texture2D icon = faction?.def.FactionIcon;
+            if (icon == null || icon == BaseContent.BadTex || faction.IsPlayer)
                 return;
             var iconRect = new Rect(VanillaLabelX, (idRect.height - IconSize) / 2f, IconSize, IconSize);
             FactionUIUtility.DrawFactionIconWithTooltip(iconRect, faction);
