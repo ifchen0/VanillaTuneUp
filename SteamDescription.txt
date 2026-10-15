@@ -1,4 +1,4 @@
-Small fixes and optional tweaks for vanilla RimWorld, collected in one mod. Every part has its own toggle.
+Small fixes and optional tweaks for vanilla RimWorld, collected in one mod.
 
 [h2]How it works[/h2][list]
 [*]Each fix and tweak can be turned on or off in [i]Options > Mod settings > Vanilla Tune-Up[/i]. Changes take effect after restarting the game.
@@ -23,6 +23,7 @@ Small fixes and optional tweaks for vanilla RimWorld, collected in one mod. Ever
 [*][b]Mute labor and birth sounds[/b] (Biotech): mutes the labor (early/late) and birth sounds. Other baby sounds are unchanged.
 [*][b]Remove fog of war:[/b] reveals the whole map when it is generated or loaded. A map stays fogged if revealing it would set something off (sleeping enemies such as ancient dangers, quest or reveal signals, entity codex or hidden item discoveries), so those maps play as in vanilla. Rock, ore and collapsed rocks stay hidden until they are reached by mining, and pocket maps such as the labyrinth are never revealed.
 [*][b]Faction icons in caravan lists:[/b] caravan and transport pod lists show the faction icon of guests, prisoners and other non-colony pawns.
+[*][b]Pin resources:[/b] left-click a resource in the categorized resource list (top left) to keep it shown while its category is collapsed, even at 0.
 [*][b]Hybrid children keep a matching xenotype[/b] (Biotech): a child labeled Hybrid whose germline genes match one heritable xenotype by more than 80% (genes weighted by complexity, skin and hair color ignored) gets that xenotype instead (a tie is decided at random), so the name carries on to later generations. Checked at birth and on every load, so existing hybrids are covered too. Genes are never changed, and pawns with xenogenes are skipped. An option (off by default) also checks modified pawns: all genes, germline and xenogenes alike, are matched against every xenotype, for hybrids with xenogenes and Baseliners still shown with the default faceless icon (such as xenogerm implants); custom xenotypes given their own icon are left alone.
 [*][b]Tell faction colors apart:[/b] on load, factions with settlements on the world map whose colors look almost the same are nudged apart, each staying close to its own color and bright enough to see on the map. Your faction and the Empire keep theirs, and nothing changes when no colors are too close. The minimum difference is adjustable; new colors are saved with the game.
 [*][b]Drag to reorder:[/b] hold the right mouse button and drag to reorder the bottom bar, the architect categories, the buildings inside them and the command buttons of whatever you select. Command buttons share one order across colonists, animals, mechs and buildings. A plain right click still works as before.
@@ -45,7 +46,6 @@ Small fixes and optional tweaks for vanilla RimWorld, collected in one mod. Ever
 [*]You can switch at any time. While a standalone mod is still active, its part here is skipped automatically, so nothing is applied twice.
 [*]A tweak whose standalone mod you were using is turned on for you, so it keeps working after you unsubscribe from the old mod.
 [*]Saved xenogerm queues and your Drag Reorder orders carry over.
-[*]The History graph part goes further than the standalone mod (see above).
 [/list]
 
 [h2]Notes[/h2][list]

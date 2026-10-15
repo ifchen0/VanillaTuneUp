@@ -79,6 +79,7 @@ namespace VanillaTuneUp
             },
             new TuneUpModule("RemoveFogOfWar", true, null),
             new TuneUpModule("CaravanFactionIcon", true, null),
+            new TuneUpModule("PinnedResources", true, null),
             // Modules with extra settings go last, the longest at the end, so plain toggles stay near the top.
             new TuneUpModule("HybridXenotype", true, null)
             {
@@ -114,6 +115,7 @@ namespace VanillaTuneUp
         public bool dragReorderMigrated;
         public bool hybridIncludeXenogenes;
         public float factionColorMinDistance = FactionColors.DefaultMinDistance;
+        public List<string> pinnedResources = new List<string>();
 
         // Compact colonist bar: what stays visible while the bar is collapsed.
         public bool compactBarShowLabels = true;
@@ -197,10 +199,12 @@ namespace VanillaTuneUp
             Scribe_Values.Look(ref compactBarPortraitZoom, "compactBarPortraitZoom", DefaultPortraitZoom);
             Scribe_Values.Look(ref compactBarPortraitOffset, "compactBarPortraitOffset", DefaultPortraitOffset);
             Scribe_Collections.Look(ref compactBarRaceZoom, "compactBarRaceZoom", LookMode.Value, LookMode.Value);
+            Scribe_Collections.Look(ref pinnedResources, "pinnedResources", LookMode.Value);
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
                 overrides ??= new Dictionary<string, bool>();
                 compactBarRaceZoom ??= new Dictionary<string, float>();
+                pinnedResources ??= new List<string>();
                 dragReorder ??= new DragReorderSettings();
             }
         }
