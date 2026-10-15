@@ -47,9 +47,9 @@
   <VTU_CaravanFactionIcon>旅隊清單顯示陣營圖示</VTU_CaravanFactionIcon>
   <VTU_CaravanFactionIcon_Desc>組建旅隊、重組旅隊與運輸艙裝載清單中，不屬於你陣營的角色（例如客人、囚犯）會顯示所屬陣營的圖示。滑鼠移上去顯示陣營名稱，點擊開啟陣營資訊卡。</VTU_CaravanFactionIcon_Desc>
   <VTU_PinnedResources>資源清單釘選</VTU_PinnedResources>
-  <VTU_PinnedResources_Desc>在左上角依分類顯示的資源清單中，左鍵點擊資源即可釘選。釘選的資源在分類摺疊時仍會顯示，數量為 0 也照樣顯示。再點一次取消釘選。釘選對所有存檔通用。</VTU_PinnedResources_Desc>
+  <VTU_PinnedResources_Desc>在左上角依分類顯示的資源清單中，左鍵點擊資源即可釘選。釘選的資源在分類摺疊時仍會顯示，數量為 0 也照樣顯示。點兩下取消釘選。釘選對所有存檔通用。</VTU_PinnedResources_Desc>
   <VTU_PinnedResources_Pin>點擊釘選：分類摺疊時仍顯示，數量為 0 也顯示。</VTU_PinnedResources_Pin>
-  <VTU_PinnedResources_Unpin>點擊取消釘選。</VTU_PinnedResources_Unpin>
+  <VTU_PinnedResources_Unpin>點兩下取消釘選。</VTU_PinnedResources_Unpin>
 
   <!-- Xenogerm queue -->
   <VTU_XQ_AddToQueue>加入佇列</VTU_XQ_AddToQueue>

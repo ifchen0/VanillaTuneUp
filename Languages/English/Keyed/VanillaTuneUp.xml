@@ -47,9 +47,9 @@
   <VTU_CaravanFactionIcon>Faction icons in caravan lists</VTU_CaravanFactionIcon>
   <VTU_CaravanFactionIcon_Desc>The form caravan, reform caravan and transport pod loading lists show the faction icon of every pawn that is not from your faction, such as guests and prisoners. Hover it for the faction name, click it for the faction info card.</VTU_CaravanFactionIcon_Desc>
   <VTU_PinnedResources>Pin resources in the resource list</VTU_PinnedResources>
-  <VTU_PinnedResources_Desc>In the categorized resource list (top left), left-click a resource to pin it. Pinned resources stay listed while their category is collapsed and are shown even when you have none. Click again to unpin. Pins apply to every save.</VTU_PinnedResources_Desc>
+  <VTU_PinnedResources_Desc>In the categorized resource list (top left), left-click a resource to pin it. Pinned resources stay listed while their category is collapsed and are shown even when you have none. Double-click to unpin. Pins apply to every save.</VTU_PinnedResources_Desc>
   <VTU_PinnedResources_Pin>Click to pin: stays listed while its category is collapsed, even at 0.</VTU_PinnedResources_Pin>
-  <VTU_PinnedResources_Unpin>Click to unpin.</VTU_PinnedResources_Unpin>
+  <VTU_PinnedResources_Unpin>Double-click to unpin.</VTU_PinnedResources_Unpin>
 
   <!-- Xenogerm queue -->
   <VTU_XQ_AddToQueue>Add to queue</VTU_XQ_AddToQueue>

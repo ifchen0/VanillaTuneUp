@@ -8,7 +8,7 @@ using Verse.Sound;
 namespace VanillaTuneUp
 {
     /// <summary>
-    /// Left-clicking a resource in the categorized resource readout pins it. A pinned resource stays listed while its
+    /// Left-clicking a resource in the categorized resource readout pins it and double-clicking unpins it. A pinned resource stays listed while its
     /// category is collapsed (drawn under the category row) and is shown even when the colony has none of it, in
     /// which case its categories are shown too. Pins are stored by defName in the mod settings, so they apply to
     /// every save and survive a mod being removed for a while.
@@ -37,6 +37,27 @@ namespace VanillaTuneUp
         }
 
         public static bool IsPinned(ThingDef def) => Pinned.Contains(def);
+
+        // The resource pinned by the current click sequence, so the second click of a double-click does not unpin it.
+        private static ThingDef justPinned;
+
+        /// <summary>A single click pins; unpinning takes a double-click, so a stray click cannot drop a pin.</summary>
+        public static void HandleClick(Rect rect, ThingDef def)
+        {
+            Event ev = Event.current;
+            if (ev.type != EventType.MouseDown || ev.button != 0 || !Mouse.IsOver(rect))
+                return;
+            ev.Use();
+            if (!IsPinned(def))
+            {
+                Toggle(def);
+                justPinned = def;
+            }
+            else if (ev.clickCount == 1)
+                justPinned = null;
+            else if (def != justPinned)
+                Toggle(def);
+        }
 
         public static void Toggle(ThingDef def)
         {
@@ -171,8 +192,7 @@ namespace VanillaTuneUp
             Rect label = new Rect(rect);
             label.xMin = icon.xMax + 6f;
             Widgets.Label(label, count.ToStringCached());
-            if (Widgets.ButtonInvisible(rect, doMouseoverSound: false))
-                PinnedResources.Toggle(thingDef);
+            PinnedResources.HandleClick(rect, thingDef);
             EndLine();
         }
     }
