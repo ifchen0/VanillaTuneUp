@@ -27,7 +27,7 @@ Small fixes and optional tweaks for vanilla RimWorld, collected in one mod.
 [*][b]Hybrid children keep a matching xenotype[/b] (Biotech): a Hybrid child whose genes closely match one heritable xenotype gets that xenotype. Genes are never changed. Optional check for modified pawns.
 [*][b]Tell faction colors apart:[/b] on load, factions with nearly identical colors are nudged apart (adjustable, saved with the game).
 [*][b]Drag to reorder:[/b] right-drag to reorder the bottom bar, architect categories, buildings and command buttons.
-[*][b]Compact colonist bar (experimental):[/b] the colonist bar shrinks while the mouse is away and expands on hover. Options for what stays visible, taller portraits and hover magnify.
+[*][b]Compact colonist bar:[/b] the colonist bar shrinks while the mouse is away and expands on hover. Options for what stays visible, taller portraits and hover magnify.
 [/list]
 
 [h2]Notes[/h2][list]

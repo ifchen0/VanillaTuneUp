@@ -11,29 +11,23 @@ Fixes:
 - Faction leaders: fixes the "Faction leader for X is null" error.
 - History graph: removes the History tab lag in long-running colonies.
 - Right-click menu: stops the stutter while a right-click menu is open on the map.
-- Trade setup: removes the long freeze when a trade window opens with many items (and with Auto Seller).
-- Mechs in sieges: fixes the error spam when a sieging group contains mechs added by other mods.
-- Prisoners in a mental break: wardens respect their food policy.
-- Bleeding prisoners: wardens tend them before feeding them.
-- Prisoner food delivery: wardens bring food before prisoners get hungry, one trip for the whole cell.
+- Trade setup: removes the freeze when a trade window opens with many items (and with Auto Seller).
+- Mechs in sieges: fixes the error spam when a siege includes mechs added by other mods.
+- Food policy during mental breaks: wardens no longer bring restricted food to a prisoner having a mental break.
+- Tend bleeding prisoners first: wardens skip feeding while a prisoner is bleeding.
+- Prisoner food delivery keeps up: wardens bring food before prisoners get hungry, one trip for the whole cell.
+- Quest text in translations: fixes quest text shown as ERR caused by a translation typo (currently Traditional Chinese).
 
 Tweaks:
 - Xenogerm queue: a bill-style queue for the gene assembler (Biotech).
-- Drag to reorder: right-drag the bottom bar, architect categories, buildings and the command buttons of the selection into your own order.
 - Mute labor and birth sounds (Biotech).
-- Hybrid xenotype: a hybrid child whose germline genes closely match one heritable xenotype (weighted by gene complexity) gets that xenotype; an option also covers pawns with xenogenes (Biotech).
-- Compact colonist bar (experimental): the colonist bar shrinks while the mouse is away and expands on hover; optional taller portraits with adjustable size and per-race zoom.
-
-Replaces these standalone mods by the same author. If one of them is still active, its part here is skipped automatically, so having both does not apply anything twice. Saved xenogerm queues and Drag Reorder orders carry over.
-- Faction Leader Fix
-- History Graph Performance Fix
-- Right-Click Menu Lag Fix
-- Trade Performance Fix
-- Siege Builder Fix (Mechs in Sieges)
-- Prisoner Handling Fixes
-- Xenogerm Queue
-- Drag Reorder: Bottom Bar &amp; Architect
-- Mute Birth Sounds
+- Remove fog of war: reveals the map on generation or load, except when revealing it would trigger something.
+- Faction icons in caravan lists: shows the faction icon of guests, prisoners and other non-colony pawns.
+- Pin resources: left-click a resource in the categorized resource list to keep it shown while its category is collapsed, even at 0.
+- Hybrid children keep a matching xenotype: a Hybrid child whose genes closely match one heritable xenotype gets that xenotype (Biotech).
+- Tell faction colors apart: factions with nearly identical colors are nudged apart on load.
+- Drag to reorder: right-drag to reorder the bottom bar, architect categories, buildings and command buttons.
+- Compact colonist bar: the colonist bar shrinks while the mouse is away and expands on hover.
 
 Safe to add to or remove from an existing save. Load after Harmony.
 
