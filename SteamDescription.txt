@@ -30,23 +30,6 @@ Small fixes and optional tweaks for vanilla RimWorld, collected in one mod.
 [*][b]Compact colonist bar (experimental):[/b] the colonist bar shrinks while the mouse is away and expands on hover. Options for what stays visible, taller portraits and hover magnify.
 [/list]
 
-[h2]Coming from the standalone mods[/h2]This mod replaces these standalone mods, which will not be updated further:
-[list]
-[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3812508568]Faction Leader Fix[/url]
-[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3814466333]History Graph Performance Fix[/url]
-[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3814590552]Right-Click Menu Lag Fix[/url]
-[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3812694216]Trade Performance Fix[/url]
-[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3814052029]Siege Builder Fix (Mechs in Sieges)[/url]
-[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3813854507]Prisoner Handling Fixes[/url]
-[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3814169515]Xenogerm Queue[/url]
-[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3815397911]Drag Reorder: Bottom Bar & Architect[/url]
-[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3811852002]Mute Birth Sounds[/url]
-[/list]
-[list]
-[*]While a standalone mod is still active, its part here is skipped, so nothing is applied twice.
-[*]Tweaks you used as standalone mods are turned on for you; xenogerm queues and Drag Reorder orders carry over.
-[/list]
-
 [h2]Notes[/h2][list]
 [*]Safe to add to or remove from an existing save. Removing it only drops xenogerm queues; a xenogerm in progress continues as normal.
 [*]Load after Harmony.
