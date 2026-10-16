@@ -116,6 +116,9 @@ namespace VanillaTuneUp
         public bool hybridIncludeXenogenes;
         public float factionColorMinDistance = FactionColors.DefaultMinDistance;
         public List<string> pinnedResources = new List<string>();
+        // Resource readout categories left open; only used once the player has toggled one.
+        public bool resourceCategoriesRecorded;
+        public List<string> openResourceCategories = new List<string>();
 
         // Compact colonist bar: what stays visible while the bar is collapsed.
         public bool compactBarShowLabels = true;
@@ -200,11 +203,14 @@ namespace VanillaTuneUp
             Scribe_Values.Look(ref compactBarPortraitOffset, "compactBarPortraitOffset", DefaultPortraitOffset);
             Scribe_Collections.Look(ref compactBarRaceZoom, "compactBarRaceZoom", LookMode.Value, LookMode.Value);
             Scribe_Collections.Look(ref pinnedResources, "pinnedResources", LookMode.Value);
+            Scribe_Values.Look(ref resourceCategoriesRecorded, "resourceCategoriesRecorded", false);
+            Scribe_Collections.Look(ref openResourceCategories, "openResourceCategories", LookMode.Value);
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
                 overrides ??= new Dictionary<string, bool>();
                 compactBarRaceZoom ??= new Dictionary<string, float>();
                 pinnedResources ??= new List<string>();
+                openResourceCategories ??= new List<string>();
                 dragReorder ??= new DragReorderSettings();
             }
         }

@@ -90,6 +90,47 @@ namespace VanillaTuneUp
             return list;
         }
 
+        // Open bit vanilla's categorized readout uses for its tree.
+        public const int ReadoutOpenMask = 32;
+        private static bool openStateRestored;
+
+        /// <summary>
+        /// Vanilla keeps the readout's open/closed state only for the session and opens the first root category
+        /// (Foods) at every startup, so the state is kept in the mod settings and put back on the first draw.
+        /// </summary>
+        public static void RestoreOpenState()
+        {
+            if (openStateRestored)
+                return;
+            openStateRestored = true;
+            TuneUpSettings settings = VanillaTuneUpMod.Settings;
+            if (!settings.resourceCategoriesRecorded)
+                return;
+            var open = new HashSet<string>(settings.openResourceCategories);
+            foreach (ThingCategoryDef cat in DefDatabase<ThingCategoryDef>.AllDefsListForReading)
+                cat.treeNode?.SetOpen(ReadoutOpenMask, open.Contains(cat.defName));
+        }
+
+        public static void RecordOpenState(ThingCategoryDef cat, bool open)
+        {
+            TuneUpSettings settings = VanillaTuneUpMod.Settings;
+            if (!settings.resourceCategoriesRecorded)
+            {
+                // First toggle: take over whatever is open now, vanilla's Foods included.
+                settings.resourceCategoriesRecorded = true;
+                settings.openResourceCategories.Clear();
+                foreach (ThingCategoryDef def in DefDatabase<ThingCategoryDef>.AllDefsListForReading)
+                {
+                    if (def.treeNode != null && def.treeNode.IsOpen(ReadoutOpenMask))
+                        settings.openResourceCategories.Add(def.defName);
+                }
+            }
+            settings.openResourceCategories.Remove(cat.defName);
+            if (open)
+                settings.openResourceCategories.Add(cat.defName);
+            VanillaTuneUpMod.Save();
+        }
+
         private static void CollectPinned(ThingCategoryDef cat, List<ThingDef> list)
         {
             foreach (ThingCategoryDef child in cat.childCategories)
@@ -130,7 +171,8 @@ namespace VanillaTuneUp
             List<ThingDef> pinnedHere = PinnedResources.PinnedUnder(node.catDef);
             if (countIn == 0 && pinnedHere.Count == 0)
                 return;
-            OpenCloseWidget(node, nestLevel, openMask);
+            if (OpenCloseWidget(node, nestLevel, openMask))
+                PinnedResources.RecordOpenState(node.catDef, node.IsOpen(openMask));
             Rect rect = new Rect(0f, curY, LabelWidth, lineHeight);
             rect.xMin = XAtIndentLevel(nestLevel) + 18f;
             Rect bg = rect;
@@ -209,6 +251,7 @@ namespace VanillaTuneUp
         // Same as vanilla, with the pinning listing in place of Listing_ResourceReadout.
         public static bool Prefix(ResourceReadout __instance, Rect rect)
         {
+            PinnedResources.RestoreOpenState();
             var listing = new Listing_PinnedResourceReadout(Find.CurrentMap);
             listing.Begin(rect);
             listing.nestIndentWidth = 7f;
@@ -216,7 +259,7 @@ namespace VanillaTuneUp
             listing.verticalSpacing = 0f;
             List<ThingCategoryDef> roots = RootThingCategories(__instance);
             for (int i = 0; i < roots.Count; i++)
-                listing.DoCategoryPinned(roots[i].treeNode, 0, 32);
+                listing.DoCategoryPinned(roots[i].treeNode, 0, PinnedResources.ReadoutOpenMask);
             listing.End();
             LastDrawnHeight(__instance) = listing.CurHeight;
             return false;
