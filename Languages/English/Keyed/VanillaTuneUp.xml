@@ -32,6 +32,14 @@
   <VTU_DragReorder_Desc>Hold the right mouse button and drag to reorder the bottom bar, the architect categories and the buildings inside them.</VTU_DragReorder_Desc>
   <VTU_MuteBirthSounds>Mute labor and birth sounds</VTU_MuteBirthSounds>
   <VTU_MuteBirthSounds_Desc>Mutes the labor (early/late) and birth sounds. Other baby sounds are unchanged.</VTU_MuteBirthSounds_Desc>
+  <VTU_PrisonerDefaultFoodPolicy>Food policy for new prisoners</VTU_PrisonerDefaultFoodPolicy>
+  <VTU_PrisonerDefaultFoodPolicy_Desc>Pawns get the food policy chosen below when they become your prisoners, so a prisoner-only policy no longer has to be set by hand for each capture. A recruited or released prisoner still on that policy goes back to the default policy. The policy is matched by name, so use the same name in every save.</VTU_PrisonerDefaultFoodPolicy_Desc>
+  <VTU_PrisonerPolicyLabel>Policy for new prisoners</VTU_PrisonerPolicyLabel>
+  <VTU_PrisonerPolicyNone>No change (vanilla)</VTU_PrisonerPolicyNone>
+  <VTU_PrisonerPolicyNoGame>Load a save to pick a food policy.</VTU_PrisonerPolicyNoGame>
+  <VTU_PrisonerPolicyMissing>This save has no food policy named "{0}"; new prisoners keep the default policy.</VTU_PrisonerPolicyMissing>
+  <VTU_PrisonerPolicyApplyAll>Apply to current prisoners</VTU_PrisonerPolicyApplyAll>
+  <VTU_PrisonerPolicyApplied>{0} prisoners now use the food policy "{1}".</VTU_PrisonerPolicyApplied>
   <VTU_HybridXenotype>Hybrid children keep a matching xenotype</VTU_HybridXenotype>
   <VTU_HybridXenotype_Desc>A child labeled Hybrid whose germline genes match one heritable xenotype by more than 80% (genes weighted by complexity, skin and hair color ignored) gets that xenotype instead; a tie is decided at random. Checked at birth and on every load; genes are not changed, and pawns with xenogenes are skipped unless the option below is on.</VTU_HybridXenotype_Desc>
   <VTU_HybridIncludeXenogenes>Also check modified pawns</VTU_HybridIncludeXenogenes>

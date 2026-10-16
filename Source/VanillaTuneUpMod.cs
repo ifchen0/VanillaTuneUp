@@ -81,6 +81,10 @@ namespace VanillaTuneUp
             new TuneUpModule("CaravanFactionIcon", true, null),
             new TuneUpModule("PinnedResources", true, null),
             // Modules with extra settings go last, the longest at the end, so plain toggles stay near the top.
+            new TuneUpModule("PrisonerDefaultFoodPolicy", true, null)
+            {
+                DrawSettings = PrisonerDefaultFoodPolicy.DrawSettings
+            },
             new TuneUpModule("HybridXenotype", true, null)
             {
                 IsAvailable = () => ModsConfig.BiotechActive,
@@ -114,6 +118,8 @@ namespace VanillaTuneUp
         public DragReorderSettings dragReorder = new DragReorderSettings();
         public bool dragReorderMigrated;
         public bool hybridIncludeXenogenes;
+        // Food policy name given to new prisoners; empty leaves vanilla behavior.
+        public string prisonerFoodPolicy = "";
         public float factionColorMinDistance = FactionColors.DefaultMinDistance;
         public List<string> pinnedResources = new List<string>();
         // Resource readout categories left open; only used once the player has toggled one.
@@ -192,6 +198,7 @@ namespace VanillaTuneUp
             Scribe_Deep.Look(ref dragReorder, "dragReorder");
             Scribe_Values.Look(ref dragReorderMigrated, "dragReorderMigrated", false);
             Scribe_Values.Look(ref hybridIncludeXenogenes, "hybridIncludeXenogenes", false);
+            Scribe_Values.Look(ref prisonerFoodPolicy, "prisonerFoodPolicy", "");
             Scribe_Values.Look(ref factionColorMinDistance, "factionColorMinDistance", FactionColors.DefaultMinDistance);
             Scribe_Values.Look(ref compactBarShowLabels, "compactBarShowLabels", true);
             Scribe_Values.Look(ref compactBarShowIcons, "compactBarShowIcons", true);
@@ -208,6 +215,7 @@ namespace VanillaTuneUp
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
                 overrides ??= new Dictionary<string, bool>();
+                prisonerFoodPolicy ??= "";
                 compactBarRaceZoom ??= new Dictionary<string, float>();
                 pinnedResources ??= new List<string>();
                 openResourceCategories ??= new List<string>();

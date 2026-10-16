@@ -32,6 +32,14 @@
   <VTU_DragReorder_Desc>按住滑鼠右鍵拖曳，即可重新排列底部工作列、建築分類與分類內的建築。</VTU_DragReorder_Desc>
   <VTU_MuteBirthSounds>靜音分娩與出生音效</VTU_MuteBirthSounds>
   <VTU_MuteBirthSounds_Desc>靜音分娩（早期／後期）與出生音效，其他嬰兒音效不變。</VTU_MuteBirthSounds_Desc>
+  <VTU_PrisonerDefaultFoodPolicy>新囚犯的食物政策</VTU_PrisonerDefaultFoodPolicy>
+  <VTU_PrisonerDefaultFoodPolicy_Desc>pawn 成為你的囚犯時，自動套用下方選擇的食物政策，不用每抓一個囚犯就手動設定一次。被招募或釋放時，若仍是這個政策，會改回預設政策。政策以名稱比對，各個存檔請使用相同名稱。</VTU_PrisonerDefaultFoodPolicy_Desc>
+  <VTU_PrisonerPolicyLabel>新囚犯套用的政策</VTU_PrisonerPolicyLabel>
+  <VTU_PrisonerPolicyNone>不變更（原版行為）</VTU_PrisonerPolicyNone>
+  <VTU_PrisonerPolicyNoGame>讀取存檔後才能選擇食物政策。</VTU_PrisonerPolicyNoGame>
+  <VTU_PrisonerPolicyMissing>這個存檔沒有名為「{0}」的食物政策，新囚犯會維持預設政策。</VTU_PrisonerPolicyMissing>
+  <VTU_PrisonerPolicyApplyAll>套用到目前所有囚犯</VTU_PrisonerPolicyApplyAll>
+  <VTU_PrisonerPolicyApplied>已將 {0} 名囚犯的食物政策改為「{1}」。</VTU_PrisonerPolicyApplied>
   <VTU_HybridXenotype>混種後代沿用相符的種族</VTU_HybridXenotype>
   <VTU_HybridXenotype_Desc>被標為「混合」的後代，若種系基因與某個可遺傳種族的相符度超過 80%（依基因複雜度加權，不計膚色與髮色），就改為該種族；同分時隨機選一個。出生時與每次讀檔都會檢查；基因本身不變，除非開啟下方選項，否則帶有異種基因的 pawn 不處理。</VTU_HybridXenotype_Desc>
   <VTU_HybridIncludeXenogenes>也檢查經過改造的 pawn</VTU_HybridIncludeXenogenes>

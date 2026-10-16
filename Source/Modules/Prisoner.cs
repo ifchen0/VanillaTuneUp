@@ -233,4 +233,95 @@ namespace VanillaTuneUp
                 job.count = 1;
         }
     }
+
+    /// <summary>
+    /// Vanilla gives every new prisoner the default food policy, so a prisoner-only policy has to be picked by hand
+    /// for each capture. Give the policy named in the settings to a pawn when it becomes a prisoner of the colony, and
+    /// put it back on the default policy when it stops being one (recruited, released) while still on that policy.
+    /// Policies are saved per game, so the setting stores the policy name and matches it in the loaded save.
+    /// </summary>
+    [HarmonyPatchCategory("PrisonerDefaultFoodPolicy")]
+    [HarmonyPatch(typeof(Pawn_GuestTracker), nameof(Pawn_GuestTracker.SetGuestStatus))]
+    public static class PrisonerDefaultFoodPolicy
+    {
+        public static void Prefix(Pawn_GuestTracker __instance, out bool __state)
+        {
+            __state = __instance.IsPrisoner && __instance.HostFaction == Faction.OfPlayer;
+        }
+
+        public static void Postfix(Pawn_GuestTracker __instance, Pawn ___pawn, bool __state)
+        {
+            Pawn_FoodRestrictionTracker tracker = ___pawn?.foodRestriction;
+            FoodPolicy policy = Configured();
+            if (tracker == null || policy == null)
+                return;
+            bool prisoner = __instance.IsPrisoner && __instance.HostFaction == Faction.OfPlayer;
+            if (prisoner && !__state)
+                tracker.CurrentFoodPolicy = policy;
+            else if (!prisoner && __state && tracker.CurrentFoodPolicy == policy)
+                tracker.CurrentFoodPolicy = Current.Game.foodRestrictionDatabase.DefaultFoodRestriction();
+        }
+
+        /// <summary>The policy named in the settings in the current game, or null when unset or missing.</summary>
+        public static FoodPolicy Configured()
+        {
+            string label = VanillaTuneUpMod.Settings.prisonerFoodPolicy;
+            if (label.NullOrEmpty())
+                return null;
+            return Current.Game?.foodRestrictionDatabase?.AllFoodRestrictions.Find(p => p.label == label);
+        }
+
+        public static void DrawSettings(Listing_Standard listing)
+        {
+            TuneUpSettings settings = VanillaTuneUpMod.Settings;
+            string current = settings.prisonerFoodPolicy.NullOrEmpty()
+                ? "VTU_PrisonerPolicyNone".Translate().ToString()
+                : settings.prisonerFoodPolicy;
+            List<FoodPolicy> policies = Current.Game?.foodRestrictionDatabase?.AllFoodRestrictions;
+            Rect row = listing.GetRect(30f);
+            Widgets.Label(row.LeftHalf(), "VTU_PrisonerPolicyLabel".Translate());
+            if (policies == null)
+            {
+                // Outside a game there is no policy list to pick from.
+                Widgets.Label(row.RightHalf(), current);
+                GUI.color = Color.gray;
+                listing.Label("VTU_PrisonerPolicyNoGame".Translate());
+                GUI.color = Color.white;
+                return;
+            }
+            if (Widgets.ButtonText(row.RightHalf(), current))
+            {
+                var options = new List<FloatMenuOption>
+                {
+                    new FloatMenuOption("VTU_PrisonerPolicyNone".Translate(), () => settings.prisonerFoodPolicy = "")
+                };
+                foreach (FoodPolicy policy in policies)
+                {
+                    string label = policy.label;
+                    options.Add(new FloatMenuOption(label, () => settings.prisonerFoodPolicy = label));
+                }
+                Find.WindowStack.Add(new FloatMenu(options));
+            }
+            if (!settings.prisonerFoodPolicy.NullOrEmpty() && Configured() == null)
+            {
+                GUI.color = ColorLibrary.Gold;
+                listing.Label("VTU_PrisonerPolicyMissing".Translate(settings.prisonerFoodPolicy));
+                GUI.color = Color.white;
+            }
+            FoodPolicy configured = Configured();
+            if (configured != null && listing.ButtonText("VTU_PrisonerPolicyApplyAll".Translate()))
+            {
+                int count = 0;
+                foreach (Pawn prisoner in PawnsFinder.AllMapsCaravansAndTravellingTransporters_Alive_PrisonersOfColony)
+                {
+                    if (prisoner.foodRestriction == null)
+                        continue;
+                    prisoner.foodRestriction.CurrentFoodPolicy = configured;
+                    count++;
+                }
+                Messages.Message("VTU_PrisonerPolicyApplied".Translate(count, configured.label),
+                    MessageTypeDefOf.TaskCompletion, historical: false);
+            }
+        }
+    }
 }
