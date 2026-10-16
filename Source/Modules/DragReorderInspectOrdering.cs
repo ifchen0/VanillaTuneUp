@@ -18,6 +18,8 @@ namespace VanillaTuneUp
     /// as separate buttons (one lambda per item or mode) get a numbered key in list order. The resulting
     /// permutation is reused for as long as the list looks the same (same type, icon, label and Order at
     /// every index), so a steady selection costs a cheap comparison per button instead of a key lookup.
+    /// Keys are always numbered in the vanilla order (before the saved order is applied), so moving a
+    /// numbered button does not renumber the ones it passes.
     /// </summary>
     [HarmonyPatchCategory("DragReorder")]
     [HarmonyPatch]
@@ -28,11 +30,16 @@ namespace VanillaTuneUp
         private static readonly Dictionary<string, string> LegacyKeys = new Dictionary<string, string>();
         private static readonly Dictionary<Type, string> TypeKeys = new Dictionary<Type, string>();
         private static readonly Dictionary<AbilityDef, string> AbilityKeys = new Dictionary<AbilityDef, string>();
+        private static readonly Dictionary<PreceptDef, string> RitualKeys = new Dictionary<PreceptDef, string>();
+        private static readonly AccessTools.FieldRef<Command_Ritual, Precept_Ritual> RitualField =
+            AccessTools.FieldRefAccess<Command_Ritual, Precept_Ritual>("ritual");
         private static readonly Dictionary<Type, FieldInfo> ClosureDesignatorFields = new Dictionary<Type, FieldInfo>();
         private static readonly DragController<string> Drag = new DragController<string>();
         private static readonly List<(Gizmo gizmo, Rect rect)> Rects = new List<(Gizmo, Rect)>();
         private static readonly List<string> RectKeys = new List<string>();
         private static readonly List<Gizmo> LastOrder = new List<Gizmo>();
+        // The last list in vanilla order; LastOrder[i] == PreSortOrder[perm[i]] when lastPermuted.
+        private static readonly List<Gizmo> PreSortOrder = new List<Gizmo>();
         private static readonly List<string> LastKeys = new List<string>();
         private static readonly List<string> TmpKeys = new List<string>();
         private static readonly List<string> TmpBaseKeys = new List<string>();
@@ -50,6 +57,7 @@ namespace VanillaTuneUp
         // Keys are only needed while a drag is going on, so they are worked out on first use.
         private static bool lastKeysValid;
         private static bool rectKeysValid;
+        private static bool lastPermuted;
 
         private struct Fingerprint
         {
@@ -134,9 +142,11 @@ namespace VanillaTuneUp
             Rects.Clear();
             RectKeys.Clear();
             LastOrder.Clear();
+            PreSortOrder.Clear();
             LastKeys.Clear();
             lastKeysValid = false;
             rectKeysValid = false;
+            lastPermuted = false;
             Drag.Cancel();
         }
 
@@ -145,8 +155,12 @@ namespace VanillaTuneUp
         {
             Rects.Clear();
             LastOrder.Clear();
+            PreSortOrder.Clear();
             lastKeysValid = false;
             rectKeysValid = false;
+            lastPermuted = false;
+            for (int i = 0; i < gizmos.Count; i++)
+                PreSortOrder.Add(gizmos[i]);
             List<string> saved = VanillaTuneUpMod.Settings.dragReorder.inspectGizmos;
             if (!saved.NullOrEmpty() && gizmos.Count > 1)
             {
@@ -158,6 +172,7 @@ namespace VanillaTuneUp
                 for (int i = 0; i < gizmos.Count; i++)
                     gizmos[i] = TmpGizmos[i];
                 TmpGizmos.Clear();
+                lastPermuted = true;
             }
             for (int i = 0; i < gizmos.Count; i++)
                 LastOrder.Add(gizmos[i]);
@@ -262,7 +277,13 @@ namespace VanillaTuneUp
         {
             if (lastKeysValid)
                 return;
-            ComputeKeys(LastOrder, LastKeys);
+            // Number the keys in vanilla order, the same way BuildPermutation does, then lay them out in
+            // drawn order. Numbering the drawn order instead would hand a moved button its neighbour's key.
+            ComputeKeys(PreSortOrder, TmpKeys);
+            LastKeys.Clear();
+            for (int i = 0; i < LastOrder.Count; i++)
+                LastKeys.Add(TmpKeys[lastPermuted ? perm[i] : i]);
+            TmpKeys.Clear();
             lastKeysValid = true;
         }
 
@@ -300,6 +321,14 @@ namespace VanillaTuneUp
                         AbilityKeys[def] = key;
                     }
                     return key;
+                case Command_Ritual ritualCommand when RitualField(ritualCommand)?.def is PreceptDef ritualDef:
+                    // Every ritual shares one button type; key it by its precept instead.
+                    if (!RitualKeys.TryGetValue(ritualDef, out string ritualKey))
+                    {
+                        ritualKey = "ritual:" + ritualDef.defName;
+                        RitualKeys[ritualDef] = ritualKey;
+                    }
+                    return ritualKey;
                 case Command_Action { action: { } action }:
                     return DelegateKey(action);
                 case Command_Toggle { toggleAction: { } toggle }:
