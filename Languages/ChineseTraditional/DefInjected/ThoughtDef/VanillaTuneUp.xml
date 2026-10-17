@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <VTU_FightBrokenUp.stages.0.label>把我的打架勸開了</VTU_FightBrokenUp.stages.0.label>
+  <VTU_FightMeddled.stages.0.label>多管我打架的閒事</VTU_FightMeddled.stages.0.label>
+  <VTU_FightInterrupted.stages.0.label>打擾我打架</VTU_FightInterrupted.stages.0.label>
+  <VTU_BrokeUpFight.stages.0.label>勸開了一場打架</VTU_BrokeUpFight.stages.0.label>
+  <VTU_BrokeUpFight.stages.0.description>我在有人受重傷之前讓他們冷靜下來了。</VTU_BrokeUpFight.stages.0.description>
+  <VTU_BrokeUpFight.stages.1.label>勸開了一場打架</VTU_BrokeUpFight.stages.1.label>
+  <VTU_BrokeUpFight.stages.1.description>能幫他們和好，真是太好了。</VTU_BrokeUpFight.stages.1.description>
+</LanguageData>

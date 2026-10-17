@@ -7,6 +7,7 @@
   <VTU_Failed>Could not be applied (see the log); this module is off for this session.</VTU_Failed>
   <VTU_ProvidedByLegacy>(skipped: already provided by the standalone mod "{0}")</VTU_ProvidedByLegacy>
   <VTU_RequiresBiotech>(requires Biotech)</VTU_RequiresBiotech>
+  <VTU_Experimental>(experimental)</VTU_Experimental>
 
   <VTU_FactionLeader>Restore missing faction leaders</VTU_FactionLeader>
   <VTU_FactionLeader_Desc>Fixes the "Faction leader for X is null" error by generating a new leader the way vanilla does when a leader dies.</VTU_FactionLeader_Desc>
@@ -66,6 +67,11 @@
   <VTU_PS_DialogTitle>Dispense until you have</VTU_PS_DialogTitle>
   <VTU_PS_DialogNote>Counts paste in storage, being carried and on the ground (now {0}). 0 turns it off.</VTU_PS_DialogNote>
   <VTU_PS_Inspect>Paste stock: {0} / {1}</VTU_PS_Inspect>
+  <VTU_BreakUpFights>Break up social fights</VTU_BreakUpFights>
+  <VTU_BreakUpFights_Desc>Colonists who see a social fight nearby may step in and try to stop it, unless they are a rival of both fighters or are busy with work that cannot be interrupted. Slaves and prisoners only step into fights among other slaves or prisoners. Success depends on their Social skill and on how much the fighters like them. When it fails, the fighter may turn on them, using the vanilla social fight formula, and the old opponent keeps going: a brawl that lasts until that fighter stops. Fighters remember who broke up their fight: most are grateful, but some resent it.</VTU_BreakUpFights_Desc>
+  <VTU_BF_Calmed>Calmed them down</VTU_BF_Calmed>
+  <VTU_BF_Ignored>Ignored</VTU_BF_Ignored>
+  <VTU_BF_DraggedIn>{PAWN1_labelShort} turned on {PAWN2_labelShort}, who tried to break up the fight!</VTU_BF_DraggedIn>
 
   <!-- Xenogerm queue -->
   <VTU_XQ_AddToQueue>Add to queue</VTU_XQ_AddToQueue>

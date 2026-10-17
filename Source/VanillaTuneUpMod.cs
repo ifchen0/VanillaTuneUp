@@ -40,9 +40,14 @@ namespace VanillaTuneUp
             LegacyPackageId = legacyPackageId;
         }
 
+        /// <summary>Still being tuned; marked as such next to its name.</summary>
+        public bool IsExperimental;
+
         public bool DefaultOn => !IsTweak;
         public bool IsActive => State == ModuleState.Active;
-        public string Label => ("VTU_" + Id).Translate();
+        public string Label => IsExperimental
+            ? ("VTU_" + Id).Translate() + " " + "VTU_Experimental".Translate()
+            : ("VTU_" + Id).Translate();
         public string Description => ("VTU_" + Id + "_Desc").Translate();
 
         public ModMetaData ActiveLegacyMod() => LegacyPackageId == null
@@ -81,6 +86,7 @@ namespace VanillaTuneUp
             new TuneUpModule("CaravanFactionIcon", true, null),
             new TuneUpModule("PinnedResources", true, null),
             new TuneUpModule("NutrientPasteStock", true, null),
+            new TuneUpModule("BreakUpFights", true, null) { IsExperimental = true },
             // Modules with extra settings go last, the longest at the end, so plain toggles stay near the top.
             new TuneUpModule("PrisonerDefaultFoodPolicy", true, null)
             {

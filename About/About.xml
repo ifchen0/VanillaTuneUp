@@ -25,6 +25,7 @@ Tweaks:
 - Faction icons in caravan lists: shows the faction icon of guests, prisoners and other non-colony pawns.
 - Pin resources: left-click a resource in the categorized resource list to keep it shown while its category is collapsed, even at 0.
 - Nutrient paste stock: a "dispense until you have X" target for nutrient paste dispensers, shared by the whole map.
+- Break up social fights (experimental): colonists who see a social fight nearby may step in to stop it.
 - Food policy for new prisoners: new prisoners get the food policy you pick.
 - Hybrid children keep a matching xenotype: a Hybrid child whose genes closely match one heritable xenotype gets that xenotype (Biotech).
 - Tell faction colors apart: factions with nearly identical colors are nudged apart on load.

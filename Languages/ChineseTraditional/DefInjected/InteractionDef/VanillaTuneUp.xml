@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <VTU_BreakUpFightTalk.label>勸架</VTU_BreakUpFightTalk.label>
+  <VTU_BreakUpFightTalk.logRulesInitiator.rulesStrings>
+    <li>r_logentry->[INITIATOR_nameDef]試著讓[RECIPIENT_nameDef]冷靜下來。</li>
+    <li>r_logentry->[INITIATOR_nameDef]上前阻止[RECIPIENT_nameDef]打架。</li>
+    <li>r_logentry->[INITIATOR_nameDef]想把[RECIPIENT_nameDef]拉開。</li>
+  </VTU_BreakUpFightTalk.logRulesInitiator.rulesStrings>
+</LanguageData>

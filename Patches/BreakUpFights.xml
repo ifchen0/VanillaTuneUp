@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!-- Added even while the module is off, so a pawn saved mid-job and its play log entries still load. -->
+  <Operation Class="VanillaTuneUp.PatchOperationTuneUp">
+    <module>BreakUpFights</module>
+    <evenWhenOff>true</evenWhenOff>
+    <operations>
+      <li Class="PatchOperationAdd">
+        <xpath>Defs</xpath>
+        <value>
+          <JobDef>
+            <defName>VTU_BreakUpFight</defName>
+            <driverClass>VanillaTuneUp.JobDriver_BreakUpFight</driverClass>
+            <reportString>breaking up TargetA's fight.</reportString>
+            <casualInterruptible>false</casualInterruptible>
+          </JobDef>
+          <!-- Never picked as a random interaction (the base worker weighs 0); its socialFightBaseChance is the chance a fighter turns on the mediator (insult: 0.04). -->
+          <InteractionDef>
+            <defName>VTU_BreakUpFightTalk</defName>
+            <label>break up fight</label>
+            <symbol>Things/Mote/SpeechSymbols/KindWords</symbol>
+            <socialFightBaseChance>0.15</socialFightBaseChance>
+            <logRulesInitiator>
+              <rulesStrings>
+                <li>r_logentry->[INITIATOR_nameDef] tried to calm [RECIPIENT_nameDef] down.</li>
+                <li>r_logentry->[INITIATOR_nameDef] stepped in to stop [RECIPIENT_nameDef] fighting.</li>
+                <li>r_logentry->[INITIATOR_nameDef] tried to pull [RECIPIENT_nameDef] out of the fight.</li>
+              </rulesStrings>
+            </logRulesInitiator>
+          </InteractionDef>
+          <!-- Fighters toward the mediator. -->
+          <ThoughtDef>
+            <defName>VTU_FightBrokenUp</defName>
+            <thoughtClass>Thought_MemorySocial</thoughtClass>
+            <durationDays>20</durationDays>
+            <stackLimit>300</stackLimit>
+            <stackLimitForSameOtherPawn>5</stackLimitForSameOtherPawn>
+            <stackedEffectMultiplier>0.9</stackedEffectMultiplier>
+            <developmentalStageFilter>Child, Adult</developmentalStageFilter>
+            <socialTargetDevelopmentalStageFilter>Child, Adult</socialTargetDevelopmentalStageFilter>
+            <stages>
+              <li>
+                <label>broke up my fight</label>
+                <baseOpinionOffset>8</baseOpinionOffset>
+              </li>
+            </stages>
+          </ThoughtDef>
+          <ThoughtDef>
+            <defName>VTU_FightMeddled</defName>
+            <thoughtClass>Thought_MemorySocial</thoughtClass>
+            <durationDays>20</durationDays>
+            <stackLimit>300</stackLimit>
+            <stackLimitForSameOtherPawn>5</stackLimitForSameOtherPawn>
+            <stackedEffectMultiplier>0.9</stackedEffectMultiplier>
+            <developmentalStageFilter>Child, Adult</developmentalStageFilter>
+            <socialTargetDevelopmentalStageFilter>Child, Adult</socialTargetDevelopmentalStageFilter>
+            <stages>
+              <li>
+                <label>meddled in my fight</label>
+                <baseOpinionOffset>-5</baseOpinionOffset>
+              </li>
+            </stages>
+          </ThoughtDef>
+          <ThoughtDef>
+            <defName>VTU_FightInterrupted</defName>
+            <thoughtClass>Thought_MemorySocial</thoughtClass>
+            <durationDays>10</durationDays>
+            <stackLimit>300</stackLimit>
+            <stackLimitForSameOtherPawn>5</stackLimitForSameOtherPawn>
+            <stackedEffectMultiplier>0.9</stackedEffectMultiplier>
+            <developmentalStageFilter>Child, Adult</developmentalStageFilter>
+            <socialTargetDevelopmentalStageFilter>Child, Adult</socialTargetDevelopmentalStageFilter>
+            <stages>
+              <li>
+                <label>butted into my fight</label>
+                <baseOpinionOffset>-3</baseOpinionOffset>
+              </li>
+            </stages>
+          </ThoughtDef>
+          <!-- The mediator's own mood; stage 1 is for Kind mediators. -->
+          <ThoughtDef>
+            <defName>VTU_BrokeUpFight</defName>
+            <durationDays>2</durationDays>
+            <stackLimit>3</stackLimit>
+            <stackedEffectMultiplier>0.75</stackedEffectMultiplier>
+            <developmentalStageFilter>Child, Adult</developmentalStageFilter>
+            <stages>
+              <li>
+                <label>broke up a fight</label>
+                <description>I calmed them down before anyone got badly hurt.</description>
+                <baseMoodEffect>3</baseMoodEffect>
+              </li>
+              <li>
+                <label>broke up a fight</label>
+                <description>I'm glad I could help them make peace.</description>
+                <baseMoodEffect>5</baseMoodEffect>
+              </li>
+            </stages>
+          </ThoughtDef>
+        </value>
+      </li>
+    </operations>
+  </Operation>
+</Patch>
