@@ -80,6 +80,7 @@ namespace VanillaTuneUp
             new TuneUpModule("RemoveFogOfWar", true, null),
             new TuneUpModule("CaravanFactionIcon", true, null),
             new TuneUpModule("PinnedResources", true, null),
+            new TuneUpModule("NutrientPasteStock", true, null),
             // Modules with extra settings go last, the longest at the end, so plain toggles stay near the top.
             new TuneUpModule("PrisonerDefaultFoodPolicy", true, null)
             {

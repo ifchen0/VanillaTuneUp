@@ -58,6 +58,14 @@
   <VTU_PinnedResources_Desc>In the categorized resource list (top left), left-click a resource to pin it. Pinned resources stay listed while their category is collapsed and are shown even when you have none. Double-click to unpin. Pins apply to every save.</VTU_PinnedResources_Desc>
   <VTU_PinnedResources_Pin>Click to pin: stays listed while its category is collapsed, even at 0.</VTU_PinnedResources_Pin>
   <VTU_PinnedResources_Unpin>Double-click to unpin.</VTU_PinnedResources_Unpin>
+  <VTU_NutrientPasteStock>Nutrient paste stock</VTU_NutrientPasteStock>
+  <VTU_NutrientPasteStock_Desc>Adds a "dispense until you have X" target to nutrient paste dispensers, like a cooking bill. The number is shared by every dispenser on the map. Cooks dispense paste and drop it by the dispenser for haulers, like a bill set to drop on the floor. Paste on the ground counts toward the target as well as paste in storage, so it does not pile up before haulers arrive.</VTU_NutrientPasteStock_Desc>
+  <VTU_PS_GizmoLabel>Paste stock: {0}</VTU_PS_GizmoLabel>
+  <VTU_PS_GizmoOff>Paste stock: off</VTU_PS_GizmoOff>
+  <VTU_PS_GizmoDesc>Cooks dispense nutrient paste and drop it by the dispenser until you have this many. Shared by every dispenser on this map.</VTU_PS_GizmoDesc>
+  <VTU_PS_DialogTitle>Dispense until you have</VTU_PS_DialogTitle>
+  <VTU_PS_DialogNote>Counts paste in storage, being carried and on the ground (now {0}). 0 turns it off.</VTU_PS_DialogNote>
+  <VTU_PS_Inspect>Paste stock: {0} / {1}</VTU_PS_Inspect>
 
   <!-- Xenogerm queue -->
   <VTU_XQ_AddToQueue>Add to queue</VTU_XQ_AddToQueue>

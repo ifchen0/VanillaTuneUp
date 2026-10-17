@@ -58,6 +58,14 @@
   <VTU_PinnedResources_Desc>在左上角依分類顯示的資源清單中，左鍵點擊資源即可釘選。釘選的資源在分類摺疊時仍會顯示，數量為 0 也照樣顯示。點兩下取消釘選。釘選對所有存檔通用。</VTU_PinnedResources_Desc>
   <VTU_PinnedResources_Pin>點擊釘選：分類摺疊時仍顯示，數量為 0 也顯示。</VTU_PinnedResources_Pin>
   <VTU_PinnedResources_Unpin>點兩下取消釘選。</VTU_PinnedResources_Unpin>
+  <VTU_NutrientPasteStock>營養膏庫存</VTU_NutrientPasteStock>
+  <VTU_NutrientPasteStock_Desc>營養膏合成機多一個「取得直到有 X 份」的目標，用法跟料理 bill 一樣。同一張地圖的合成機共用這個數字。廚師取出營養膏後放在合成機旁交給搬運工，跟 bill 設成「丟在地上」一樣。除了倉庫裡的，地上的營養膏也會算進目標，搬運工來之前不會越堆越多。</VTU_NutrientPasteStock_Desc>
+  <VTU_PS_GizmoLabel>營養膏庫存：{0}</VTU_PS_GizmoLabel>
+  <VTU_PS_GizmoOff>營養膏庫存：關閉</VTU_PS_GizmoOff>
+  <VTU_PS_GizmoDesc>廚師會取出營養膏放在合成機旁，直到有這個數量。這張地圖的所有合成機共用這個數字。</VTU_PS_GizmoDesc>
+  <VTU_PS_DialogTitle>取得營養膏直到有</VTU_PS_DialogTitle>
+  <VTU_PS_DialogNote>計算倉庫裡、搬運中與地上的營養膏（目前 {0}）。設為 0 即關閉。</VTU_PS_DialogNote>
+  <VTU_PS_Inspect>營養膏庫存：{0} / {1}</VTU_PS_Inspect>
 
   <!-- Xenogerm queue -->
   <VTU_XQ_AddToQueue>加入佇列</VTU_XQ_AddToQueue>

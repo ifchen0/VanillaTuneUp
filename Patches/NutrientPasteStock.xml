@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!-- The comp and job are added even while the module is off, so a saved target and a pawn saved mid-job still load. -->
+  <Operation Class="VanillaTuneUp.PatchOperationTuneUp">
+    <module>NutrientPasteStock</module>
+    <evenWhenOff>true</evenWhenOff>
+    <operations>
+      <li Class="PatchOperationAdd">
+        <success>Always</success>
+        <xpath>Defs/ThingDef[contains(thingClass, "NutrientPasteDispenser")]/comps</xpath>
+        <value>
+          <li>
+            <compClass>VanillaTuneUp.CompPasteStock</compClass>
+          </li>
+        </value>
+      </li>
+      <li Class="PatchOperationAdd">
+        <xpath>Defs</xpath>
+        <value>
+          <JobDef>
+            <defName>VTU_DispensePasteToStock</defName>
+            <driverClass>VanillaTuneUp.JobDriver_DispensePasteToStock</driverClass>
+            <reportString>dispensing nutrient paste to stock up.</reportString>
+            <allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+          </JobDef>
+        </value>
+      </li>
+    </operations>
+  </Operation>
+  <Operation Class="VanillaTuneUp.PatchOperationTuneUp">
+    <module>NutrientPasteStock</module>
+    <operations>
+      <li Class="PatchOperationAdd">
+        <xpath>Defs</xpath>
+        <value>
+          <!-- Below cooking bills (100), so real cooking still comes first. -->
+          <WorkGiverDef>
+            <defName>VTU_DispensePasteToStock</defName>
+            <label>dispense nutrient paste to stock up</label>
+            <giverClass>VanillaTuneUp.WorkGiver_DispensePasteToStock</giverClass>
+            <workType>Cooking</workType>
+            <priorityInType>40</priorityInType>
+            <verb>dispense</verb>
+            <gerund>dispensing</gerund>
+            <requiredCapacities>
+              <li>Manipulation</li>
+            </requiredCapacities>
+          </WorkGiverDef>
+        </value>
+      </li>
+    </operations>
+  </Operation>
+</Patch>

@@ -24,6 +24,7 @@ Small fixes and optional tweaks for vanilla RimWorld, collected in one mod.
 [*][b]Remove fog of war:[/b] reveals the map on generation or load, except when revealing it would trigger something. Rock and ore stay hidden until mined.
 [*][b]Faction icons in caravan lists:[/b] shows the faction icon of guests, prisoners and other non-colony pawns.
 [*][b]Pin resources:[/b] left-click a resource in the categorized resource list to keep it shown while its category is collapsed, even at 0.
+[*][b]Nutrient paste stock:[/b] a "dispense until you have X" target for nutrient paste dispensers, shared by the whole map.
 [*][b]Food policy for new prisoners:[/b] new prisoners get the food policy you pick, and go back to the default when recruited.
 [*][b]Hybrid children keep a matching xenotype[/b] (Biotech): a Hybrid child whose genes closely match one heritable xenotype gets that xenotype. Genes are never changed. Optional check for modified pawns.
 [*][b]Tell faction colors apart:[/b] on load, factions with nearly identical colors are nudged apart (adjustable, saved with the game).
