@@ -21,7 +21,7 @@ Small fixes and optional tweaks for vanilla RimWorld, collected in one mod.
 [h2]Tweaks[/h2][list]
 [*][b]Xenogerm queue[/b] (Biotech): a bill-style queue for the gene assembler (X times, until you have X, or forever).
 [*][b]Mute labor and birth sounds[/b] (Biotech).
-[*][b]Remove fog of war:[/b] reveals the map on generation or load, except when revealing it would trigger something. Rock and ore stay hidden until mined.
+[*][b]Remove fog of war:[/b] reveals the map on generation or load, except fogged areas where revealing would trigger something. Rock and ore stay hidden until mined.
 [*][b]Faction icons in caravan lists:[/b] shows the faction icon of guests, prisoners and other non-colony pawns.
 [*][b]Pin resources:[/b] left-click a resource in the categorized resource list to keep it shown while its category is collapsed, even at 0.
 [*][b]Nutrient paste stock:[/b] a "dispense until you have X" target for nutrient paste dispensers, shared by the whole map.
