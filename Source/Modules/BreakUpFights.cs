@@ -13,6 +13,7 @@ namespace VanillaTuneUp
     {
         public static JobDef VTU_BreakUpFight;
         public static InteractionDef VTU_BreakUpFightTalk;
+        public static InteractionDef VTU_JoinFight;
         public static ThoughtDef VTU_FightBrokenUp;
         public static ThoughtDef VTU_FightMeddled;
         public static ThoughtDef VTU_FightInterrupted;
@@ -24,6 +25,7 @@ namespace VanillaTuneUp
     /// <summary>
     /// Colonists who see a social fight nearby may step in: they walk up to one fighter, talk for a moment,
     /// and either end the fight or, now and then, get pulled into a new one with that fighter.
+    /// Rivals of a fighter and Bloodlust pawns may pile in on the fighter they like least instead.
     /// </summary>
     public static class BreakUpFights
     {
@@ -36,8 +38,10 @@ namespace VanillaTuneUp
         // Each mediator rolls on their own; more of them adds no bonus, only more rolls either way.
         private const int MaxMediators = 3;
         private const float SocialXp = 20f;
-        // Vanilla shows "rival" from -20 down; a colonist who is a rival of both fighters does not care.
+        // Vanilla shows "rival" from -20 down; a rival of a fighter joins the fight instead of breaking it up.
         private const float RivalOpinion = -20f;
+        // Pawns piling onto the fighters of one fight at a time.
+        private const int MaxJoiners = 2;
         // Interruptible in vanilla, but walking off to a fight makes no sense.
         private static readonly HashSet<string> NoStepInJobs = new HashSet<string> { "Flee", "FleeAndCower", "FleeAndCowerShort", "Hunt" };
         // Mediators carry their load along and set it down when done, except food on its way to someone else.
@@ -62,9 +66,9 @@ namespace VanillaTuneUp
                 return;
 
             System.Text.StringBuilder diag = Prefs.DevMode ? new System.Text.StringBuilder() : null;
-            Pawn mediator = null;
-            float bestDist = float.MaxValue;
-            int mediators = 0;
+            Pawn mediator = null, joiner = null, joinTarget = null;
+            float bestDist = float.MaxValue, bestJoinDist = float.MaxValue;
+            int mediators = 0, joiners = 0;
             foreach (Pawn p in a.Map.mapPawns.AllHumanlikeSpawned)
             {
                 if (p == a || p == b || !IsInGroup(p, a, b))
@@ -75,24 +79,54 @@ namespace VanillaTuneUp
                     mediators++;
                     continue;
                 }
-                string reason = RejectReason(p, a, b, out float dist);
-                if (reason == null && !Rand.Chance(StepInChancePerScan))
-                    reason = "roll failed";
-                if (reason == null && dist >= bestDist)
-                    reason = "someone closer";
-                if (reason != null)
+                Pawn piledOn = FightOf(p)?.otherPawn;
+                if (piledOn == a || piledOn == b)
                 {
-                    if (diag != null && reason != "too far" && DistanceTo(p, a, b) <= DiagRadius * DiagRadius)
-                        diag.Append($" {p.LabelShort}: {reason};");
+                    joiners++;
                     continue;
                 }
-                mediator = p;
-                bestDist = dist;
+                string reason = RejectReason(p, a, b, out float dist);
+                Pawn hated = null;
+                if (reason == null && WantsToJoin(p, a, b, out hated))
+                {
+                    // Vanilla social fight chance against the disliked fighter: opinion, Bloodlust, drink and so on.
+                    if (!CanFight(p, hated) || !Rand.Chance(p.interactions.SocialFightChance(BreakUpFightDefOf.VTU_JoinFight, hated)))
+                        reason = "join roll failed (" + hated.LabelShort + ")";
+                    else if (dist >= bestJoinDist)
+                        reason = "someone closer";
+                    else
+                    {
+                        joiner = p;
+                        joinTarget = hated;
+                        bestJoinDist = dist;
+                        continue;
+                    }
+                }
+                else
+                {
+                    reason ??= MediatorRejectReason(p);
+                    if (reason == null && !Rand.Chance(StepInChancePerScan))
+                        reason = "roll failed";
+                    if (reason == null && dist >= bestDist)
+                        reason = "someone closer";
+                    if (reason == null)
+                    {
+                        mediator = p;
+                        bestDist = dist;
+                        continue;
+                    }
+                }
+                if (diag != null && reason != "too far" && DistanceTo(p, a, b) <= DiagRadius * DiagRadius)
+                    diag.Append($" {p.LabelShort}: {reason};");
             }
+            if (joiners >= MaxJoiners)
+                joiner = null;
             if (mediators >= MaxMediators)
-                return;
-            if (diag != null && (diag.Length > 0 || mediator != null))
-                Log.Message($"[Vanilla Tune-Up] Fight {a.LabelShort} vs {b.LabelShort} (age {fight.Age}):{diag} sent: {mediator?.LabelShort ?? "none"}");
+                mediator = null;
+            if (diag != null && (diag.Length > 0 || mediator != null || joiner != null))
+                Log.Message($"[Vanilla Tune-Up] Fight {a.LabelShort} vs {b.LabelShort} (age {fight.Age}):{diag} sent: {mediator?.LabelShort ?? "none"}, joined: {joiner?.LabelShort ?? "none"}");
+            if (joiner != null)
+                Join(joiner, joinTarget);
             if (mediator == null)
                 return;
 
@@ -120,7 +154,42 @@ namespace VanillaTuneUp
         private static float DistanceTo(Pawn p, Pawn a, Pawn b) =>
             Mathf.Min(p.Position.DistanceToSquared(a.Position), p.Position.DistanceToSquared(b.Position));
 
-        // Null when the pawn can step in; otherwise why not.
+        // A rival of either fighter, or anyone with Bloodlust, would rather pile in on the fighter they like least.
+        private static bool WantsToJoin(Pawn p, Pawn a, Pawn b, out Pawn hated)
+        {
+            float opA = p.relations.OpinionOf(a);
+            float opB = p.relations.OpinionOf(b);
+            hated = opA <= opB ? a : b;
+            return Mathf.Min(opA, opB) <= RivalOpinion || p.story?.traits?.HasTrait(TraitDefOf.Bloodlust) == true;
+        }
+
+        // Vanilla rules from both sides, so prisoners and slaves still only fight their own kind.
+        private static bool CanFight(Pawn p, Pawn other) =>
+            p.interactions.SocialFightPossible(other) && other.interactions.SocialFightPossible(p);
+
+        // The joiner fights the disliked fighter, who keeps fighting their own opponent (see Patch_SocialFighting_ShouldStop).
+        private static void Join(Pawn joiner, Pawn target)
+        {
+            if (!joiner.mindState.mentalStateHandler.TryStartMentalState(MentalStateDefOf.SocialFighting, null, false, false, false, target))
+                return;
+            if (PawnUtility.ShouldSendNotificationAbout(joiner) || PawnUtility.ShouldSendNotificationAbout(target))
+            {
+                Messages.Message("VTU_BF_JoinedIn".Translate(joiner.LabelShort, target.LabelShort, joiner.Named("PAWN1"), target.Named("PAWN2")),
+                    joiner, MessageTypeDefOf.ThreatSmall);
+            }
+            TaleRecorder.RecordTale(TaleDefOf.SocialFight, joiner, target);
+        }
+
+        private static string MediatorRejectReason(Pawn p)
+        {
+            if (!p.health.capacities.CapableOf(PawnCapacityDefOf.Talking))
+                return "cannot talk";
+            if (p.skills == null || p.skills.GetSkill(SkillDefOf.Social).TotallyDisabled)
+                return "incapable of social";
+            return null;
+        }
+
+        // Null when the pawn could step in or join; otherwise why not.
         private static string RejectReason(Pawn p, Pawn a, Pawn b, out float dist)
         {
             dist = DistanceTo(p, a, b);
@@ -138,15 +207,8 @@ namespace VanillaTuneUp
                 return "player-ordered job " + cur.def.defName;
             if (cur != null && (!cur.def.casualInterruptible || NoStepInJobs.Contains(cur.def.defName)))
                 return "uninterruptible job " + cur.def.defName;
-            if (!p.health.capacities.CapableOf(PawnCapacityDefOf.Talking) || !p.health.capacities.CapableOf(PawnCapacityDefOf.Moving))
-                return "cannot talk or move";
-            if (p.skills == null || p.skills.GetSkill(SkillDefOf.Social).TotallyDisabled)
-                return "incapable of social";
-            // Bloodlust colonists enjoy the show.
-            if (p.story?.traits?.HasTrait(TraitDefOf.Bloodlust) == true)
-                return "bloodlust";
-            if (Mathf.Max(p.relations.OpinionOf(a), p.relations.OpinionOf(b)) <= RivalOpinion)
-                return "rival of both";
+            if (!p.health.capacities.CapableOf(PawnCapacityDefOf.Moving))
+                return "cannot move";
             if (!GenSight.LineOfSight(p.Position, a.Position, p.Map) && !GenSight.LineOfSight(p.Position, b.Position, p.Map))
                 return "no line of sight";
             if (!p.CanReach(a, PathEndMode.Touch, Danger.Some) && !p.CanReach(b, PathEndMode.Touch, Danger.Some))

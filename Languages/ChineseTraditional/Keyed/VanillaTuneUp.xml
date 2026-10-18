@@ -68,9 +68,10 @@
   <VTU_PS_DialogNote>計算倉庫裡、搬運中與地上的營養膏（目前 {0}）。設為 0 即關閉。</VTU_PS_DialogNote>
   <VTU_PS_Inspect>營養膏庫存：{0} / {1}</VTU_PS_Inspect>
   <VTU_BreakUpFights>勸架</VTU_BreakUpFights>
-  <VTU_BreakUpFights_Desc>殖民者看到附近有人打架時，可能會上前勸架；如果他跟雙方都是對手，或正在做不能中斷的工作，就不會介入。奴隸和囚犯只會勸同樣是奴隸或囚犯之間的打架。成功率看勸架者的社交技能，以及打架雙方對他的好感。勸架失敗時，打架的人可能會轉而跟勸架者打起來，機率沿用原版的打架公式；原本的對手不會停手，變成圍毆，直到那個人停手為止。打架的人會記得是誰勸開他們：多數人會感謝，但也有人覺得被多管閒事。</VTU_BreakUpFights_Desc>
+  <VTU_BreakUpFights_Desc>殖民者看到附近有人打架時，可能會上前勸架；正在做不能中斷的工作時不會介入。跟其中一方是對手，或有嗜血特性的人，則可能趁機加入，一起打他最討厭的那一方。奴隸和囚犯只會勸同樣是奴隸或囚犯之間的打架。成功率看勸架者的社交技能，以及打架雙方對他的好感。勸架失敗時，打架的人可能會轉而跟勸架者打起來，機率沿用原版的打架公式；原本的對手不會停手，變成圍毆，直到那個人停手為止。打架的人會記得是誰勸開他們：多數人會感謝，但也有人覺得被多管閒事。</VTU_BreakUpFights_Desc>
   <VTU_BF_Calmed>勸開了</VTU_BF_Calmed>
   <VTU_BF_Ignored>勸不動</VTU_BF_Ignored>
+  <VTU_BF_JoinedIn>{PAWN1_labelShort}趁機加入，一起圍毆{PAWN2_labelShort}！</VTU_BF_JoinedIn>
   <VTU_BF_DraggedIn>{PAWN1_labelShort}把氣出在來勸架的{PAWN2_labelShort}身上，兩人打了起來！</VTU_BF_DraggedIn>
 
   <!-- Xenogerm queue -->
