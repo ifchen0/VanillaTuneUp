@@ -24,7 +24,7 @@
   <VTU_PrisonerBleeding>先治療流血的囚犯再餵食</VTU_PrisonerBleeding>
   <VTU_PrisonerBleeding_Desc>囚犯仍在流血時，獄卒會略過餵食和送餐，改去做治療等其他工作。手動下令餵食仍然有效。</VTU_PrisonerBleeding_Desc>
   <VTU_PrisonerFoodDelivery>囚犯送餐跟得上</VTU_PrisonerFoodDelivery>
-  <VTU_PrisonerFoodDelivery_Desc>獄卒會在囚犯餓肚子之前送餐，而且一趟就帶足牢房裡所有快要用餐的囚犯的份量。牢房裡已有的食物會計入，而且同一間牢房一次只會有一名獄卒送餐，不會重複送；如果牢房裡已有囚犯進入飢餓狀態，會允許多名獄卒同時送餐來追上進度，人數以補足缺口所需的趟數為上限。</VTU_PrisonerFoodDelivery_Desc>
+  <VTU_PrisonerFoodDelivery_Desc>獄卒送餐的時機和原版相同，但一趟就帶足牢房裡當下所有需要用餐的囚犯的份量，食物不會放在牢房裡壞掉。牢房裡已有的食物會計入，而且同一間牢房一次只會有一名獄卒送餐，不會重複送；如果牢房裡已有囚犯進入非常飢餓狀態，會允許多名獄卒同時送餐來追上進度，人數以補足缺口所需的趟數為上限。</VTU_PrisonerFoodDelivery_Desc>
   <VTU_TranslationFixes>官方翻譯修正</VTU_TranslationFixes>
   <VTU_TranslationFixes_Desc>修正官方翻譯中無法用翻譯檔覆蓋的錯誤（目前為繁體中文）：機械軍團哨站任務文字顯示成「ERR:」加上 [標籤]，以及殘留英文的生成文字（朝聖者任務、審判指控、理念故事、藝術品描述）。</VTU_TranslationFixes_Desc>
   <VTU_XenogermQueue>異種細胞佇列</VTU_XenogermQueue>

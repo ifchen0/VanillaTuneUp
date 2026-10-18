@@ -57,17 +57,17 @@ namespace VanillaTuneUp
     }
 
     /// <summary>
-    /// Vanilla starts a food delivery only once a prisoner is already 2% from Hungry and brings one prisoner's worth
-    /// per trip, so a crowded prison always has some prisoners waiting hungry. Deliver earlier, and bring enough for
-    /// every prisoner in the cell who will soon want food, one delivery per cell at a time unless someone there is
-    /// already Hungry.
+    /// Vanilla brings one prisoner's worth per trip, so a crowded prison always has some prisoners waiting hungry.
+    /// Keep vanilla's trigger (2% from Hungry, so the food is eaten on arrival and does not sit and rot), but bring
+    /// enough for every prisoner in the cell at that point, one delivery per cell at a time unless someone there is
+    /// already UrgentlyHungry.
     /// </summary>
     [HarmonyPatchCategory("PrisonerFoodDelivery")]
     [HarmonyPatch(typeof(WorkGiver_Warden_DeliverFood), nameof(WorkGiver_Warden_DeliverFood.JobOnThing))]
     public static class Patch_WardenDeliverFood_WholeRoom
     {
-        // Prisoners start looking for food at FoodLevelPercentageWantEat (30% for humans); deliver before that.
-        private const float EarlyMargin = 0.1f;
+        // Same margin as vanilla WorkGiver_Warden_DeliverFood.
+        private const float HungryMargin = 0.02f;
 
         // A full stack of simple meals (10 x 0.9), what one warden usually carries per trip.
         private const float FullTripNutrition = 9f;
@@ -103,14 +103,15 @@ namespace VanillaTuneUp
                 return null;
 
             // Cheap room check before the expensive food search, the reverse of vanilla's order.
-            float shortfall = RoomShortfall(prisoner, room, out bool anyoneHungry);
+            float shortfall = RoomShortfall(prisoner, room, out bool anyoneUrgent);
             if (shortfall <= 0f)
                 return null;
 
             // One delivery per cell at a time: once it arrives, its food counts as supply for the next one.
-            // A prisoner already Hungry means single trips are falling behind (a very large cell), so allow as many
-            // as the shortfall needs full trips; food on the way is not counted, so this caps the overdelivery.
-            int allowed = anyoneHungry ? Mathf.CeilToInt(shortfall / FullTripNutrition) : 1;
+            // A prisoner already UrgentlyHungry means single trips are falling behind (a very large cell), so allow as
+            // many as the shortfall needs full trips; food on the way is not counted, so this caps the overdelivery.
+            // Plain Hungry is reached seconds after the trigger, so it cannot tell a slow cell from a normal one.
+            int allowed = anyoneUrgent ? Mathf.CeilToInt(shortfall / FullTripNutrition) : 1;
             if (DeliveriesUnderway(room, warden.Map) >= allowed)
                 return null;
 
@@ -144,13 +145,13 @@ namespace VanillaTuneUp
         private static bool WantsFoodSoon(Pawn p)
         {
             Need_Food food = p.needs?.food;
-            return food != null && food.CurLevelPercentage < p.RaceProps.FoodLevelPercentageWantEat + EarlyMargin;
+            return food != null && food.CurLevelPercentage < food.PercentageThreshHungry + HungryMargin;
         }
 
-        /// <summary>Nutrition the cell still lacks for prisoners who will soon want food.</summary>
-        private static float RoomShortfall(Pawn prisoner, Room room, out bool anyoneHungry)
+        /// <summary>Nutrition the cell still lacks for prisoners who want food now.</summary>
+        private static float RoomShortfall(Pawn prisoner, Room room, out bool anyoneUrgent)
         {
-            anyoneHungry = false;
+            anyoneUrgent = false;
             float need = 0f;
             float supply = 0f;
             List<Region> regions = room.Regions;
@@ -174,8 +175,8 @@ namespace VanillaTuneUp
                     if (held != null && p.WillEat(held))
                         continue;
                     need += p.needs.food.NutritionWanted;
-                    if (p.needs.food.CurCategory >= HungerCategory.Hungry)
-                        anyoneHungry = true;
+                    if (p.needs.food.CurCategory >= HungerCategory.UrgentlyHungry)
+                        anyoneUrgent = true;
                 }
             }
             return need - supply;
