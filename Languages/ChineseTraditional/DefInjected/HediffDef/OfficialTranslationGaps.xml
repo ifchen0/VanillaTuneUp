@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- Missing from the official Traditional Chinese translation. -->
+  <Decayed.injuryProps.destroyedLabel>受侵蝕</Decayed.injuryProps.destroyedLabel>
+</LanguageData>

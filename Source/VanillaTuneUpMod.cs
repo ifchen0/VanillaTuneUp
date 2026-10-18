@@ -67,10 +67,10 @@ namespace VanillaTuneUp
             new TuneUpModule("PrisonerFoodPolicy", false, "ifchen0.prisonpatch"),
             new TuneUpModule("PrisonerBleeding", false, "ifchen0.prisonpatch"),
             new TuneUpModule("PrisonerFoodDelivery", false, null),
-            new TuneUpModule("QuestFactionRules", false, null)
+            new TuneUpModule("TranslationFixes", false, null)
             {
                 // Translations are already injected by the time patches are applied.
-                OnActivated = QuestFactionRules.Apply
+                OnActivated = TranslationFixes.Apply
             },
             new TuneUpModule("XenogermQueue", true, "ifchen0.xenogermqueue")
             {

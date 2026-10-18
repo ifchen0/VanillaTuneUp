@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- Missing from the official Traditional Chinese translation. Keyed entries from mods load later and replace them. -->
+  <Red>紅色</Red>
+  <Green>綠色</Green>
+  <Blue>藍色</Blue>
+</LanguageData>

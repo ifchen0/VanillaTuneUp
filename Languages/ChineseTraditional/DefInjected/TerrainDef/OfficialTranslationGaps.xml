@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- Missing from the official Traditional Chinese translation. -->
+  <AncientBridge.label>遠古橋</AncientBridge.label>
+  <AncientBridge.description>由木頭建成的遠古橋。你可以在橋上方蓋較輕的建築，但請注意——橋很脆弱。如果橋塌陷了，上方的建築物也無法倖免。</AncientBridge.description>
+</LanguageData>

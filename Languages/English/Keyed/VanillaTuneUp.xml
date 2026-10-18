@@ -25,8 +25,8 @@
   <VTU_PrisonerBleeding_Desc>Wardens skip feeding and food delivery while a prisoner is still bleeding, so they can move on to tending. Manual feeding orders still work.</VTU_PrisonerBleeding_Desc>
   <VTU_PrisonerFoodDelivery>Prisoner food delivery keeps up</VTU_PrisonerFoodDelivery>
   <VTU_PrisonerFoodDelivery_Desc>Wardens bring food before prisoners get hungry, and one trip brings enough for everyone in the cell who will soon need it. Food already in the cell is counted, and only one warden delivers to a cell at a time, so wardens do not deliver twice. If a prisoner in the cell is already hungry, more wardens may deliver at once to catch up, as many as the missing food needs full trips.</VTU_PrisonerFoodDelivery_Desc>
-  <VTU_QuestFactionRules>Quest text in translations</VTU_QuestFactionRules>
-  <VTU_QuestFactionRules_Desc>Fixes quest names and descriptions shown as "ERR:" with raw [tags] when a translation misspells a faction in its quest text (Traditional Chinese: mech cluster outposts with a climate adjuster, weather controller or similar).</VTU_QuestFactionRules_Desc>
+  <VTU_TranslationFixes>Official translation fixes</VTU_TranslationFixes>
+  <VTU_TranslationFixes_Desc>Fixes mistakes in the official translations that a translation file cannot override (currently Traditional Chinese): quest text shown as "ERR:" with raw [tags] for mech cluster outposts, and generated text left in English (pilgrims quest, trial accusations, ideoligion stories, art descriptions).</VTU_TranslationFixes_Desc>
   <VTU_XenogermQueue>Xenogerm queue</VTU_XenogermQueue>
   <VTU_XenogermQueue_Desc>Adds a bill-style queue to the gene assembler: do X times, until you have X, or forever. Skipping an entry keeps its progress.</VTU_XenogermQueue_Desc>
   <VTU_DragReorder>Drag to reorder</VTU_DragReorder>
