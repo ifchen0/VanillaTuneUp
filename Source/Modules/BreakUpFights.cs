@@ -139,17 +139,11 @@ namespace VanillaTuneUp
             mediator.jobs.StartJob(job, JobCondition.InterruptForced, resumeCurJobAfterwards: resume, keepCarryingThingOverride: true);
         }
 
-        // Free colonists step into any fight; slaves and prisoners only into fights among their own kind.
-        private static bool IsInGroup(Pawn p, Pawn a, Pawn b)
-        {
-            if (p.IsFreeNonSlaveColonist)
-                return true;
-            if (p.IsSlaveOfColony)
-                return a.IsSlaveOfColony && b.IsSlaveOfColony;
-            if (p.IsPrisonerOfColony)
-                return a.IsPrisonerOfColony && b.IsPrisonerOfColony;
-            return false;
-        }
+        // Anyone hostile to neither fighter may step in, whatever their standing. Who may actually fight whom
+        // (prisoners and slaves only their own kind) is left to the vanilla checks in CanFight and TryDragIn,
+        // and prison doors keep prisoners in their cell. Wild and non-human pawns stay out.
+        private static bool IsInGroup(Pawn p, Pawn a, Pawn b) =>
+            p.Faction != null && !p.IsSubhuman && !p.HostileTo(a) && !p.HostileTo(b);
 
         private static float DistanceTo(Pawn p, Pawn a, Pawn b) =>
             Mathf.Min(p.Position.DistanceToSquared(a.Position), p.Position.DistanceToSquared(b.Position));
@@ -197,7 +191,8 @@ namespace VanillaTuneUp
                 return "too far";
             if (p.Downed || p.Drafted || p.InMentalState || !p.Awake() || p.IsBurning())
                 return "downed, drafted, asleep or in a mental state";
-            if (p.GetLord() != null)
+            // Visitors and raiders always belong to a lord; for the colony's own pawns it means a party or ritual.
+            if (p.Faction != null && p.Faction.IsPlayer && p.GetLord() != null)
                 return "in a group activity";
             Job cur = p.CurJob;
             Thing carried = p.carryTracker.CarriedThing;
