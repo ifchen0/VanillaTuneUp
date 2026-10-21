@@ -84,6 +84,7 @@ namespace VanillaTuneUp
             },
             new TuneUpModule("RemoveFogOfWar", true, null),
             new TuneUpModule("CaravanFactionIcon", true, null),
+            new TuneUpModule("CaravanEncounterNoJump", true, null),
             new TuneUpModule("PinnedResources", true, null),
             new TuneUpModule("NutrientPasteStock", true, null),
             new TuneUpModule("BreakUpFights", true, null) { IsExperimental = true },

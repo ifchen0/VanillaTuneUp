@@ -55,6 +55,8 @@
   <VTU_RemoveFogOfWar_Desc>地圖產生或讀檔時揭開整張地圖。揭開會觸發事件的迷霧區塊（古代危險等沉睡的敵人、任務或揭露訊號、實體圖鑑或隱藏物品的發現）維持迷霧，照 vanilla 進行；地圖其餘部分照常揭開。岩石、礦脈與崩落的岩石維持隱藏，直到開採到才揭開；迷宮這類口袋地圖一律不揭開。</VTU_RemoveFogOfWar_Desc>
   <VTU_CaravanFactionIcon>旅隊清單顯示陣營圖示</VTU_CaravanFactionIcon>
   <VTU_CaravanFactionIcon_Desc>組建旅隊、重組旅隊與運輸艙裝載清單中，不屬於你陣營的角色（例如客人、囚犯）會顯示所屬陣營的圖示。滑鼠移上去顯示陣營名稱，點擊開啟陣營資訊卡。</VTU_CaravanFactionIcon_Desc>
+  <VTU_CaravanEncounterNoJump>旅隊遭遇不切換到世界地圖</VTU_CaravanEncounterNoJump>
+  <VTU_CaravanEncounterNoJump_Desc>旅隊遇到事件時（例如遇到其他旅隊、被敵對旅隊勒索，或 mod 事件如 Real Ruins 發現遺跡），對話框直接開啟，不會把畫面從殖民地地圖切到世界地圖。選擇進入遭遇地圖時仍會切過去。</VTU_CaravanEncounterNoJump_Desc>
   <VTU_PinnedResources>資源清單釘選</VTU_PinnedResources>
   <VTU_PinnedResources_Desc>在左上角依分類顯示的資源清單中，左鍵點擊資源即可釘選。釘選的資源在分類摺疊時仍會顯示，數量為 0 也照樣顯示。點兩下取消釘選。釘選對所有存檔通用。</VTU_PinnedResources_Desc>
   <VTU_PinnedResources_Pin>點擊釘選：分類摺疊時仍顯示，數量為 0 也顯示。</VTU_PinnedResources_Pin>
