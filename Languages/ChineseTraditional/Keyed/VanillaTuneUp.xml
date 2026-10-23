@@ -7,6 +7,7 @@
   <VTU_Failed>無法套用（詳見記錄），本次遊戲中此項目已關閉。</VTU_Failed>
   <VTU_ProvidedByLegacy>（已略過：獨立版 mod「{0}」已提供此功能）</VTU_ProvidedByLegacy>
   <VTU_RequiresBiotech>（需要 Biotech）</VTU_RequiresBiotech>
+  <VTU_RequiresSteam>（需要Steam版）</VTU_RequiresSteam>
   <VTU_Experimental>（實驗性）</VTU_Experimental>
 
   <VTU_FactionLeader>補回遺失的派系領袖</VTU_FactionLeader>
@@ -69,6 +70,15 @@
   <VTU_PS_DialogTitle>取得營養膏直到有</VTU_PS_DialogTitle>
   <VTU_PS_DialogNote>計算倉庫裡、搬運中與地上的營養膏（目前 {0}）。設為 0 即關閉。</VTU_PS_DialogNote>
   <VTU_PS_Inspect>營養膏庫存：{0} / {1}</VTU_PS_Inspect>
+  <VTU_ModUpdateNotes>模組更新說明</VTU_ModUpdateNotes>
+  <VTU_ModUpdateNotes_Desc>主選單左上角的方框（翻譯人員名單）改為列出已啟用的Steam工作坊模組，最近更新的排在最前面。上次查看後有更新的模組會標亮，點選即可看工作坊上的更新說明。適用所有模組；第一次啟用時全部視為已讀。</VTU_ModUpdateNotes_Desc>
+  <VTU_MU_Title>模組更新（{0}個新的）</VTU_MU_Title>
+  <VTU_MU_MarkAllRead>全部標記為已讀</VTU_MU_MarkAllRead>
+  <VTU_MU_OpenChangeLog>開啟更新說明頁面</VTU_MU_OpenChangeLog>
+  <VTU_MU_Loading>正在載入更新說明...</VTU_MU_Loading>
+  <VTU_MU_Failed>無法載入更新說明，請用上方按鈕開啟頁面。</VTU_MU_Failed>
+  <VTU_MU_NoNotes>工作坊更新說明頁面沒有這個版本的記錄。</VTU_MU_NoNotes>
+  <VTU_MU_EmptyNote>（無說明）</VTU_MU_EmptyNote>
   <VTU_BreakUpFights>勸架</VTU_BreakUpFights>
   <VTU_BreakUpFights_Desc>看到附近有人打架、而且跟雙方都不敵對的人（殖民者、訪客，甚至敵人自己人之間），可能會上前勸架；正在做不能中斷的工作時不會介入。跟其中一方是對手，或有嗜血特性的人，則可能趁機加入，一起打他最討厭的那一方。成功率看勸架者的社交技能，以及打架雙方對他的好感。勸架失敗時，打架的人可能會轉而跟勸架者打起來，機率沿用原版的打架公式；原本的對手不會停手，變成圍毆，直到那個人停手為止。打架的人會記得是誰勸開他們：多數人會感謝，但也有人覺得被多管閒事。</VTU_BreakUpFights_Desc>
   <VTU_BF_Calmed>勸開了</VTU_BF_Calmed>

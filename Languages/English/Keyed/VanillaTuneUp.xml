@@ -7,6 +7,7 @@
   <VTU_Failed>Could not be applied (see the log); this module is off for this session.</VTU_Failed>
   <VTU_ProvidedByLegacy>(skipped: already provided by the standalone mod "{0}")</VTU_ProvidedByLegacy>
   <VTU_RequiresBiotech>(requires Biotech)</VTU_RequiresBiotech>
+  <VTU_RequiresSteam>(requires the Steam version)</VTU_RequiresSteam>
   <VTU_Experimental>(experimental)</VTU_Experimental>
 
   <VTU_FactionLeader>Restore missing faction leaders</VTU_FactionLeader>
@@ -69,6 +70,15 @@
   <VTU_PS_DialogTitle>Dispense until you have</VTU_PS_DialogTitle>
   <VTU_PS_DialogNote>Counts paste in storage, being carried and on the ground (now {0}). 0 turns it off.</VTU_PS_DialogNote>
   <VTU_PS_Inspect>Paste stock: {0} / {1}</VTU_PS_Inspect>
+  <VTU_ModUpdateNotes>Mod update notes</VTU_ModUpdateNotes>
+  <VTU_ModUpdateNotes_Desc>The main menu's top-left box (translation credits) becomes a list of your active Steam Workshop mods, most recently updated first. Mods updated since you last opened them are highlighted; click one to read its change notes from the Workshop. Works for every mod. On the first run every mod counts as read.</VTU_ModUpdateNotes_Desc>
+  <VTU_MU_Title>Mod updates ({0} new)</VTU_MU_Title>
+  <VTU_MU_MarkAllRead>Mark all as read</VTU_MU_MarkAllRead>
+  <VTU_MU_OpenChangeLog>Open change notes page</VTU_MU_OpenChangeLog>
+  <VTU_MU_Loading>Loading change notes...</VTU_MU_Loading>
+  <VTU_MU_Failed>Could not load the change notes. Use the button above to open the page.</VTU_MU_Failed>
+  <VTU_MU_NoNotes>The Workshop change notes page has no entry for this version.</VTU_MU_NoNotes>
+  <VTU_MU_EmptyNote>(no notes)</VTU_MU_EmptyNote>
   <VTU_BreakUpFights>Break up social fights</VTU_BreakUpFights>
   <VTU_BreakUpFights_Desc>Anyone who sees a social fight nearby and is not hostile to either fighter (colonists, visitors, even raiders among themselves) may step in and try to stop it, unless they are busy with work that cannot be interrupted. A rival of either fighter, or anyone with Bloodlust, may instead join in against the fighter they like least. Success depends on their Social skill and on how much the fighters like them. When it fails, the fighter may turn on them, using the vanilla social fight formula, and the old opponent keeps going: a brawl that lasts until that fighter stops. Fighters remember who broke up their fight: most are grateful, but some resent it.</VTU_BreakUpFights_Desc>
   <VTU_BF_Calmed>Calmed them down</VTU_BF_Calmed>

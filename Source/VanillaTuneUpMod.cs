@@ -87,6 +87,12 @@ namespace VanillaTuneUp
             new TuneUpModule("CaravanEncounterNoJump", true, null),
             new TuneUpModule("PinnedResources", true, null),
             new TuneUpModule("NutrientPasteStock", true, null),
+            new TuneUpModule("ModUpdateNotes", true, null)
+            {
+                IsAvailable = () => Verse.Steam.SteamManager.Initialized,
+                UnavailableKey = "VTU_RequiresSteam",
+                OnActivated = ModUpdateNotes.Scan
+            },
             new TuneUpModule("BreakUpFights", true, null) { IsExperimental = true },
             // Modules with extra settings go last, the longest at the end, so plain toggles stay near the top.
             new TuneUpModule("PrisonerDefaultFoodPolicy", true, null)
@@ -133,6 +139,8 @@ namespace VanillaTuneUp
         // Resource readout categories left open; only used once the player has toggled one.
         public bool resourceCategoriesRecorded;
         public List<string> openResourceCategories = new List<string>();
+        // Workshop file id -> Steam install time of the version the player last marked as read.
+        public Dictionary<string, int> seenModUpdates = new Dictionary<string, int>();
 
         // Compact colonist bar: what stays visible while the bar is collapsed.
         public bool compactBarShowLabels = true;
@@ -220,6 +228,7 @@ namespace VanillaTuneUp
             Scribe_Collections.Look(ref pinnedResources, "pinnedResources", LookMode.Value);
             Scribe_Values.Look(ref resourceCategoriesRecorded, "resourceCategoriesRecorded", false);
             Scribe_Collections.Look(ref openResourceCategories, "openResourceCategories", LookMode.Value);
+            Scribe_Collections.Look(ref seenModUpdates, "seenModUpdates", LookMode.Value, LookMode.Value);
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
                 overrides ??= new Dictionary<string, bool>();
@@ -227,6 +236,7 @@ namespace VanillaTuneUp
                 compactBarRaceZoom ??= new Dictionary<string, float>();
                 pinnedResources ??= new List<string>();
                 openResourceCategories ??= new List<string>();
+                seenModUpdates ??= new Dictionary<string, int>();
                 dragReorder ??= new DragReorderSettings();
             }
         }
