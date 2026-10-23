@@ -49,8 +49,6 @@ namespace VanillaTuneUp
         {
             "FeedPatient", "DeliverFood", "BottleFeedBaby", "Breastfeed", "BreastfeedCarryToMom"
         };
-        // TEMP diagnostics: dev mode logs why pawns this close did not step in.
-        private const float DiagRadius = 20f;
 
         public static MentalState_SocialFighting FightOf(Pawn pawn) =>
             pawn != null && pawn.Spawned ? pawn.MentalState as MentalState_SocialFighting : null;
@@ -65,7 +63,6 @@ namespace VanillaTuneUp
             if (fight.Age < MinFightAge || !a.Spawned || b.Map != a.Map)
                 return;
 
-            System.Text.StringBuilder diag = Prefs.DevMode ? new System.Text.StringBuilder() : null;
             Pawn mediator = null, joiner = null, joinTarget = null;
             float bestDist = float.MaxValue, bestJoinDist = float.MaxValue;
             int mediators = 0, joiners = 0;
@@ -91,7 +88,7 @@ namespace VanillaTuneUp
                 {
                     // Vanilla social fight chance against the disliked fighter: opinion, Bloodlust, drink and so on.
                     if (!CanFight(p, hated) || !Rand.Chance(p.interactions.SocialFightChance(BreakUpFightDefOf.VTU_JoinFight, hated)))
-                        reason = "join roll failed (" + hated.LabelShort + ")";
+                        reason = "join roll failed";
                     else if (dist >= bestJoinDist)
                         reason = "someone closer";
                     else
@@ -116,15 +113,11 @@ namespace VanillaTuneUp
                         continue;
                     }
                 }
-                if (diag != null && reason != "too far" && DistanceTo(p, a, b) <= DiagRadius * DiagRadius)
-                    diag.Append($" {p.LabelShort}: {reason};");
             }
             if (joiners >= MaxJoiners)
                 joiner = null;
             if (mediators >= MaxMediators)
                 mediator = null;
-            if (diag != null && (diag.Length > 0 || mediator != null || joiner != null))
-                Log.Message($"[Vanilla Tune-Up] Fight {a.LabelShort} vs {b.LabelShort} (age {fight.Age}):{diag} sent: {mediator?.LabelShort ?? "none"}, joined: {joiner?.LabelShort ?? "none"}");
             if (joiner != null)
                 Join(joiner, joinTarget);
             if (mediator == null)
