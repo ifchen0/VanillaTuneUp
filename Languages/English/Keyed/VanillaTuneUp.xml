@@ -34,6 +34,10 @@
   <VTU_DragReorder_Desc>Hold the right mouse button and drag to reorder the bottom bar, the architect categories and the buildings inside them.</VTU_DragReorder_Desc>
   <VTU_MuteBirthSounds>Mute labor and birth sounds</VTU_MuteBirthSounds>
   <VTU_MuteBirthSounds_Desc>Mutes the labor (early/late) and birth sounds. Other baby sounds are unchanged.</VTU_MuteBirthSounds_Desc>
+  <VTU_HuntGuard>Guards for dangerous hunts</VTU_HuntGuard>
+  <VTU_HuntGuard_Desc>When a hunter goes after an animal whose revenge chance on harm (for that hunter, at shooting range) reaches the value below, the nearest free colonist with a ranged weapon and hostility response set to attack comes along as a guard: it follows the hunter and shoots anything that attacks them. The hunter waits at the shooting spot until the guard is close, for up to 30 seconds. Guards are only picked from colonists who are not hungry, tired, hurt or busy with work that cannot be interrupted, and they go back to normal work once the animal is down. Hunts you order by hand are left alone.</VTU_HuntGuard_Desc>
+  <VTU_HuntGuardMinChance>Minimum revenge chance: {0}%</VTU_HuntGuardMinChance>
+  <VTU_HuntGuardMinChance_Desc>Per-hit chance that the animal attacks back, as vanilla computes it for the hunter: the species value, raised at close range and lowered by hunting stealth. Vanilla species values are 10% (muffalo, boomalope...), 50% (bears, big cats, insects...) and 100% (thrumbos, wolves, wargs...).</VTU_HuntGuardMinChance_Desc>
   <VTU_PrisonerDefaultFoodPolicy>Food policy for new prisoners</VTU_PrisonerDefaultFoodPolicy>
   <VTU_PrisonerDefaultFoodPolicy_Desc>Pawns get the food policy chosen below when they become your prisoners, so a prisoner-only policy no longer has to be set by hand for each capture. A recruited or released prisoner still on that policy goes back to the default policy. The policy is matched by name, so use the same name in every save.</VTU_PrisonerDefaultFoodPolicy_Desc>
   <VTU_PrisonerPolicyLabel>Policy for new prisoners</VTU_PrisonerPolicyLabel>

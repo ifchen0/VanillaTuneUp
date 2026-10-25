@@ -100,6 +100,10 @@ namespace VanillaTuneUp
             {
                 DrawSettings = PrisonerDefaultFoodPolicy.DrawSettings
             },
+            new TuneUpModule("HuntGuard", true, null)
+            {
+                DrawSettings = HuntGuard.DrawSettings
+            },
             new TuneUpModule("HybridXenotype", true, null)
             {
                 IsAvailable = () => ModsConfig.BiotechActive,
@@ -136,6 +140,7 @@ namespace VanillaTuneUp
         // Food policy name given to new prisoners; empty leaves vanilla behavior.
         public string prisonerFoodPolicy = "";
         public float factionColorMinDistance = FactionColors.DefaultMinDistance;
+        public float huntGuardMinRevengeChance = HuntGuard.DefaultMinRevengeChance;
         public List<string> pinnedResources = new List<string>();
         // Resource readout categories left open; only used once the player has toggled one.
         public bool resourceCategoriesRecorded;
@@ -217,6 +222,7 @@ namespace VanillaTuneUp
             Scribe_Values.Look(ref hybridIncludeXenogenes, "hybridIncludeXenogenes", false);
             Scribe_Values.Look(ref prisonerFoodPolicy, "prisonerFoodPolicy", "");
             Scribe_Values.Look(ref factionColorMinDistance, "factionColorMinDistance", FactionColors.DefaultMinDistance);
+            Scribe_Values.Look(ref huntGuardMinRevengeChance, "huntGuardMinRevengeChance", HuntGuard.DefaultMinRevengeChance);
             Scribe_Values.Look(ref compactBarShowLabels, "compactBarShowLabels", true);
             Scribe_Values.Look(ref compactBarShowIcons, "compactBarShowIcons", true);
             Scribe_Values.Look(ref compactBarShowWeapons, "compactBarShowWeapons", false);

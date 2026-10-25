@@ -30,6 +30,7 @@ Tweaks:
 - Break up social fights: anyone who sees a social fight nearby may step in to stop it.
 - Short names on the map: long names under pawns are cut short; hover or select the pawn to see the full name.
 - Food policy for new prisoners: new prisoners get the food policy you pick.
+- Guards for dangerous hunts: hunting an animal likely to fight back calls a nearby armed colonist along as a guard.
 - Hybrid children keep a matching xenotype: a Hybrid child whose genes closely match one heritable xenotype gets that xenotype (Biotech).
 - Tell faction colors apart: factions with nearly identical colors are nudged apart on load.
 - Drag to reorder: right-drag to reorder the bottom bar, architect categories, buildings and command buttons.

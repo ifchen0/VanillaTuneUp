@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <Operation Class="VanillaTuneUp.PatchOperationTuneUp">
+    <module>HuntGuard</module>
+    <operations>
+      <li Class="PatchOperationAdd">
+        <xpath>Defs</xpath>
+        <value>
+          <!-- Same shape as the obedient animal's follow-and-defend branch; above needs and work, below orders and duties. -->
+          <ThinkTreeDef>
+            <defName>VTU_HuntGuard</defName>
+            <insertTag>Humanlike_PostDuty</insertTag>
+            <thinkRoot Class="VanillaTuneUp.ThinkNode_ConditionalHuntGuard">
+              <subNodes>
+                <li Class="VanillaTuneUp.JobGiver_HuntGuardDefend">
+                  <attackMeleeThreatEvenIfNotHostile>true</attackMeleeThreatEvenIfNotHostile>
+                </li>
+                <li Class="VanillaTuneUp.JobGiver_HuntGuardFollow" />
+              </subNodes>
+            </thinkRoot>
+          </ThinkTreeDef>
+        </value>
+      </li>
+    </operations>
+  </Operation>
+</Patch>

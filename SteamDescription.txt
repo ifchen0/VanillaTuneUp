@@ -30,6 +30,7 @@ Small fixes and optional tweaks for vanilla RimWorld, collected in one mod.
 [*][b]Break up social fights:[/b] anyone who sees a social fight nearby and is not hostile to the fighters may step in to stop it. Social skill helps; a failed attempt can turn it into a brawl with the mediator. Rivals and Bloodlust pawns may join in instead. Fighters remember who stepped in.
 [*][b]Short names on the map:[/b] long names under pawns are cut to about one and a half cells wide, following the zoom, so they do not cover their neighbours. Hover over or select the pawn to see the full name.
 [*][b]Food policy for new prisoners:[/b] new prisoners get the food policy you pick, and go back to the default when recruited.
+[*][b]Guards for dangerous hunts:[/b] when the animal's revenge chance reaches your threshold, the nearest free colonist with a ranged weapon and hostility response set to attack comes along, and the hunter waits for them before the first shot (up to 30 seconds). The guard shoots anything that attacks the hunter and goes back to work once the animal is down.
 [*][b]Hybrid children keep a matching xenotype[/b] (Biotech): a Hybrid child whose genes closely match one heritable xenotype gets that xenotype. Genes are never changed. Optional check for modified pawns.
 [*][b]Tell faction colors apart:[/b] on load, factions with nearly identical colors are nudged apart (adjustable, saved with the game).
 [*][b]Drag to reorder:[/b] right-drag to reorder the bottom bar, architect categories, buildings and command buttons.
