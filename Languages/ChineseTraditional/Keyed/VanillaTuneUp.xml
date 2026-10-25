@@ -85,6 +85,8 @@
   <VTU_BF_Ignored>勸不動</VTU_BF_Ignored>
   <VTU_BF_JoinedIn>{PAWN1_labelShort}趁機加入，一起圍毆{PAWN2_labelShort}！</VTU_BF_JoinedIn>
   <VTU_BF_DraggedIn>{PAWN1_labelShort}把氣出在來勸架的{PAWN2_labelShort}身上，兩人打了起來！</VTU_BF_DraggedIn>
+  <VTU_ShortMapNames>地圖上的短名字</VTU_ShortMapNames>
+  <VTU_ShortMapNames_Desc>地圖上 pawn 底下的名字超過約一格半寬（跟著地圖縮放）就截斷，長名字不會蓋住旁邊的人。滑鼠移到 pawn 或名字上，或選取 pawn 時，顯示全名。</VTU_ShortMapNames_Desc>
 
   <!-- Xenogerm queue -->
   <VTU_XQ_AddToQueue>加入佇列</VTU_XQ_AddToQueue>

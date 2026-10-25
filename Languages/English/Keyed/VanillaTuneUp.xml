@@ -85,6 +85,8 @@
   <VTU_BF_Ignored>Ignored</VTU_BF_Ignored>
   <VTU_BF_JoinedIn>{PAWN1_labelShort} jumped into the fight to gang up on {PAWN2_labelShort}!</VTU_BF_JoinedIn>
   <VTU_BF_DraggedIn>{PAWN1_labelShort} turned on {PAWN2_labelShort}, who tried to break up the fight!</VTU_BF_DraggedIn>
+  <VTU_ShortMapNames>Short names on the map</VTU_ShortMapNames>
+  <VTU_ShortMapNames_Desc>Names under pawns on the map are cut to about one and a half cells wide (following the zoom) so long names do not cover their neighbours. The full name shows while the mouse is over the pawn or its name, or while the pawn is selected.</VTU_ShortMapNames_Desc>
 
   <!-- Xenogerm queue -->
   <VTU_XQ_AddToQueue>Add to queue</VTU_XQ_AddToQueue>
