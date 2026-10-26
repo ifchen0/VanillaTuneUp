@@ -24,6 +24,7 @@ namespace VanillaTuneUp
         {
             QuestFactionRules.Apply();
             UntranslatedRules.Apply();
+            StrayRecoveryMessages.Apply();
         }
 
         /// <summary>Rewrites every rule in the pack with <paramref name="rewrite"/>; returns how many changed.</summary>
@@ -207,6 +208,38 @@ namespace VanillaTuneUp
             }
             if (fixedCount > 0)
                 Log.Message($"[Vanilla Tune-Up] Fixed {fixedCount} untranslated rule(s) in the official translation.");
+        }
+    }
+
+    /// <summary>
+    /// Recovery messages an official translation added where the English def has none. Traditional Chinese gives
+    /// social fighting "{0}和{1}不再爭吵了。", but MentalState.PostEnd passes only the pawn itself, so every fighter
+    /// gets an extra "X和X" message next to the real one (MessageNoLongerSocialFighting). Cleared only while the
+    /// shipped text is unchanged.
+    /// </summary>
+    public static class StrayRecoveryMessages
+    {
+        private static readonly Dictionary<string, string> Messages = new Dictionary<string, string>
+        {
+            { "SocialFighting", "{0}和{1}不再爭吵了。" },
+        };
+
+        public static void Apply()
+        {
+            string language = LanguageDatabase.activeLanguage?.folderName;
+            if (language == null || !language.StartsWith("ChineseTraditional"))
+                return;
+            int fixedCount = 0;
+            foreach (KeyValuePair<string, string> entry in Messages)
+            {
+                MentalStateDef def = DefDatabase<MentalStateDef>.GetNamedSilentFail(entry.Key);
+                if (def == null || def.recoveryMessage != entry.Value)
+                    continue;
+                def.recoveryMessage = null;
+                fixedCount++;
+            }
+            if (fixedCount > 0)
+                Log.Message($"[Vanilla Tune-Up] Removed {fixedCount} stray recovery message(s) from the official translation.");
         }
     }
 

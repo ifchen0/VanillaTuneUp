@@ -15,7 +15,7 @@ Small fixes and optional tweaks for vanilla RimWorld, collected in one mod.
 [*][b]Food policy during mental breaks:[/b] wardens no longer bring restricted food to a prisoner having a mental break.
 [*][b]Tend bleeding prisoners first:[/b] wardens skip feeding while a prisoner is bleeding, so tending comes first.
 [*][b]Prisoner food delivery keeps up:[/b] when prisoners get hungry, one trip brings enough for everyone in the cell who needs food.
-[*][b]Official translation fixes:[/b] fixes quest text shown as [i]ERR:[/i] and generated text left in English that a translation file cannot override (currently Traditional Chinese).
+[*][b]Official translation fixes:[/b] fixes quest text shown as [i]ERR:[/i] and generated text left in English that a translation file cannot override, and a duplicate message after social fights (currently Traditional Chinese).
 [/list]
 
 [h2]Tweaks[/h2][list]

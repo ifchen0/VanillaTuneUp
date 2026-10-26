@@ -16,7 +16,7 @@ Fixes:
 - Food policy during mental breaks: wardens no longer bring restricted food to a prisoner having a mental break.
 - Tend bleeding prisoners first: wardens skip feeding while a prisoner is bleeding.
 - Prisoner food delivery keeps up: when prisoners get hungry, one trip brings food for everyone in the cell who needs it.
-- Official translation fixes: fixes quest text shown as ERR and generated text left in English that a translation file cannot override (currently Traditional Chinese).
+- Official translation fixes: fixes quest text shown as ERR and generated text left in English that a translation file cannot override, and a duplicate message after social fights (currently Traditional Chinese).
 
 Tweaks:
 - Xenogerm queue: a bill-style queue for the gene assembler (Biotech).
