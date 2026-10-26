@@ -190,7 +190,8 @@ namespace VanillaTuneUp
 
     /// <summary>
     /// Adds the guard call at the start of the hunt and a wait before the first shot. The wait toil goes after
-    /// every vanilla toil, so the saved toil index of a hunt in progress means the same with or without the module.
+    /// every vanilla toil, behind a toil that ends the job, so it is only reached by jumping to it and the saved
+    /// toil index of a hunt in progress means the same with or without the module.
     /// </summary>
     [HarmonyPatchCategory("HuntGuard")]
     [HarmonyPatch(typeof(JobDriver_Hunt), "MakeNewToils")]
@@ -255,7 +256,14 @@ namespace VanillaTuneUp
                 yield return toil;
             }
             if (gotoCastPos != null)
+            {
+                // Vanilla ends the hunt by running out of toils after the corpse is stored. Without this stop the
+                // driver would walk on into the wait toil and from there back to shooting, now at the corpse.
+                Toil end = ToilMaker.MakeToil("VTU_EndHunt");
+                end.initAction = () => driver.EndJobWith(JobCondition.Succeeded);
+                yield return end;
                 yield return wait;
+            }
         }
     }
 
