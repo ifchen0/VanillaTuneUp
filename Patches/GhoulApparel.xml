@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!-- Ghouls keep their clothes when turned and can be ordered to wear apparel. They still drop weapons,
+       get no apparel policy (disablePolicies) and never change clothes on their own. -->
+  <Operation Class="VanillaTuneUp.PatchOperationTuneUp">
+    <module>GhoulApparel</module>
+    <operations>
+      <li Class="PatchOperationReplace">
+        <xpath>Defs/MutantDef[defName="Ghoul"]/disableApparel</xpath>
+        <value>
+          <disableApparel>false</disableApparel>
+        </value>
+      </li>
+      <li Class="PatchOperationAdd">
+        <xpath>Defs/MutantDef[defName="Ghoul"]/whitelistedFloatMenuProviders</xpath>
+        <value>
+          <li>FloatMenuOptionProvider_Wear</li>
+        </value>
+      </li>
+    </operations>
+  </Operation>
+</Patch>

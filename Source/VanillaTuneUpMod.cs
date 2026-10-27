@@ -95,6 +95,11 @@ namespace VanillaTuneUp
             },
             new TuneUpModule("BreakUpFights", true, null),
             new TuneUpModule("ShortMapNames", true, null),
+            new TuneUpModule("GhoulApparel", true, null)
+            {
+                IsAvailable = () => ModsConfig.AnomalyActive,
+                UnavailableKey = "VTU_RequiresAnomaly"
+            },
             // Modules with extra settings go last, the longest at the end, so plain toggles stay near the top.
             new TuneUpModule("PrisonerDefaultFoodPolicy", true, null)
             {

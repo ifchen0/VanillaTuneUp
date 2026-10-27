@@ -29,6 +29,7 @@ Tweaks:
 - Mod update notes: the main menu's top-left box lists your active Workshop mods by update time, newly updated ones highlighted, with their change notes (Steam version).
 - Break up social fights: anyone who sees a social fight nearby may step in to stop it.
 - Short names on the map: long names under pawns are cut short; hover or select the pawn to see the full name.
+- Ghouls can wear apparel: ghouls keep their clothes when turned and can be ordered to wear clothes and armor, still no weapons (Anomaly).
 - Food policy for new prisoners: new prisoners get the food policy you pick.
 - Guards for dangerous hunts: hunting an animal likely to fight back calls a nearby armed colonist along as a guard.
 - Hybrid children keep a matching xenotype: a Hybrid child whose genes closely match one heritable xenotype gets that xenotype (Biotech).

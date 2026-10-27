@@ -8,6 +8,7 @@
   <VTU_ProvidedByLegacy>（已略過：獨立版 mod「{0}」已提供此功能）</VTU_ProvidedByLegacy>
   <VTU_RequiresBiotech>（需要 Biotech）</VTU_RequiresBiotech>
   <VTU_RequiresSteam>（需要Steam版）</VTU_RequiresSteam>
+  <VTU_RequiresAnomaly>（需要Anomaly）</VTU_RequiresAnomaly>
   <VTU_Experimental>（實驗性）</VTU_Experimental>
 
   <VTU_FactionLeader>補回遺失的派系領袖</VTU_FactionLeader>
@@ -91,6 +92,8 @@
   <VTU_BF_DraggedIn>{PAWN1_labelShort}把氣出在來勸架的{PAWN2_labelShort}身上，兩人打了起來！</VTU_BF_DraggedIn>
   <VTU_ShortMapNames>地圖上的短名字</VTU_ShortMapNames>
   <VTU_ShortMapNames_Desc>地圖上 pawn 底下的名字超過約一格半寬（跟著地圖縮放）就截斷，長名字不會蓋住旁邊的人。滑鼠移到 pawn 或名字上，或選取 pawn 時，顯示全名。</VTU_ShortMapNames_Desc>
+  <VTU_GhoulApparel>食屍鬼可以穿衣服</VTU_GhoulApparel>
+  <VTU_GhoulApparel_Desc>食屍鬼轉化時保留身上的衣服，也可以命令它穿上衣服和裝甲（選取食屍鬼後右鍵點衣物）。食屍鬼不會自己換衣服，也依然不能使用武器。</VTU_GhoulApparel_Desc>
 
   <!-- Xenogerm queue -->
   <VTU_XQ_AddToQueue>加入佇列</VTU_XQ_AddToQueue>
