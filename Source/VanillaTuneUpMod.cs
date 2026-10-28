@@ -67,6 +67,11 @@ namespace VanillaTuneUp
             new TuneUpModule("PrisonerFoodPolicy", false, "ifchen0.prisonpatch"),
             new TuneUpModule("PrisonerBleeding", false, "ifchen0.prisonpatch"),
             new TuneUpModule("PrisonerFoodDelivery", false, null),
+            new TuneUpModule("GenepackEject", false, null)
+            {
+                IsAvailable = () => ModsConfig.BiotechActive,
+                UnavailableKey = "VTU_RequiresBiotech"
+            },
             new TuneUpModule("TranslationFixes", false, null)
             {
                 // Translations are already injected by the time patches are applied.
