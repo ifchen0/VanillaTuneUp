@@ -157,6 +157,8 @@ namespace VanillaTuneUp
         public List<string> openResourceCategories = new List<string>();
         // Workshop file id -> Steam install time of the version the player last marked as read.
         public Dictionary<string, int> seenModUpdates = new Dictionary<string, int>();
+        // "<file id>@<install time>" -> game starts an unread update has been listed on.
+        public Dictionary<string, int> unreadModUpdateShows = new Dictionary<string, int>();
 
         // Compact colonist bar: what stays visible while the bar is collapsed.
         public bool compactBarShowLabels = true;
@@ -246,6 +248,7 @@ namespace VanillaTuneUp
             Scribe_Values.Look(ref resourceCategoriesRecorded, "resourceCategoriesRecorded", false);
             Scribe_Collections.Look(ref openResourceCategories, "openResourceCategories", LookMode.Value);
             Scribe_Collections.Look(ref seenModUpdates, "seenModUpdates", LookMode.Value, LookMode.Value);
+            Scribe_Collections.Look(ref unreadModUpdateShows, "unreadModUpdateShows", LookMode.Value, LookMode.Value);
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
                 overrides ??= new Dictionary<string, bool>();
@@ -254,6 +257,7 @@ namespace VanillaTuneUp
                 pinnedResources ??= new List<string>();
                 openResourceCategories ??= new List<string>();
                 seenModUpdates ??= new Dictionary<string, int>();
+                unreadModUpdateShows ??= new Dictionary<string, int>();
                 dragReorder ??= new DragReorderSettings();
             }
         }

@@ -15,8 +15,10 @@ namespace VanillaTuneUp
     /// <summary>
     /// Lists active Workshop mods on the main menu, newest update first, marking those Steam updated since the player
     /// last read them. Update times come from Steam's local install info, so the list needs no network. A mod seen for
-    /// the first time (new subscription, or the first run of this module) is recorded as read. Change notes are fetched
-    /// from the item's Workshop change log page when the player opens it.
+    /// the first time (new subscription, or the first run of this module) is recorded as read. An update left unopened
+    /// through <see cref="MaxUnreadStartups"/> game starts is marked read on the next one, so players who never open
+    /// the notes do not end up with every mod highlighted. Change notes are fetched from the item's Workshop change log
+    /// page when the player opens it.
     /// </summary>
     public static class ModUpdateNotes
     {
@@ -50,6 +52,8 @@ namespace VanillaTuneUp
         public static readonly List<Entry> Entries = new List<Entry>();
         public static int UnreadCount;
 
+        public const int MaxUnreadStartups = 3;
+
         // Each change log entry is <p id="unix time of the update">notes</p>; the id matches Steam's install timestamp.
         private static readonly Regex NoteRegex = new Regex("<p id=\"(\\d+)\">(.*?)</p>", RegexOptions.Singleline | RegexOptions.Compiled);
         private static readonly Regex HeadingRegex = new Regex("<div class=\"bb_h\\d\">(.*?)</div>", RegexOptions.Singleline | RegexOptions.Compiled);
@@ -59,6 +63,9 @@ namespace VanillaTuneUp
         public static void Scan()
         {
             Dictionary<string, int> seen = VanillaTuneUpMod.Settings.seenModUpdates;
+            // Rebuilt every start from the updates still unread, so read or replaced versions drop out on their own.
+            Dictionary<string, int> oldShows = VanillaTuneUpMod.Settings.unreadModUpdateShows;
+            var shows = new Dictionary<string, int>();
             bool changed = false;
             foreach (ModMetaData mod in ModLister.AllInstalledMods)
             {
@@ -77,11 +84,30 @@ namespace VanillaTuneUp
                 if (!mod.Active)
                     continue;
                 bool unread = installed > (uint)seenTime;
+                if (unread)
+                {
+                    string showKey = key + "@" + installed;
+                    oldShows.TryGetValue(showKey, out int shown);
+                    if (shown >= MaxUnreadStartups)
+                    {
+                        seenTime = (int)installed;
+                        seen[key] = seenTime;
+                        unread = false;
+                    }
+                    else
+                    {
+                        shows[showKey] = shown + 1;
+                    }
+                    changed = true;
+                }
                 Entries.Add(new Entry { Mod = mod, FileId = fileId, SeenTime = (uint)seenTime, InstalledTime = installed, Unread = unread });
                 if (unread)
                     UnreadCount++;
             }
             Entries.SortByDescending(e => e.InstalledTime);
+            if (oldShows.Count > 0)
+                changed = true;
+            VanillaTuneUpMod.Settings.unreadModUpdateShows = shows;
             if (changed)
                 VanillaTuneUpMod.Save();
         }

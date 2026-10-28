@@ -78,7 +78,7 @@
   <VTU_PS_DialogNote>計算倉庫裡、搬運中與地上的營養膏（目前 {0}）。設為 0 即關閉。</VTU_PS_DialogNote>
   <VTU_PS_Inspect>營養膏庫存：{0} / {1}</VTU_PS_Inspect>
   <VTU_ModUpdateNotes>模組更新說明</VTU_ModUpdateNotes>
-  <VTU_ModUpdateNotes_Desc>主選單左上角的方框（翻譯人員名單）改為列出已啟用的Steam工作坊模組，最近更新的排在最前面。上次查看後有更新的模組會標亮，點選即可看工作坊上的更新說明。適用所有模組；第一次啟用時全部視為已讀。</VTU_ModUpdateNotes_Desc>
+  <VTU_ModUpdateNotes_Desc>主選單左上角的方框（翻譯人員名單）改為列出已啟用的Steam工作坊模組，最近更新的排在最前面。上次查看後有更新的模組會標亮，點選即可看工作坊上的更新說明。沒點開的更新經過3次遊戲啟動後就不再標亮。適用所有模組；第一次啟用時全部視為已讀。</VTU_ModUpdateNotes_Desc>
   <VTU_MU_Title>模組更新（{0}個新的）</VTU_MU_Title>
   <VTU_MU_MarkAllRead>全部標記為已讀</VTU_MU_MarkAllRead>
   <VTU_MU_OpenChangeLog>開啟更新說明頁面</VTU_MU_OpenChangeLog>
