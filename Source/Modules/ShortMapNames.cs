@@ -40,6 +40,8 @@ namespace VanillaTuneUp
 
         private static readonly Dictionary<string, string> TruncatedCache = new Dictionary<string, string>();
         private static float cachedWidth;
+        // "Disable tiny text" swaps the tiny font for a wider one, so truncations made before no longer fit.
+        private static bool cachedTinyTextDisabled;
 
         public static void Prefix(Pawn pawn, Vector2 pos, ref float truncateToWidth, ref Dictionary<string, string> truncatedLabelsCache, GameFont font)
         {
@@ -48,10 +50,11 @@ namespace VanillaTuneUp
                 return;
             if (Find.Selector.IsSelected(pawn) || IsHovered(pawn, pos, font))
                 return;
-            if (maxWidth != cachedWidth)
+            if (maxWidth != cachedWidth || Prefs.DisableTinyText != cachedTinyTextDisabled)
             {
                 TruncatedCache.Clear();
                 cachedWidth = maxWidth;
+                cachedTinyTextDisabled = Prefs.DisableTinyText;
             }
             truncateToWidth = maxWidth;
             truncatedLabelsCache = TruncatedCache;
@@ -83,12 +86,17 @@ namespace VanillaTuneUp
             Vector3 drawPos = pawn.DrawPos;
             if (Mathf.Abs(mouse.x - drawPos.x) <= HoverHalfWidth && mouse.z <= drawPos.z + HoverTop && mouse.z >= drawPos.z - HoverBottom)
                 return true;
-            // A long label is wider than the pawn; hovering anywhere on its full width also shows it.
+            // A long label is wider than the pawn; hovering anywhere on its full width also shows it. The row is
+            // checked first so only pawns level with the mouse pay for measuring the label.
+            Vector2 mousePos = Event.current.mousePosition;
+            float height = Prefs.DisableTinyText ? 16f : 12f;
+            if (mousePos.y < pos.y || mousePos.y > pos.y + height)
+                return false;
             GameFont oldFont = Text.Font;
             Text.Font = font;
             float width = Text.CalcSize(pawn.LabelShortCap).x;
             Text.Font = oldFont;
-            return new Rect(pos.x - width / 2f, pos.y, width, Prefs.DisableTinyText ? 16f : 12f).Contains(Event.current.mousePosition);
+            return new Rect(pos.x - width / 2f, pos.y, width, height).Contains(mousePos);
         }
     }
 }

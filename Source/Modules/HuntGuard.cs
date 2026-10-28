@@ -5,6 +5,7 @@ using UnityEngine;
 using Verse;
 using Verse.AI;
 using Verse.AI.Group;
+using Verse.Profile;
 
 namespace VanillaTuneUp
 {
@@ -117,6 +118,9 @@ namespace VanillaTuneUp
                     continue;
                 if (p.CurJob != null && (p.CurJob.playerForced || p.CurJob.def == JobDefOf.Hunt || !p.jobs.IsCurrentJobPlayerInterruptible()))
                     continue;
+                // Pulling away a pawn mid-carry would drop the rescued pawn or the meal where it stands.
+                if (p.carryTracker?.CarriedThing != null)
+                    continue;
                 float dist = p.Position.DistanceToSquared(hunter.Position);
                 if (dist < bestDist && p.CanReach(hunter, PathEndMode.OnCell, Danger.Deadly))
                 {
@@ -173,6 +177,13 @@ namespace VanillaTuneUp
         {
             ByHunter.Remove(escort.Hunter);
             ByGuard.Remove(escort.Guard);
+        }
+
+        /// <summary>Drops every assignment, so the old game's pawns and map are not kept after leaving it.</summary>
+        public static void Forget()
+        {
+            ByHunter.Clear();
+            ByGuard.Clear();
         }
 
         private static void PruneInvalid()
@@ -265,6 +276,13 @@ namespace VanillaTuneUp
                 yield return wait;
             }
         }
+    }
+
+    [HarmonyPatchCategory("HuntGuard")]
+    [HarmonyPatch(typeof(MemoryUtility), nameof(MemoryUtility.ClearAllMapsAndWorld))]
+    public static class Patch_MemoryUtility_ClearAllMapsAndWorld_HuntGuard
+    {
+        public static void Postfix() => HuntGuard.Forget();
     }
 
     public class ThinkNode_ConditionalHuntGuard : ThinkNode_Conditional

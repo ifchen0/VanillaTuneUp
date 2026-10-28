@@ -256,7 +256,8 @@ namespace VanillaTuneUp
             draggable = true;
             closeOnClickedOutside = true;
             absorbInputAroundWindow = false;
-            if (entry.State == ModUpdateNotes.NotesState.NotFetched)
+            // A failed fetch (offline, timeout) is retried each time the window opens.
+            if (entry.State == ModUpdateNotes.NotesState.NotFetched || entry.State == ModUpdateNotes.NotesState.Failed)
                 ModUpdateNotes.RequestNotes(entry);
         }
 
