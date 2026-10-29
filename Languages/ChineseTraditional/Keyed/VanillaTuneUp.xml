@@ -96,6 +96,12 @@
   <VTU_ShortMapNames_Desc>地圖上 pawn 底下的名字超過約一格半寬（跟著地圖縮放）就截斷，長名字不會蓋住旁邊的人。滑鼠移到 pawn 或名字上，或選取 pawn 時，顯示全名。</VTU_ShortMapNames_Desc>
   <VTU_GhoulApparel>食屍鬼可以穿衣服</VTU_GhoulApparel>
   <VTU_GhoulApparel_Desc>食屍鬼轉化時保留身上的衣服，也可以命令它穿上衣服和裝甲（選取食屍鬼後右鍵點衣物）。食屍鬼不會自己換衣服，也依然不能使用武器。</VTU_GhoulApparel_Desc>
+  <VTU_CaravanAbandonDead>旅隊一次拋棄所有死者</VTU_CaravanAbandonDead>
+  <VTU_CaravanAbandonDead_Desc>在旅隊「貨物」分頁的「指定用藥計畫」旁加一個按鈕，確認一次即可拋棄旅隊貨物中所有人類屍體和死者穿過的衣物，動物屍體保留以便帶回屠宰。確認視窗會列出其中的殖民者。活著的成員身上穿的衣物不受影響。</VTU_CaravanAbandonDead_Desc>
+  <VTU_CaravanAbandonDead_Button>拋棄死者</VTU_CaravanAbandonDead_Button>
+  <VTU_CaravanAbandonDead_Tip>拋棄這支旅隊貨物中所有人類屍體和死者穿過的衣物，動物屍體保留。</VTU_CaravanAbandonDead_Tip>
+  <VTU_CaravanAbandonDead_Confirm>確定要拋棄{0}具人類屍體和{1}件死者穿過的衣物嗎？</VTU_CaravanAbandonDead_Confirm>
+  <VTU_CaravanAbandonDead_Colonists>其中包含以下殖民者的遺體：</VTU_CaravanAbandonDead_Colonists>
 
   <!-- Xenogerm queue -->
   <VTU_XQ_AddToQueue>加入佇列</VTU_XQ_AddToQueue>
