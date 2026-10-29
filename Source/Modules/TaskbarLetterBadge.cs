@@ -22,7 +22,10 @@ namespace VanillaTuneUp
         public static void Postfix(LetterStack __instance) => TaskbarLetterBadge.Sync(__instance.LettersListForReading);
     }
 
-    /// <summary>Critical (red) alerts such as a life-threatening condition turn the taskbar progress bar red.</summary>
+    /// <summary>
+    /// Critical (red) alerts such as a life-threatening condition turn the badge big-threat red, or show a red dot when
+    /// there are no letters.
+    /// </summary>
     [HarmonyPatchCategory("TaskbarLetterBadge")]
     [HarmonyPatch(typeof(AlertsReadout), nameof(AlertsReadout.AlertsReadoutUpdate))]
     public static class Patch_AlertsReadout_AlertsReadoutUpdate
@@ -67,7 +70,7 @@ namespace VanillaTuneUp
             if (critical == shownCritical)
                 return;
             shownCritical = critical;
-            TaskbarOverlay.SetRedBar(critical);
+            Redraw();
         }
 
         /// <summary>Called every frame; the icon is redrawn only when the count or the colour changes.</summary>
@@ -90,10 +93,24 @@ namespace VanillaTuneUp
                 return;
             shownCount = count;
             shownDef = mostUrgent;
-            if (count == 0)
+            Redraw();
+        }
+
+        // A critical alert outranks every letter, so it paints the badge in the big-threat colour; with no letters
+        // it is a plain red dot.
+        private static void Redraw()
+        {
+            if (shownCritical)
+            {
+                string tip = shownCount == 0
+                    ? "VTU_TaskbarLetterBadge_CriticalTip".Translate().ToString()
+                    : "VTU_TaskbarLetterBadge_Tip".Translate(shownCount).ToString();
+                TaskbarOverlay.Show(BadgeIcon.Draw(LetterDefOf.ThreatBig.flashColor, shownCount), tip);
+            }
+            else if (shownCount == 0)
                 TaskbarOverlay.Clear();
             else
-                TaskbarOverlay.Show(BadgeIcon.Draw(mostUrgent.flashColor, count), "VTU_TaskbarLetterBadge_Tip".Translate(count));
+                TaskbarOverlay.Show(BadgeIcon.Draw(shownDef.flashColor, shownCount), "VTU_TaskbarLetterBadge_Tip".Translate(shownCount));
         }
 
         // Vanilla's own urgency order: letters that pause on a lower auto-pause setting first, then the faster flash.
@@ -143,6 +160,8 @@ namespace VanillaTuneUp
                 }
             }
 
+            if (count == 0)
+                return pixels;
             string text = count > 9 ? "9+" : count.ToString();
             int scale = Math.Max(1, size / 8);
             // Shrink "9+" until its corners stay inside the circle.
@@ -225,23 +244,6 @@ namespace VanillaTuneUp
                 if (icon != IntPtr.Zero)
                     DestroyIcon(icon);
                 icon = IntPtr.Zero;
-            }
-            catch (Exception e)
-            {
-                Fail(e);
-            }
-        }
-
-        /// <summary>Full red progress bar while on, no bar while off.</summary>
-        public static void SetRedBar(bool on)
-        {
-            if (!(on ? Init() : taskbar != IntPtr.Zero && !failed))
-                return;
-            try
-            {
-                if (on)
-                    Check(Method<SetProgressValueFn>(SlotSetProgressValue)(taskbar, window, 1UL, 1UL));
-                Check(Method<SetProgressStateFn>(SlotSetProgressState)(taskbar, window, on ? TBPF_ERROR : TBPF_NOPROGRESS));
             }
             catch (Exception e)
             {
@@ -345,11 +347,7 @@ namespace VanillaTuneUp
         private static readonly Guid IID_ITaskbarList3 = new Guid("ea1afb91-9e28-4b86-90e9-9e9f8a5eefaf");
         // IUnknown (3) + ITaskbarList (HrInit 3 .. SetActiveAlt 7) + ITaskbarList2 (8) + ITaskbarList3 (9 ..).
         private const int SlotHrInit = 3;
-        private const int SlotSetProgressValue = 9;
-        private const int SlotSetProgressState = 10;
         private const int SlotSetOverlayIcon = 18;
-        private const int TBPF_NOPROGRESS = 0;
-        private const int TBPF_ERROR = 4;
         private const uint CLSCTX_INPROC_SERVER = 1;
         private const uint COINIT_APARTMENTTHREADED = 2;
         private const int SM_CXSMICON = 49;
@@ -360,12 +358,6 @@ namespace VanillaTuneUp
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Unicode)]
         private delegate int SetOverlayIconFn(IntPtr self, IntPtr hwnd, IntPtr hIcon, string description);
-
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        private delegate int SetProgressValueFn(IntPtr self, IntPtr hwnd, ulong completed, ulong total);
-
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        private delegate int SetProgressStateFn(IntPtr self, IntPtr hwnd, int flags);
 
         private delegate bool EnumWindowsProc(IntPtr hwnd, IntPtr lParam);
 
