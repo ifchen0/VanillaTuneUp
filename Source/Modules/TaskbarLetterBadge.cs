@@ -1,0 +1,447 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using HarmonyLib;
+using RimWorld;
+using UnityEngine;
+using Verse;
+using Verse.Profile;
+
+namespace VanillaTuneUp
+{
+    /// <summary>
+    /// Mirrors the letter stack on a small badge over the game's taskbar button: the number of letters in the stack,
+    /// coloured like the most urgent of them (the letter's flash colour). Opening or dismissing letters updates it.
+    /// No banners, sounds or flashing.
+    /// </summary>
+    [HarmonyPatchCategory("TaskbarLetterBadge")]
+    [HarmonyPatch(typeof(LetterStack), nameof(LetterStack.LetterStackUpdate))]
+    public static class Patch_LetterStack_LetterStackUpdate
+    {
+        public static void Postfix(LetterStack __instance) => TaskbarLetterBadge.Sync(__instance.LettersListForReading);
+    }
+
+    /// <summary>Critical (red) alerts such as a life-threatening condition turn the taskbar progress bar red.</summary>
+    [HarmonyPatchCategory("TaskbarLetterBadge")]
+    [HarmonyPatch(typeof(AlertsReadout), nameof(AlertsReadout.AlertsReadoutUpdate))]
+    public static class Patch_AlertsReadout_AlertsReadoutUpdate
+    {
+        private static readonly AccessTools.FieldRef<AlertsReadout, List<Alert>> ActiveAlerts =
+            AccessTools.FieldRefAccess<AlertsReadout, List<Alert>>("activeAlerts");
+
+        public static void Postfix(AlertsReadout __instance) => TaskbarLetterBadge.SyncAlerts(ActiveAlerts(__instance));
+    }
+
+    [HarmonyPatchCategory("TaskbarLetterBadge")]
+    [HarmonyPatch(typeof(MemoryUtility), nameof(MemoryUtility.ClearAllMapsAndWorld))]
+    public static class Patch_MemoryUtility_ClearAllMapsAndWorld_TaskbarLetterBadge
+    {
+        public static void Postfix()
+        {
+            TaskbarLetterBadge.Sync(null);
+            TaskbarLetterBadge.SyncAlerts(null);
+        }
+    }
+
+    public static class TaskbarLetterBadge
+    {
+        private static int shownCount;
+        private static LetterDef shownDef;
+        private static bool shownCritical;
+
+        public static void SyncAlerts(List<Alert> alerts)
+        {
+            bool critical = false;
+            if (alerts != null)
+            {
+                foreach (Alert alert in alerts)
+                {
+                    if (alert != null && alert.Priority == AlertPriority.Critical)
+                    {
+                        critical = true;
+                        break;
+                    }
+                }
+            }
+            if (critical == shownCritical)
+                return;
+            shownCritical = critical;
+            TaskbarOverlay.SetRedBar(critical);
+        }
+
+        /// <summary>Called every frame; the icon is redrawn only when the count or the colour changes.</summary>
+        public static void Sync(List<Letter> letters)
+        {
+            int count = 0;
+            LetterDef mostUrgent = null;
+            if (letters != null)
+            {
+                foreach (Letter letter in letters)
+                {
+                    if (letter?.def == null)
+                        continue;
+                    count++;
+                    if (mostUrgent == null || MoreUrgent(letter.def, mostUrgent))
+                        mostUrgent = letter.def;
+                }
+            }
+            if (count == shownCount && mostUrgent == shownDef)
+                return;
+            shownCount = count;
+            shownDef = mostUrgent;
+            if (count == 0)
+                TaskbarOverlay.Clear();
+            else
+                TaskbarOverlay.Show(BadgeIcon.Draw(mostUrgent.flashColor, count), "VTU_TaskbarLetterBadge_Tip".Translate(count));
+        }
+
+        // Vanilla's own urgency order: letters that pause on a lower auto-pause setting first, then the faster flash.
+        private static bool MoreUrgent(LetterDef a, LetterDef b)
+        {
+            int ra = PauseRank(a.pauseMode), rb = PauseRank(b.pauseMode);
+            if (ra != rb)
+                return ra < rb;
+            return a.flashInterval < b.flashInterval;
+        }
+
+        private static int PauseRank(AutomaticPauseMode mode) => mode == AutomaticPauseMode.Never ? int.MaxValue : (int)mode;
+    }
+
+    /// <summary>Draws the badge as BGRA pixels: a rounded square with a 3x5 pixel-font count.</summary>
+    internal static class BadgeIcon
+    {
+        private static readonly string[] Glyphs =
+        {
+            "111101101101111", "010110010010111", "111001111100111", "111001111001111", "101101111001001",
+            "111100111001111", "111100111101111", "111001001001001", "111101111101111", "111101111001111",
+        };
+        private const string Plus = "000010111010000";
+
+        public static byte[] Draw(Color fill, int count)
+        {
+            int size = TaskbarOverlay.IconSize;
+            var pixels = new byte[size * size * 4];
+            Color border = fill * 0.45f;
+            float radius = size * 0.3f;
+            const int Samples = 4;
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    int outer = 0, inner = 0;
+                    for (int sy = 0; sy < Samples; sy++)
+                    {
+                        for (int sx = 0; sx < Samples; sx++)
+                        {
+                            float px = x + (sx + 0.5f) / Samples, py = y + (sy + 0.5f) / Samples;
+                            if (InRoundedSquare(px, py, 0f, size, radius))
+                                outer++;
+                            if (InRoundedSquare(px, py, 1f, size, radius - 1f))
+                                inner++;
+                        }
+                    }
+                    if (outer == 0)
+                        continue;
+                    Color c = Color.Lerp(border, fill, inner / (float)outer);
+                    SetPixel(pixels, size, x, y, c, outer / (float)(Samples * Samples));
+                }
+            }
+
+            string text = count > 9 ? "9+" : count.ToString();
+            int scale = Math.Max(1, size / 8);
+            int width = text.Length * 3 * scale + (text.Length - 1) * scale;
+            int left = (size - width) / 2, top = (size - 5 * scale) / 2;
+            float luminance = 0.299f * fill.r + 0.587f * fill.g + 0.114f * fill.b;
+            Color ink = luminance > 0.55f ? new Color(0.1f, 0.1f, 0.1f) : Color.white;
+            for (int i = 0; i < text.Length; i++)
+            {
+                string glyph = text[i] == '+' ? Plus : Glyphs[text[i] - '0'];
+                int gx = left + i * 4 * scale;
+                for (int bit = 0; bit < 15; bit++)
+                {
+                    if (glyph[bit] != '1')
+                        continue;
+                    for (int dy = 0; dy < scale; dy++)
+                        for (int dx = 0; dx < scale; dx++)
+                            SetPixel(pixels, size, gx + bit % 3 * scale + dx, top + bit / 3 * scale + dy, ink, 1f);
+                }
+            }
+            return pixels;
+        }
+
+        private static bool InRoundedSquare(float px, float py, float inset, int size, float radius)
+        {
+            float min = inset, max = size - inset;
+            if (px < min || px > max || py < min || py > max)
+                return false;
+            float cx = Mathf.Clamp(px, min + radius, max - radius);
+            float cy = Mathf.Clamp(py, min + radius, max - radius);
+            return (px - cx) * (px - cx) + (py - cy) * (py - cy) <= radius * radius;
+        }
+
+        private static void SetPixel(byte[] pixels, int size, int x, int y, Color c, float alpha)
+        {
+            if (x < 0 || y < 0 || x >= size || y >= size)
+                return;
+            int i = (y * size + x) * 4;
+            pixels[i] = (byte)(Mathf.Clamp01(c.b) * 255f);
+            pixels[i + 1] = (byte)(Mathf.Clamp01(c.g) * 255f);
+            pixels[i + 2] = (byte)(Mathf.Clamp01(c.r) * 255f);
+            pixels[i + 3] = (byte)(Mathf.Clamp01(alpha) * 255f);
+        }
+    }
+
+    /// <summary>
+    /// ITaskbarList3::SetOverlayIcon on the game window. COM is called through the raw vtable so it works on both the
+    /// Unity (1.6) and the new (1.7) runtime without either one's COM interop.
+    /// </summary>
+    internal static class TaskbarOverlay
+    {
+        private static IntPtr taskbar;
+        private static IntPtr window;
+        private static IntPtr icon;
+        private static bool failed;
+        private static EnumWindowsProc enumProc;
+
+        public static int IconSize => Math.Max(16, GetSystemMetrics(SM_CXSMICON));
+
+        public static void Show(byte[] pixels, string description)
+        {
+            if (!Init())
+                return;
+            try
+            {
+                IntPtr newIcon = CreateIcon(pixels, IconSize);
+                SetOverlay(newIcon, description);
+                // The previous icon is freed only after it has been replaced on the taskbar.
+                if (icon != IntPtr.Zero)
+                    DestroyIcon(icon);
+                icon = newIcon;
+            }
+            catch (Exception e)
+            {
+                Fail(e);
+            }
+        }
+
+        public static void Clear()
+        {
+            if (taskbar == IntPtr.Zero || failed)
+                return;
+            try
+            {
+                SetOverlay(IntPtr.Zero, null);
+                if (icon != IntPtr.Zero)
+                    DestroyIcon(icon);
+                icon = IntPtr.Zero;
+            }
+            catch (Exception e)
+            {
+                Fail(e);
+            }
+        }
+
+        /// <summary>Full red progress bar while on, no bar while off.</summary>
+        public static void SetRedBar(bool on)
+        {
+            if (!(on ? Init() : taskbar != IntPtr.Zero && !failed))
+                return;
+            try
+            {
+                if (on)
+                    Check(Method<SetProgressValueFn>(SlotSetProgressValue)(taskbar, window, 1UL, 1UL));
+                Check(Method<SetProgressStateFn>(SlotSetProgressState)(taskbar, window, on ? TBPF_ERROR : TBPF_NOPROGRESS));
+            }
+            catch (Exception e)
+            {
+                Fail(e);
+            }
+        }
+
+        private static IntPtr Window()
+        {
+            if (window != IntPtr.Zero && IsWindow(window))
+                return window;
+            window = IntPtr.Zero;
+            uint pid = (uint)Process.GetCurrentProcess().Id;
+            enumProc ??= (h, _) =>
+            {
+                GetWindowThreadProcessId(h, out uint owner);
+                if (owner != pid || !IsWindowVisible(h) || GetWindow(h, GW_OWNER) != IntPtr.Zero)
+                    return true;
+                window = h;
+                return false;
+            };
+            EnumWindows(enumProc, IntPtr.Zero);
+            return window;
+        }
+
+        private static bool Init()
+        {
+            if (failed || Window() == IntPtr.Zero)
+                return false;
+            if (taskbar != IntPtr.Zero)
+                return true;
+            try
+            {
+                CoInitializeEx(IntPtr.Zero, COINIT_APARTMENTTHREADED);
+                Guid clsid = CLSID_TaskbarList, iid = IID_ITaskbarList3;
+                Check(CoCreateInstance(ref clsid, IntPtr.Zero, CLSCTX_INPROC_SERVER, ref iid, out taskbar));
+                Check(Method<HrInitFn>(SlotHrInit)(taskbar));
+                return true;
+            }
+            catch (Exception e)
+            {
+                Fail(e);
+                return false;
+            }
+        }
+
+        private static void SetOverlay(IntPtr hIcon, string description) =>
+            Check(Method<SetOverlayIconFn>(SlotSetOverlayIcon)(taskbar, window, hIcon, description));
+
+        private static T Method<T>(int slot) where T : Delegate
+        {
+            IntPtr vtable = Marshal.ReadIntPtr(taskbar);
+            return Marshal.GetDelegateForFunctionPointer<T>(Marshal.ReadIntPtr(vtable, slot * IntPtr.Size));
+        }
+
+        private static IntPtr CreateIcon(byte[] bgra, int size)
+        {
+            var header = new BITMAPINFOHEADER
+            {
+                biSize = (uint)Marshal.SizeOf<BITMAPINFOHEADER>(),
+                biWidth = size,
+                biHeight = -size, // top-down rows
+                biPlanes = 1,
+                biBitCount = 32,
+            };
+            IntPtr color = CreateDIBSection(IntPtr.Zero, ref header, 0, out IntPtr bits, IntPtr.Zero, 0);
+            IntPtr mask = CreateBitmap(size, size, 1, 1, IntPtr.Zero);
+            try
+            {
+                if (color == IntPtr.Zero || mask == IntPtr.Zero)
+                    throw new InvalidOperationException("bitmap creation failed");
+                Marshal.Copy(bgra, 0, bits, bgra.Length);
+                var info = new ICONINFO { fIcon = true, hbmMask = mask, hbmColor = color };
+                IntPtr result = CreateIconIndirect(ref info);
+                if (result == IntPtr.Zero)
+                    throw new InvalidOperationException("CreateIconIndirect failed");
+                return result;
+            }
+            finally
+            {
+                if (color != IntPtr.Zero)
+                    DeleteObject(color);
+                if (mask != IntPtr.Zero)
+                    DeleteObject(mask);
+            }
+        }
+
+        private static void Check(int hr)
+        {
+            if (hr < 0)
+                Marshal.ThrowExceptionForHR(hr);
+        }
+
+        private static void Fail(Exception e)
+        {
+            failed = true;
+            Log.Warning($"[Vanilla Tune-Up] TaskbarLetterBadge: taskbar badge unavailable, turned off for this session: {e.Message}");
+        }
+
+        private static readonly Guid CLSID_TaskbarList = new Guid("56FDF344-FD6D-11d0-958A-006097C9A090");
+        private static readonly Guid IID_ITaskbarList3 = new Guid("ea1afb91-9e28-4b86-90e9-9e9f8a5eefaf");
+        // IUnknown (3) + ITaskbarList (HrInit 3 .. SetActiveAlt 7) + ITaskbarList2 (8) + ITaskbarList3 (9 ..).
+        private const int SlotHrInit = 3;
+        private const int SlotSetProgressValue = 9;
+        private const int SlotSetProgressState = 10;
+        private const int SlotSetOverlayIcon = 18;
+        private const int TBPF_NOPROGRESS = 0;
+        private const int TBPF_ERROR = 4;
+        private const uint CLSCTX_INPROC_SERVER = 1;
+        private const uint COINIT_APARTMENTTHREADED = 2;
+        private const int SM_CXSMICON = 49;
+        private const uint GW_OWNER = 4;
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        private delegate int HrInitFn(IntPtr self);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Unicode)]
+        private delegate int SetOverlayIconFn(IntPtr self, IntPtr hwnd, IntPtr hIcon, string description);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        private delegate int SetProgressValueFn(IntPtr self, IntPtr hwnd, ulong completed, ulong total);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        private delegate int SetProgressStateFn(IntPtr self, IntPtr hwnd, int flags);
+
+        private delegate bool EnumWindowsProc(IntPtr hwnd, IntPtr lParam);
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct BITMAPINFOHEADER
+        {
+            public uint biSize;
+            public int biWidth;
+            public int biHeight;
+            public ushort biPlanes;
+            public ushort biBitCount;
+            public uint biCompression;
+            public uint biSizeImage;
+            public int biXPelsPerMeter;
+            public int biYPelsPerMeter;
+            public uint biClrUsed;
+            public uint biClrImportant;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct ICONINFO
+        {
+            [MarshalAs(UnmanagedType.Bool)] public bool fIcon;
+            public int xHotspot;
+            public int yHotspot;
+            public IntPtr hbmMask;
+            public IntPtr hbmColor;
+        }
+
+        [DllImport("ole32.dll")]
+        private static extern int CoInitializeEx(IntPtr reserved, uint coInit);
+
+        [DllImport("ole32.dll")]
+        private static extern int CoCreateInstance(ref Guid clsid, IntPtr outer, uint context, ref Guid iid, out IntPtr ppv);
+
+        [DllImport("user32.dll")]
+        private static extern bool IsWindow(IntPtr hwnd);
+
+        [DllImport("user32.dll")]
+        private static extern bool IsWindowVisible(IntPtr hwnd);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetWindow(IntPtr hwnd, uint cmd);
+
+        [DllImport("user32.dll")]
+        private static extern uint GetWindowThreadProcessId(IntPtr hwnd, out uint processId);
+
+        [DllImport("user32.dll")]
+        private static extern bool EnumWindows(EnumWindowsProc proc, IntPtr lParam);
+
+        [DllImport("user32.dll")]
+        private static extern int GetSystemMetrics(int index);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr CreateIconIndirect(ref ICONINFO info);
+
+        [DllImport("user32.dll")]
+        private static extern bool DestroyIcon(IntPtr icon);
+
+        [DllImport("gdi32.dll")]
+        private static extern IntPtr CreateDIBSection(IntPtr hdc, ref BITMAPINFOHEADER header, uint usage, out IntPtr bits, IntPtr section, uint offset);
+
+        [DllImport("gdi32.dll")]
+        private static extern IntPtr CreateBitmap(int width, int height, uint planes, uint bitCount, IntPtr bits);
+
+        [DllImport("gdi32.dll")]
+        private static extern bool DeleteObject(IntPtr obj);
+    }
+}

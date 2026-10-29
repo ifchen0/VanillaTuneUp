@@ -9,6 +9,7 @@
   <VTU_RequiresBiotech>（需要 Biotech）</VTU_RequiresBiotech>
   <VTU_RequiresSteam>（需要Steam版）</VTU_RequiresSteam>
   <VTU_RequiresAnomaly>（需要Anomaly）</VTU_RequiresAnomaly>
+  <VTU_RequiresWindows>（僅限Windows）</VTU_RequiresWindows>
   <VTU_Experimental>（實驗性）</VTU_Experimental>
 
   <VTU_FactionLeader>補回遺失的派系領袖</VTU_FactionLeader>
@@ -102,6 +103,9 @@
   <VTU_CaravanAbandonDead_Tip>拋棄這支旅隊貨物中所有人類屍體和死者穿過的衣物，動物屍體保留。</VTU_CaravanAbandonDead_Tip>
   <VTU_CaravanAbandonDead_Confirm>確定要拋棄{0}具人類屍體和{1}件死者穿過的衣物嗎？</VTU_CaravanAbandonDead_Confirm>
   <VTU_CaravanAbandonDead_Colonists>其中包含以下殖民者的遺體：</VTU_CaravanAbandonDead_Colonists>
+  <VTU_TaskbarLetterBadge>工作列信件角標與警示進度條</VTU_TaskbarLetterBadge>
+  <VTU_TaskbarLetterBadge_Desc>把畫面右側待處理的信件以小角標顯示在工作列的遊戲圖示上：數字是信件數，顏色取最緊急的那封（大威脅紅色、小威脅橘色，依此類推）。打開或關閉信件時角標跟著更新。有紅色緊急警示（例如危及生命的病況、殖民者需要救援）時，工作列進度條會變成紅色。在其他視窗時看一眼工作列就知道遊戲裡發生了事。不會跳出通知、不發出聲音也不閃爍。僅限Windows。</VTU_TaskbarLetterBadge_Desc>
+  <VTU_TaskbarLetterBadge_Tip>RimWorld有{0}封待處理信件</VTU_TaskbarLetterBadge_Tip>
 
   <!-- Xenogerm queue -->
   <VTU_XQ_AddToQueue>加入佇列</VTU_XQ_AddToQueue>

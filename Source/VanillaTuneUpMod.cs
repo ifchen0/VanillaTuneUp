@@ -106,6 +106,11 @@ namespace VanillaTuneUp
                 UnavailableKey = "VTU_RequiresAnomaly"
             },
             new TuneUpModule("CaravanAbandonDead", true, null),
+            new TuneUpModule("TaskbarLetterBadge", true, null)
+            {
+                IsAvailable = () => Environment.OSVersion.Platform == PlatformID.Win32NT,
+                UnavailableKey = "VTU_RequiresWindows"
+            },
             // Modules with extra settings go last, the longest at the end, so plain toggles stay near the top.
             new TuneUpModule("PrisonerDefaultFoodPolicy", true, null)
             {
