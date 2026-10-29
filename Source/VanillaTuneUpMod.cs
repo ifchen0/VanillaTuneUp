@@ -111,6 +111,7 @@ namespace VanillaTuneUp
                 IsAvailable = () => Environment.OSVersion.Platform == PlatformID.Win32NT,
                 UnavailableKey = "VTU_RequiresWindows"
             },
+            new TuneUpModule("BundleLetterDismiss", true, null),
             // Modules with extra settings go last, the longest at the end, so plain toggles stay near the top.
             new TuneUpModule("PrisonerDefaultFoodPolicy", true, null)
             {

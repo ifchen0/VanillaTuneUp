@@ -106,6 +106,8 @@
   <VTU_TaskbarLetterBadge>Taskbar letter badge and alert bar</VTU_TaskbarLetterBadge>
   <VTU_TaskbarLetterBadge_Desc>Shows the letters waiting on the right side of the screen as a small badge over the game's taskbar button: their number, coloured like the most urgent one (red for big threats, orange for small threats, and so on). Opening or dismissing letters updates it. While a critical (red) alert is active, such as a life-threatening condition or a colonist needing rescue, the taskbar progress bar turns red. A glance at the taskbar tells you something happened while you were in another window. No pop-ups, sounds or flashing. Windows only.</VTU_TaskbarLetterBadge_Desc>
   <VTU_TaskbarLetterBadge_Tip>{0} letter(s) waiting in RimWorld</VTU_TaskbarLetterBadge_Tip>
+  <VTU_BundleLetterDismiss>Right-click to dismiss bundled letters</VTU_BundleLetterDismiss>
+  <VTU_BundleLetterDismiss_Desc>When too many letters pile up, the oldest ones are folded into a single "N more..." letter that ignores right-click. Right-clicking it now dismisses all the letters inside at once, like right-clicking a normal letter. Letters that still wait for your choice (such as someone asking to join or visitors at the gate) cannot be dismissed with a right click and stay.</VTU_BundleLetterDismiss_Desc>
 
   <!-- Xenogerm queue -->
   <VTU_XQ_AddToQueue>Add to queue</VTU_XQ_AddToQueue>
