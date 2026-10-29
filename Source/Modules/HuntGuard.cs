@@ -10,23 +10,29 @@ using Verse.Profile;
 namespace VanillaTuneUp
 {
     /// <summary>
-    /// Hunting an animal likely to turn on the hunter calls the nearest free armed colonist as a guard. The guard
-    /// follows and defends the hunter with the same vanilla AI that obedient animals use for their master, and the
-    /// hunter holds fire at the cast position until the guard is close or a time limit runs out. Assignments live in
-    /// memory only: nothing is saved, so a game loaded mid-hunt simply goes on without a guard.
+    /// Hunting an animal likely to turn on the hunter calls the nearest free armed colonists as guards, more of them
+    /// for a stronger victim or one whose packmates would join its revenge. The guards follow and defend the hunter
+    /// with the same vanilla AI that obedient animals use for their master, and the hunter holds fire at the cast
+    /// position until every guard is close or a time limit runs out. Assignments live in memory only: nothing is
+    /// saved, so a game loaded mid-hunt simply goes on without guards.
     /// </summary>
     public static class HuntGuard
     {
         public const float DefaultMinRevengeChance = 0.2f;
-        // The hunter shoots anyway once it has waited this long (30 s) for the guard.
+        // The hunter shoots anyway once it has waited this long (30 s) for the guards.
         private const int MaxWaitTicks = 1800;
         // Guard counts as arrived within this many cells of the hunter.
         private const float ReadyDistance = 8f;
+        // One guard per this much combat power on the victim's side (a grizzly bear is 200, a thrumbo 500).
+        private const float PowerPerGuard = 200f;
+        private const int MaxGuards = 3;
+        // Same radius vanilla uses to pull packmates into an animal's revenge (Pawn_MindState.GetPackmates).
+        private const float PackRadius = 24f;
 
         private sealed class Escort
         {
             public Pawn Hunter;
-            public Pawn Guard;
+            public readonly List<Pawn> Guards = new List<Pawn>();
             public Pawn Victim;
             public int WaitStartTick = -1;
             // Set once the guard has arrived or the wait timed out, so the hunter never waits twice.
@@ -49,15 +55,12 @@ namespace VanillaTuneUp
         {
             if (!ByGuard.TryGetValue(guard, out Escort escort))
                 return null;
-            if (!IsValid(escort))
-            {
-                Release(escort);
+            if (!Refresh(escort))
                 return null;
-            }
-            return escort.Hunter;
+            return escort.Guards.Contains(guard) ? escort.Hunter : null;
         }
 
-        /// <summary>Called when a hunt job starts: picks a guard if the victim is dangerous enough.</summary>
+        /// <summary>Called when a hunt job starts: picks guards if the victim is dangerous enough.</summary>
         public static void Request(Pawn hunter, Pawn victim)
         {
             // A downed victim only needs slaughtering, so no guard for that.
@@ -71,30 +74,31 @@ namespace VanillaTuneUp
             float chance = PawnUtility.GetManhunterOnDamageChance(victim, hunter, range * JobDriver_Hunt.MaxRangeFactor);
             if (chance < VanillaTuneUpMod.Settings.huntGuardMinRevengeChance)
                 return;
-            Pawn guard = FindGuard(hunter);
-            if (guard == null)
+            List<Pawn> guards = FindGuards(hunter, GuardsNeeded(victim));
+            if (guards.Count == 0)
                 return;
-            var escort = new Escort { Hunter = hunter, Guard = guard, Victim = victim };
+            var escort = new Escort { Hunter = hunter, Victim = victim };
+            escort.Guards.AddRange(guards);
             ByHunter[hunter] = escort;
-            ByGuard[guard] = escort;
-            // Start following directly: ending the current job and letting the think tree choose is not enough,
-            // since hauling mods chain the next haul as soon as a haul job ends.
-            guard.jobs.StartJob(JobGiver_HuntGuardFollow.MakeFollowJob(hunter), JobCondition.InterruptForced);
+            foreach (Pawn guard in guards)
+            {
+                ByGuard[guard] = escort;
+                // Start following directly: ending the current job and letting the think tree choose is not enough,
+                // since hauling mods chain the next haul as soon as a haul job ends.
+                guard.jobs.StartJob(JobGiver_HuntGuardFollow.MakeFollowJob(hunter), JobCondition.InterruptForced);
+            }
         }
 
-        /// <summary>True while the hunter should hold fire because its guard is still on the way.</summary>
+        /// <summary>True while the hunter should hold fire because a guard is still on the way.</summary>
         public static bool ShouldWait(Pawn hunter)
         {
             if (!ByHunter.TryGetValue(hunter, out Escort escort))
                 return false;
-            if (!IsValid(escort))
-            {
-                Release(escort);
+            if (!Refresh(escort))
                 return false;
-            }
             if (escort.WaitOver)
                 return false;
-            if (escort.Guard.Position.InHorDistOf(hunter.Position, ReadyDistance))
+            if (escort.Guards.TrueForAll(g => g.Position.InHorDistOf(hunter.Position, ReadyDistance)))
             {
                 escort.WaitOver = true;
                 return false;
@@ -108,10 +112,34 @@ namespace VanillaTuneUp
             return false;
         }
 
-        private static Pawn FindGuard(Pawn hunter)
+        // Worst case: the victim's revenge pulls in every packmate vanilla would, which needs big threats allowed.
+        private static int GuardsNeeded(Pawn victim)
         {
-            Pawn best = null;
-            float bestDist = float.MaxValue;
+            float threat = CombatPower(victim);
+            if (victim.Spawned && Find.Storyteller.difficulty.allowBigThreats)
+            {
+                District district = victim.GetDistrict();
+                List<ThingDef> crossAggro = victim.RaceProps.crossAggroWith;
+                foreach (Pawn p in victim.Map.mapPawns.AllPawnsSpawned)
+                {
+                    if (p == victim || p.Dead || p.Downed || p.Faction != victim.Faction)
+                        continue;
+                    if (p.def != victim.def && (crossAggro == null || !crossAggro.Contains(p.def)))
+                        continue;
+                    if (p.Position.InHorDistOf(victim.Position, PackRadius) && p.GetDistrict() == district)
+                        threat += CombatPower(p);
+                }
+            }
+            return Mathf.Clamp(Mathf.CeilToInt(threat / PowerPerGuard), 1, MaxGuards);
+        }
+
+        // Young and wounded animals hit less hard than the kind's listed combat power.
+        private static float CombatPower(Pawn p) =>
+            p.kindDef.combatPower * (p.ageTracker?.CurLifeStage?.bodySizeFactor ?? 1f) * p.health.summaryHealth.SummaryHealthPercent;
+
+        private static List<Pawn> FindGuards(Pawn hunter, int count)
+        {
+            var candidates = new List<Pawn>();
             foreach (Pawn p in hunter.Map.mapPawns.FreeColonistsSpawned)
             {
                 if (p == hunter || ByGuard.ContainsKey(p) || ByHunter.ContainsKey(p) || !CanGuard(p))
@@ -121,14 +149,18 @@ namespace VanillaTuneUp
                 // Pulling away a pawn mid-carry would drop the rescued pawn or the meal where it stands.
                 if (p.carryTracker?.CarriedThing != null)
                     continue;
-                float dist = p.Position.DistanceToSquared(hunter.Position);
-                if (dist < bestDist && p.CanReach(hunter, PathEndMode.OnCell, Danger.Deadly))
-                {
-                    best = p;
-                    bestDist = dist;
-                }
+                candidates.Add(p);
             }
-            return best;
+            candidates.SortBy(p => p.Position.DistanceToSquared(hunter.Position));
+            var guards = new List<Pawn>();
+            foreach (Pawn p in candidates)
+            {
+                if (guards.Count >= count)
+                    break;
+                if (p.CanReach(hunter, PathEndMode.OnCell, Danger.Deadly))
+                    guards.Add(p);
+            }
+            return guards;
         }
 
         // Also checked while guarding, so a guard who gets very hungry, very tired or hurt goes back to normal life.
@@ -151,16 +183,37 @@ namespace VanillaTuneUp
             return !HealthAIUtility.ShouldSeekMedicalRest(p);
         }
 
-        private static bool IsValid(Escort escort)
+        // Drops guards that can no longer guard, and the whole escort once the hunt is over or no guard is left.
+        // Returns whether the escort still stands.
+        private static bool Refresh(Escort escort)
+        {
+            if (!HuntGoingOn(escort))
+            {
+                Release(escort);
+                return false;
+            }
+            for (int i = escort.Guards.Count - 1; i >= 0; i--)
+            {
+                Pawn guard = escort.Guards[i];
+                if (guard.Spawned && guard.Map == escort.Hunter.Map && CanGuard(guard, guarding: true))
+                    continue;
+                escort.Guards.RemoveAt(i);
+                ByGuard.Remove(guard);
+            }
+            if (escort.Guards.Count > 0)
+                return true;
+            Release(escort);
+            return false;
+        }
+
+        private static bool HuntGoingOn(Escort escort)
         {
             Pawn hunter = escort.Hunter;
             Pawn victim = escort.Victim;
             // Once the victim is down or dead the hunter only slaughters and hauls, so the danger is over.
             if (!hunter.Spawned || hunter.Downed || victim.Dead || victim.Downed)
                 return false;
-            if (!StillEngaged(hunter, victim))
-                return false;
-            return escort.Guard.Spawned && escort.Guard.Map == hunter.Map && CanGuard(escort.Guard, guarding: true);
+            return StillEngaged(hunter, victim);
         }
 
         // When the victim turns on the hunter, the hunter drops the hunt job to fight back or flee; that is exactly
@@ -176,7 +229,9 @@ namespace VanillaTuneUp
         private static void Release(Escort escort)
         {
             ByHunter.Remove(escort.Hunter);
-            ByGuard.Remove(escort.Guard);
+            foreach (Pawn guard in escort.Guards)
+                ByGuard.Remove(guard);
+            escort.Guards.Clear();
         }
 
         /// <summary>Drops every assignment, so the old game's pawns and map are not kept after leaving it.</summary>
@@ -188,14 +243,10 @@ namespace VanillaTuneUp
 
         private static void PruneInvalid()
         {
-            List<Escort> stale = null;
-            foreach (Escort escort in ByHunter.Values)
-            {
-                if (!IsValid(escort))
-                    (stale ??= new List<Escort>()).Add(escort);
-            }
-            if (stale != null)
-                stale.ForEach(Release);
+            if (ByHunter.Count == 0)
+                return;
+            foreach (Escort escort in new List<Escort>(ByHunter.Values))
+                Refresh(escort);
         }
     }
 
