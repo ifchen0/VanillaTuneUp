@@ -108,7 +108,7 @@ namespace VanillaTuneUp
         private static int PauseRank(AutomaticPauseMode mode) => mode == AutomaticPauseMode.Never ? int.MaxValue : (int)mode;
     }
 
-    /// <summary>Draws the badge as BGRA pixels: a rounded square with a 3x5 pixel-font count.</summary>
+    /// <summary>Draws the badge as BGRA pixels: a filled circle with a 3x5 pixel-font count.</summary>
     internal static class BadgeIcon
     {
         private static readonly string[] Glyphs =
@@ -122,34 +122,32 @@ namespace VanillaTuneUp
         {
             int size = TaskbarOverlay.IconSize;
             var pixels = new byte[size * size * 4];
-            Color border = fill * 0.45f;
-            float radius = size * 0.3f;
+            float radius = size / 2f;
             const int Samples = 4;
             for (int y = 0; y < size; y++)
             {
                 for (int x = 0; x < size; x++)
                 {
-                    int outer = 0, inner = 0;
+                    int covered = 0;
                     for (int sy = 0; sy < Samples; sy++)
                     {
                         for (int sx = 0; sx < Samples; sx++)
                         {
-                            float px = x + (sx + 0.5f) / Samples, py = y + (sy + 0.5f) / Samples;
-                            if (InRoundedSquare(px, py, 0f, size, radius))
-                                outer++;
-                            if (InRoundedSquare(px, py, 1f, size, radius - 1f))
-                                inner++;
+                            float dx = x + (sx + 0.5f) / Samples - radius, dy = y + (sy + 0.5f) / Samples - radius;
+                            if (dx * dx + dy * dy <= radius * radius)
+                                covered++;
                         }
                     }
-                    if (outer == 0)
-                        continue;
-                    Color c = Color.Lerp(border, fill, inner / (float)outer);
-                    SetPixel(pixels, size, x, y, c, outer / (float)(Samples * Samples));
+                    if (covered > 0)
+                        SetPixel(pixels, size, x, y, fill, covered / (float)(Samples * Samples));
                 }
             }
 
             string text = count > 9 ? "9+" : count.ToString();
             int scale = Math.Max(1, size / 8);
+            // Shrink "9+" until its corners stay inside the circle.
+            while (scale > 1 && Square(text.Length * 4 * scale - scale) + Square(5 * scale) > Square(size - 2))
+                scale--;
             int width = text.Length * 3 * scale + (text.Length - 1) * scale;
             int left = (size - width) / 2, top = (size - 5 * scale) / 2;
             float luminance = 0.299f * fill.r + 0.587f * fill.g + 0.114f * fill.b;
@@ -170,15 +168,7 @@ namespace VanillaTuneUp
             return pixels;
         }
 
-        private static bool InRoundedSquare(float px, float py, float inset, int size, float radius)
-        {
-            float min = inset, max = size - inset;
-            if (px < min || px > max || py < min || py > max)
-                return false;
-            float cx = Mathf.Clamp(px, min + radius, max - radius);
-            float cy = Mathf.Clamp(py, min + radius, max - radius);
-            return (px - cx) * (px - cx) + (py - cy) * (py - cy) <= radius * radius;
-        }
+        private static int Square(int v) => v * v;
 
         private static void SetPixel(byte[] pixels, int size, int x, int y, Color c, float alpha)
         {
