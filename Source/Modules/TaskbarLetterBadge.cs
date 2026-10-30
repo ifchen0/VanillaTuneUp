@@ -13,13 +13,15 @@ namespace VanillaTuneUp
     /// <summary>
     /// Mirrors the letter stack on a small badge over the game's taskbar button: the number of letters in the stack,
     /// coloured like the most urgent of them (the letter's flash colour). Opening or dismissing letters updates it.
+    /// While the game is paused the count gives way to a pause sign, on a grey badge when nothing else is showing.
     /// No banners, sounds or flashing.
     /// </summary>
     [HarmonyPatchCategory("TaskbarLetterBadge")]
     [HarmonyPatch(typeof(LetterStack), nameof(LetterStack.LetterStackUpdate))]
     public static class Patch_LetterStack_LetterStackUpdate
     {
-        public static void Postfix(LetterStack __instance) => TaskbarLetterBadge.Sync(__instance.LettersListForReading);
+        public static void Postfix(LetterStack __instance) =>
+            TaskbarLetterBadge.Sync(__instance.LettersListForReading, Find.TickManager?.Paused ?? false);
     }
 
     /// <summary>
@@ -42,16 +44,19 @@ namespace VanillaTuneUp
     {
         public static void Postfix()
         {
-            TaskbarLetterBadge.Sync(null);
+            TaskbarLetterBadge.Sync(null, false);
             TaskbarLetterBadge.SyncAlerts(null);
         }
     }
 
     public static class TaskbarLetterBadge
     {
+        private static readonly Color PausedGrey = new Color(0.45f, 0.45f, 0.45f);
+
         private static int shownCount;
         private static LetterDef shownDef;
         private static bool shownCritical;
+        private static bool shownPaused;
 
         public static void SyncAlerts(List<Alert> alerts)
         {
@@ -73,8 +78,8 @@ namespace VanillaTuneUp
             Redraw();
         }
 
-        /// <summary>Called every frame; the icon is redrawn only when the count or the colour changes.</summary>
-        public static void Sync(List<Letter> letters)
+        /// <summary>Called every frame; the icon is redrawn only when the count, the colour or the pause state changes.</summary>
+        public static void Sync(List<Letter> letters, bool paused)
         {
             int count = 0;
             LetterDef mostUrgent = null;
@@ -89,28 +94,36 @@ namespace VanillaTuneUp
                         mostUrgent = letter.def;
                 }
             }
-            if (count == shownCount && mostUrgent == shownDef)
+            if (count == shownCount && mostUrgent == shownDef && paused == shownPaused)
                 return;
             shownCount = count;
             shownDef = mostUrgent;
+            shownPaused = paused;
             Redraw();
         }
 
         // A critical alert outranks every letter, so it paints the badge in the big-threat colour; with no letters
-        // it is a plain red dot.
+        // it is a plain red dot. Pausing swaps the count for a pause sign and keeps the colour; with nothing else to
+        // show the badge is grey.
         private static void Redraw()
         {
+            Color fill;
             if (shownCritical)
-            {
-                string tip = shownCount == 0
-                    ? "VTU_TaskbarLetterBadge_CriticalTip".Translate().ToString()
-                    : "VTU_TaskbarLetterBadge_Tip".Translate(shownCount).ToString();
-                TaskbarOverlay.Show(BadgeIcon.Draw(LetterDefOf.ThreatBig.flashColor, shownCount), tip);
-            }
-            else if (shownCount == 0)
-                TaskbarOverlay.Clear();
+                fill = LetterDefOf.ThreatBig.flashColor;
+            else if (shownCount > 0)
+                fill = shownDef.flashColor;
+            else if (shownPaused)
+                fill = PausedGrey;
             else
-                TaskbarOverlay.Show(BadgeIcon.Draw(shownDef.flashColor, shownCount), "VTU_TaskbarLetterBadge_Tip".Translate(shownCount));
+            {
+                TaskbarOverlay.Clear();
+                return;
+            }
+            // The description is only alt text for accessibility tools; Windows does not show it on the taskbar.
+            string tip = shownCount > 0 ? "VTU_TaskbarLetterBadge_Tip".Translate(shownCount).ToString()
+                : shownCritical ? "VTU_TaskbarLetterBadge_CriticalTip".Translate().ToString()
+                : "VTU_TaskbarLetterBadge_PausedTip".Translate().ToString();
+            TaskbarOverlay.Show(BadgeIcon.Draw(fill, shownCount, shownPaused), tip);
         }
 
         // Vanilla's own urgency order: letters that pause on a lower auto-pause setting first, then the faster flash.
@@ -125,7 +138,7 @@ namespace VanillaTuneUp
         private static int PauseRank(AutomaticPauseMode mode) => mode == AutomaticPauseMode.Never ? int.MaxValue : (int)mode;
     }
 
-    /// <summary>Draws the badge as BGRA pixels: a filled circle with a 3x5 pixel-font count.</summary>
+    /// <summary>Draws the badge as BGRA pixels: a filled circle with a 3x5 pixel-font count or pause sign.</summary>
     internal static class BadgeIcon
     {
         private static readonly string[] Glyphs =
@@ -134,8 +147,9 @@ namespace VanillaTuneUp
             "111100111001111", "111100111101111", "111001001001001", "111101111101111", "111101111001111",
         };
         private const string Plus = "000010111010000";
+        private const string Pause = "101101101101101";
 
-        public static byte[] Draw(Color fill, int count)
+        public static byte[] Draw(Color fill, int count, bool paused = false)
         {
             int size = TaskbarOverlay.IconSize;
             var pixels = new byte[size * size * 4];
@@ -160,9 +174,9 @@ namespace VanillaTuneUp
                 }
             }
 
-            if (count == 0)
+            if (count == 0 && !paused)
                 return pixels;
-            string text = count > 9 ? "9+" : count.ToString();
+            string text = paused ? "|" : count > 9 ? "9+" : count.ToString();
             int scale = Math.Max(1, size / 8);
             // Shrink "9+" until its corners stay inside the circle.
             while (scale > 1 && Square(text.Length * 4 * scale - scale) + Square(5 * scale) > Square(size - 2))
@@ -173,7 +187,7 @@ namespace VanillaTuneUp
             Color ink = luminance > 0.55f ? new Color(0.1f, 0.1f, 0.1f) : Color.white;
             for (int i = 0; i < text.Length; i++)
             {
-                string glyph = text[i] == '+' ? Plus : Glyphs[text[i] - '0'];
+                string glyph = text[i] == '|' ? Pause : text[i] == '+' ? Plus : Glyphs[text[i] - '0'];
                 int gx = left + i * 4 * scale;
                 for (int bit = 0; bit < 15; bit++)
                 {
