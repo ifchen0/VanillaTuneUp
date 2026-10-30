@@ -109,6 +109,10 @@
   <VTU_TaskbarLetterBadge_CriticalTip>RimWorld有緊急警示</VTU_TaskbarLetterBadge_CriticalTip>
   <VTU_BundleLetterDismiss>右鍵關閉合併信件</VTU_BundleLetterDismiss>
   <VTU_BundleLetterDismiss_Desc>信件太多時，較舊的信件會合併成一封「還有N封...」的信件，原版對它按右鍵沒有反應。開啟後，右鍵點它會一次關閉其中所有信件，和右鍵關閉一般信件一樣。仍在等你做選擇的信件（例如有人請求加入、訪客在門口）本來就不能用右鍵關閉，會保留下來。</VTU_BundleLetterDismiss_Desc>
+  <VTU_Quicksave>快速存檔快捷鍵</VTU_Quicksave>
+  <VTU_Quicksave_Desc>遊戲中按F5直接存檔，不用打開選單。存檔依序命名為Quicksave-1、Quicksave-2……，全部用過後會覆寫最舊的一個，和自動存檔的輪替方式相同。遊戲時間還沒前進就再按一次（例如暫停中），會覆寫同一個存檔。按鍵可在選項 > 鍵盤（遊戲分類）中更改。永久死亡模式下會存到該遊戲唯一的存檔，和自動存檔相同。</VTU_Quicksave_Desc>
+  <VTU_QuicksaveCount>保留的快速存檔數量：{0}</VTU_QuicksaveCount>
+  <VTU_QuicksaveUnavailable>目前無法存檔。</VTU_QuicksaveUnavailable>
 
   <!-- Xenogerm queue -->
   <VTU_XQ_AddToQueue>加入佇列</VTU_XQ_AddToQueue>

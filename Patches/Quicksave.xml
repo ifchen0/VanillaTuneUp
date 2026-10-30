@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <Operation Class="VanillaTuneUp.PatchOperationTuneUp">
+    <module>Quicksave</module>
+    <operations>
+      <li Class="PatchOperationAdd">
+        <xpath>Defs</xpath>
+        <value>
+          <KeyBindingDef>
+            <defName>VTU_Quicksave</defName>
+            <label>quicksave</label>
+            <category>Game</category>
+            <defaultKeyCodeA>F5</defaultKeyCodeA>
+          </KeyBindingDef>
+        </value>
+      </li>
+    </operations>
+  </Operation>
+</Patch>

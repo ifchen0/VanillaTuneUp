@@ -109,6 +109,10 @@
   <VTU_TaskbarLetterBadge_CriticalTip>Critical alert in RimWorld</VTU_TaskbarLetterBadge_CriticalTip>
   <VTU_BundleLetterDismiss>Right-click to dismiss bundled letters</VTU_BundleLetterDismiss>
   <VTU_BundleLetterDismiss_Desc>When too many letters pile up, the oldest ones are folded into a single "N more..." letter that ignores right-click. Right-clicking it now dismisses all the letters inside at once, like right-clicking a normal letter. Letters that still wait for your choice (such as someone asking to join or visitors at the gate) cannot be dismissed with a right click and stay.</VTU_BundleLetterDismiss_Desc>
+  <VTU_Quicksave>Quicksave hotkey</VTU_Quicksave>
+  <VTU_Quicksave_Desc>Press F5 during play to save right away, without opening the menu. Saves are named Quicksave-1, Quicksave-2 and so on; once all of them exist, the oldest one is overwritten, the same way autosaves rotate. Pressing again before any game time has passed (for example while paused) overwrites the same file instead. The key can be changed in Options > Keyboard (Game section). In commitment mode the game's single save file is used, like autosave.</VTU_Quicksave_Desc>
+  <VTU_QuicksaveCount>Quicksave files to keep: {0}</VTU_QuicksaveCount>
+  <VTU_QuicksaveUnavailable>Cannot save right now.</VTU_QuicksaveUnavailable>
 
   <!-- Xenogerm queue -->
   <VTU_XQ_AddToQueue>Add to queue</VTU_XQ_AddToQueue>
