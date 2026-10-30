@@ -35,6 +35,13 @@
             <symbol>Things/Mote/SpeechSymbols/Insult</symbol>
             <socialFightBaseChance>0.02</socialFightBaseChance>
           </InteractionDef>
+          <!-- Never picked at random either; its base chance, per scan, is how readily a fighter turns on someone hitting them that they are not fighting back. -->
+          <InteractionDef>
+            <defName>VTU_TurnBack</defName>
+            <label>turn on attacker</label>
+            <symbol>Things/Mote/SpeechSymbols/Insult</symbol>
+            <socialFightBaseChance>0.05</socialFightBaseChance>
+          </InteractionDef>
           <!-- Fighters toward the mediator. -->
           <ThoughtDef>
             <defName>VTU_FightBrokenUp</defName>

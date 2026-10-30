@@ -14,6 +14,7 @@ namespace VanillaTuneUp
         public static JobDef VTU_BreakUpFight;
         public static InteractionDef VTU_BreakUpFightTalk;
         public static InteractionDef VTU_JoinFight;
+        public static InteractionDef VTU_TurnBack;
         public static ThoughtDef VTU_FightBrokenUp;
         public static ThoughtDef VTU_FightMeddled;
         public static ThoughtDef VTU_FightInterrupted;
@@ -26,6 +27,7 @@ namespace VanillaTuneUp
     /// Colonists who see a social fight nearby may step in: they walk up to one fighter, talk for a moment,
     /// and either end the fight or, now and then, get pulled into a new one with that fighter.
     /// Rivals of a fighter and Bloodlust pawns may pile in on the fighter they like least instead.
+    /// Someone hit by a pawn they are not fighting back may turn on that pawn, splitting a brawl into more fights.
     /// </summary>
     public static class BreakUpFights
     {
@@ -154,7 +156,8 @@ namespace VanillaTuneUp
         private static bool CanFight(Pawn p, Pawn other) =>
             p.interactions.SocialFightPossible(other) && other.interactions.SocialFightPossible(p);
 
-        // The joiner fights the disliked fighter, who keeps fighting their own opponent (see Patch_SocialFighting_ShouldStop).
+        // The joiner fights the disliked fighter, who keeps fighting their own opponent (see Patch_SocialFighting_ShouldStop)
+        // until they turn on the joiner (see TryTurnBack).
         private static void Join(Pawn joiner, Pawn target)
         {
             if (!joiner.mindState.mentalStateHandler.TryStartMentalState(MentalStateDefOf.SocialFighting, null, false, false, false, target))
@@ -165,6 +168,21 @@ namespace VanillaTuneUp
                     joiner, MessageTypeDefOf.ThreatSmall);
             }
             TaleRecorder.RecordTale(TaleDefOf.SocialFight, joiner, target);
+        }
+
+        // Rolled by each one-sided attacker on every scan: the pawn they hit may leave their own opponent and turn on them,
+        // with the vanilla social fight chance. The old opponent becomes a one-sided attacker in turn and rolls the same way.
+        public static void TryTurnBack(MentalState_SocialFighting fight)
+        {
+            Pawn attacker = fight.pawn;
+            Pawn target = fight.otherPawn;
+            MentalState_SocialFighting targetFight = FightOf(target);
+            if (targetFight == null || targetFight.otherPawn == attacker || fight.Age < MinFightAge || !attacker.Spawned)
+                return;
+            if (!CanFight(target, attacker) || !Rand.Chance(target.interactions.SocialFightChance(BreakUpFightDefOf.VTU_TurnBack, attacker)))
+                return;
+            targetFight.otherPawn = attacker;
+            target.jobs.EndCurrentJob(JobCondition.InterruptForced);
         }
 
         private static string MediatorRejectReason(Pawn p)
@@ -294,8 +312,12 @@ namespace VanillaTuneUp
         public static void Postfix(MentalState_SocialFighting __instance, int delta)
         {
             Pawn pawn = __instance.pawn;
-            if (pawn.MentalState == __instance && pawn.IsHashIntervalTick(BreakUpFights.ScanIntervalTicks, delta))
+            if (pawn.MentalState != __instance || !pawn.IsHashIntervalTick(BreakUpFights.ScanIntervalTicks, delta))
+                return;
+            if (BreakUpFights.FightOf(__instance.otherPawn)?.otherPawn == pawn)
                 BreakUpFights.TrySendMediator(__instance);
+            else
+                BreakUpFights.TryTurnBack(__instance);
         }
     }
 
