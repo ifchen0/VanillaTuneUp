@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
   <VTU_RestartNote>可個別開關每一項修正或調整，變更在重新啟動遊戲後生效。</VTU_RestartNote>
+  <VTU_NoSearchMatches>沒有符合搜尋的選項。</VTU_NoSearchMatches>
   <VTU_Fixes>修正</VTU_Fixes>
   <VTU_Tweaks>調整</VTU_Tweaks>
   <VTU_RestartRequired>重新啟動遊戲後才會套用這項變更。</VTU_RestartRequired>

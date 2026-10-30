@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using HarmonyLib;
+using RimWorld;
 using UnityEngine;
 using Verse;
 
@@ -283,8 +284,10 @@ namespace VanillaTuneUp
         public static TuneUpSettings Settings;
         private const float DescriptionIndent = 12f;
         private const float CheckboxColumn = 36f;
+        private const float SearchHeight = 30f;
         private Vector2 scroll;
         private float viewHeight;
+        private readonly QuickSearchWidget search = new QuickSearchWidget();
 
         public VanillaTuneUpMod(ModContentPack content) : base(content)
         {
@@ -299,25 +302,37 @@ namespace VanillaTuneUp
 
         public override void DoSettingsWindowContents(Rect inRect)
         {
+            // Kept above the scroll view so it stays in reach however far the list is scrolled.
+            search.OnGUI(new Rect(inRect.x, inRect.y, Mathf.Min(300f, inRect.width), SearchHeight - 6f), () => scroll = Vector2.zero);
+            inRect.yMin += SearchHeight;
             Rect view = new Rect(0f, 0f, inRect.width - 16f, Mathf.Max(viewHeight, inRect.height));
             Widgets.BeginScrollView(inRect, ref scroll, view);
             // One column, so content taller than the window extends the scroll view instead of wrapping.
             var listing = new Listing_Standard { maxOneColumn = true };
             listing.Begin(view);
             listing.Label("VTU_RestartNote".Translate());
-            DrawSection(listing, "VTU_Fixes", tweaks: false);
-            DrawSection(listing, "VTU_Tweaks", tweaks: true);
+            int shown = DrawSection(listing, "VTU_Fixes", tweaks: false) + DrawSection(listing, "VTU_Tweaks", tweaks: true);
+            search.noResultsMatched = shown == 0;
+            if (shown == 0)
+            {
+                listing.GapLine();
+                GUI.color = Color.gray;
+                listing.Label("VTU_NoSearchMatches".Translate());
+                GUI.color = Color.white;
+            }
             viewHeight = listing.CurHeight;
             listing.End();
             Widgets.EndScrollView();
         }
 
-        private static void DrawSection(Listing_Standard listing, string headerKey, bool tweaks)
+        /// <summary>Draws the section's modules that match the search; returns how many were drawn.</summary>
+        private int DrawSection(Listing_Standard listing, string headerKey, bool tweaks)
         {
             bool header = false;
+            int shown = 0;
             foreach (TuneUpModule module in Modules.All)
             {
-                if (module.IsTweak != tweaks)
+                if (module.IsTweak != tweaks || !search.filter.Matches(module.Label) && !search.filter.Matches(module.Description))
                     continue;
                 if (!header)
                 {
@@ -328,7 +343,9 @@ namespace VanillaTuneUp
                     header = true;
                 }
                 DrawModule(listing, module);
+                shown++;
             }
+            return shown;
         }
 
         private static void DrawModule(Listing_Standard listing, TuneUpModule module)

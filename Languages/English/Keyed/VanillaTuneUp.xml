@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
   <VTU_RestartNote>Turn each fix or tweak on or off. Changes take effect after restarting the game.</VTU_RestartNote>
+  <VTU_NoSearchMatches>No options match the search.</VTU_NoSearchMatches>
   <VTU_Fixes>Fixes</VTU_Fixes>
   <VTU_Tweaks>Tweaks</VTU_Tweaks>
   <VTU_RestartRequired>Restart the game to apply this change.</VTU_RestartRequired>
