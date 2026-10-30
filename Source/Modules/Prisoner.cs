@@ -36,6 +36,7 @@ namespace VanillaTuneUp
     /// Freshly captured prisoners are often both hungry and bleeding. Warden feeding can be picked before doctor
     /// tending, letting the prisoner bleed out while being spoon-fed. Skip non-forced feeding while the prisoner is
     /// still bleeding so the pawn moves on to other work such as tending; bleeding kills far faster than hunger.
+    /// A life-threatening condition that can be tended right now (an extreme infection) is skipped the same way.
     /// </summary>
     [HarmonyPatchCategory("PrisonerBleeding")]
     [HarmonyPatch]
@@ -49,9 +50,28 @@ namespace VanillaTuneUp
 
         public static bool Prefix(Thing t, bool forced, ref Job __result)
         {
-            if (forced || !(t is Pawn prisoner) || prisoner.health.hediffSet.BleedRateTotal <= 0f)
+            if (forced || !(t is Pawn prisoner))
+                return true;
+            if (prisoner.health.hediffSet.BleedRateTotal <= 0f && !NeedsLifeSavingTend(prisoner))
                 return true;
             __result = null;
+            return false;
+        }
+
+        // Unlike bleeding, an infection does not end by itself, so only wait while a doctor is expected to come
+        // and the prisoner is not yet urgently hungry. Malnutrition is life-threatening too but not tendable.
+        private static bool NeedsLifeSavingTend(Pawn prisoner)
+        {
+            if (prisoner.needs?.food != null && prisoner.needs.food.CurCategory >= HungerCategory.UrgentlyHungry)
+                return false;
+            if (!HealthAIUtility.ShouldEverReceiveMedicalCareFromPlayer(prisoner))
+                return false;
+            List<Hediff> hediffs = prisoner.health.hediffSet.hediffs;
+            for (int i = 0; i < hediffs.Count; i++)
+            {
+                if (hediffs[i].IsCurrentlyLifeThreatening && hediffs[i].TendableNow())
+                    return true;
+            }
             return false;
         }
     }
@@ -76,7 +96,7 @@ namespace VanillaTuneUp
             AccessTools.MethodDelegate<Func<WorkGiver_Warden, Pawn, Thing, bool, bool>>(
                 AccessTools.Method(typeof(WorkGiver_Warden), "ShouldTakeCareOfPrisoner"));
 
-        // Runs after the bleeding check, which may already have skipped the job.
+        // Runs after the bleeding/tend check, which may already have skipped the job.
         [HarmonyPriority(Priority.Low)]
         public static bool Prefix(WorkGiver_Warden_DeliverFood __instance, Pawn pawn, Thing t, bool forced, ref Job __result, bool __runOriginal)
         {

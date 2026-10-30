@@ -25,8 +25,8 @@
   <VTU_SiegeBuilder_Desc>Fixes the error spam when a sieging group contains mechs (added by other mods): pawns without skills defend the camp instead of building it.</VTU_SiegeBuilder_Desc>
   <VTU_PrisonerFoodPolicy>Food policy during mental breaks</VTU_PrisonerFoodPolicy>
   <VTU_PrisonerFoodPolicy_Desc>Wardens no longer bring restricted food to a prisoner having a mental break. A pawn in a mental break that feeds itself behaves as in vanilla.</VTU_PrisonerFoodPolicy_Desc>
-  <VTU_PrisonerBleeding>Tend bleeding prisoners before feeding</VTU_PrisonerBleeding>
-  <VTU_PrisonerBleeding_Desc>Wardens skip feeding and food delivery while a prisoner is still bleeding, so they can move on to tending. Manual feeding orders still work.</VTU_PrisonerBleeding_Desc>
+  <VTU_PrisonerBleeding>Tend bleeding or critical prisoners before feeding</VTU_PrisonerBleeding>
+  <VTU_PrisonerBleeding_Desc>Wardens skip feeding and food delivery while a prisoner is still bleeding or has a life-threatening condition (such as an extreme infection) waiting to be tended, so they can move on to tending. Urgently hungry prisoners are still fed unless bleeding. Manual feeding orders still work.</VTU_PrisonerBleeding_Desc>
   <VTU_PrisonerFoodDelivery>Prisoner food delivery keeps up</VTU_PrisonerFoodDelivery>
   <VTU_PrisonerFoodDelivery_Desc>Wardens deliver food at the same hunger level as vanilla, but one trip brings enough for everyone in the cell who needs it by then, so food does not sit in the cell and spoil. Food already in the cell is counted, and only one warden delivers to a cell at a time, so wardens do not deliver twice. If a prisoner in the cell is already urgently hungry, more wardens may deliver at once to catch up, as many as the missing food needs full trips.</VTU_PrisonerFoodDelivery_Desc>
   <VTU_GenepackEject>Ejected genepacks stay out</VTU_GenepackEject>

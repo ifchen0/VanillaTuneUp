@@ -25,8 +25,8 @@
   <VTU_SiegeBuilder_Desc>修正圍攻隊伍中有機械體（其他 mod 加入）時的錯誤洗版：沒有技能的單位改為防守營地，不再被指派建造。</VTU_SiegeBuilder_Desc>
   <VTU_PrisonerFoodPolicy>精神崩潰時的飲食政策</VTU_PrisonerFoodPolicy>
   <VTU_PrisonerFoodPolicy_Desc>獄卒不會再把受限制的食物送給正在精神崩潰的囚犯。精神崩潰的角色自己進食時，行為與原版相同。</VTU_PrisonerFoodPolicy_Desc>
-  <VTU_PrisonerBleeding>先治療流血的囚犯再餵食</VTU_PrisonerBleeding>
-  <VTU_PrisonerBleeding_Desc>囚犯仍在流血時，獄卒會略過餵食和送餐，改去做治療等其他工作。手動下令餵食仍然有效。</VTU_PrisonerBleeding_Desc>
+  <VTU_PrisonerBleeding>先治療流血或危急的囚犯再餵食</VTU_PrisonerBleeding>
+  <VTU_PrisonerBleeding_Desc>囚犯仍在流血，或有危及生命且可治療的病症（例如極嚴重的感染）時，獄卒會略過餵食和送餐，改去做治療等其他工作。未流血的囚犯一旦極度飢餓仍會餵食。手動下令餵食仍然有效。</VTU_PrisonerBleeding_Desc>
   <VTU_PrisonerFoodDelivery>囚犯送餐跟得上</VTU_PrisonerFoodDelivery>
   <VTU_PrisonerFoodDelivery_Desc>獄卒送餐的時機和原版相同，但一趟就帶足牢房裡當下所有需要用餐的囚犯的份量，食物不會放在牢房裡壞掉。牢房裡已有的食物會計入，而且同一間牢房一次只會有一名獄卒送餐，不會重複送；如果牢房裡已有囚犯進入非常飢餓狀態，會允許多名獄卒同時送餐來追上進度，人數以補足缺口所需的趟數為上限。</VTU_PrisonerFoodDelivery_Desc>
   <VTU_GenepackEject>彈出的基因包不會被放回去</VTU_GenepackEject>

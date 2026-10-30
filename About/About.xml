@@ -14,7 +14,7 @@ Fixes:
 - Trade setup: removes the freeze when a trade window opens with many items (and with Auto Seller).
 - Mechs in sieges: fixes the error spam when a siege includes mechs added by other mods.
 - Food policy during mental breaks: wardens no longer bring restricted food to a prisoner having a mental break.
-- Tend bleeding prisoners first: wardens skip feeding while a prisoner is bleeding.
+- Tend bleeding prisoners first: wardens skip feeding while a prisoner is bleeding or has a life-threatening condition (such as an extreme infection) waiting to be tended.
 - Prisoner food delivery keeps up: when prisoners get hungry, one trip brings food for everyone in the cell who needs it.
 - Ejected genepacks stay out: genepacks you eject from a gene bank get auto-load turned off, so haulers do not put them back (Biotech).
 - Official translation fixes: fixes quest text shown as ERR and generated text left in English that a translation file cannot override, and a duplicate message after social fights (currently Traditional Chinese).
