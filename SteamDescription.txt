@@ -13,7 +13,7 @@ Small fixes and optional tweaks for vanilla RimWorld, collected in one mod.
 [*][b]Trade setup:[/b] removes the freeze when a trade window opens in a colony with many items, including Auto Seller trades.
 [*][b]Mechs in sieges:[/b] fixes the [i]Exception while ticking lord with job RimWorld.LordJob_Siege[/i] spam when a siege includes modded mechs.
 [*][b]Food policy during mental breaks:[/b] wardens no longer bring restricted food to a prisoner having a mental break.
-[*][b]Tend bleeding prisoners first:[/b] wardens skip feeding while a prisoner is bleeding or has a life-threatening condition (such as an extreme infection) waiting to be tended, so tending comes first.
+[*][b]Tend bleeding prisoners first:[/b] wardens skip feeding while a prisoner is bleeding or has surgery scheduled, so tending and surgery come first.
 [*][b]Prisoner food delivery keeps up:[/b] when prisoners get hungry, one trip brings enough for everyone in the cell who needs food.
 [*][b]Ejected genepacks stay out[/b] (Biotech): genepacks you eject from a gene bank get auto-load turned off, so haulers no longer carry them straight back in.
 [*][b]Official translation fixes:[/b] fixes quest text shown as [i]ERR:[/i] and generated text left in English that a translation file cannot override, and a duplicate message after social fights (currently Traditional Chinese).
