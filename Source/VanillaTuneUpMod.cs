@@ -162,6 +162,7 @@ namespace VanillaTuneUp
         public string prisonerFoodPolicy = "";
         public float factionColorMinDistance = FactionColors.DefaultMinDistance;
         public float huntGuardMinRevengeChance = HuntGuard.DefaultMinRevengeChance;
+        public bool huntGuardStrict;
         public int quicksaveCount = Quicksave.DefaultCount;
         public List<string> pinnedResources = new List<string>();
         // Resource readout categories left open; only used once the player has toggled one.
@@ -247,6 +248,7 @@ namespace VanillaTuneUp
             Scribe_Values.Look(ref prisonerFoodPolicy, "prisonerFoodPolicy", "");
             Scribe_Values.Look(ref factionColorMinDistance, "factionColorMinDistance", FactionColors.DefaultMinDistance);
             Scribe_Values.Look(ref huntGuardMinRevengeChance, "huntGuardMinRevengeChance", HuntGuard.DefaultMinRevengeChance);
+            Scribe_Values.Look(ref huntGuardStrict, "huntGuardStrict", false);
             Scribe_Values.Look(ref quicksaveCount, "quicksaveCount", Quicksave.DefaultCount);
             Scribe_Values.Look(ref compactBarShowLabels, "compactBarShowLabels", true);
             Scribe_Values.Look(ref compactBarShowIcons, "compactBarShowIcons", true);

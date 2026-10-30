@@ -13,8 +13,9 @@ namespace VanillaTuneUp
     /// Hunting an animal likely to turn on the hunter calls the nearest free armed colonists as guards, more of them
     /// for a stronger victim or one whose packmates would join its revenge. The guards follow and defend the hunter
     /// with the same vanilla AI that obedient animals use for their master, and the hunter holds fire at the cast
-    /// position until every guard is close or a time limit runs out. Assignments live in memory only: nothing is
-    /// saved, so a game loaded mid-hunt simply goes on without guards.
+    /// position until every guard is close or a time limit runs out. In strict mode a hunter who cannot get every
+    /// guard it needs before the first shot gives the hunt up and leaves that animal alone for a while instead.
+    /// Assignments live in memory only: nothing is saved, so a game loaded mid-hunt simply goes on without guards.
     /// </summary>
     public static class HuntGuard
     {
@@ -28,12 +29,15 @@ namespace VanillaTuneUp
         private const int MaxGuards = 3;
         // Same radius vanilla uses to pull packmates into an animal's revenge (Pawn_MindState.GetPackmates).
         private const float PackRadius = 24f;
+        // Strict mode: a hunter that gave a hunt up leaves that animal alone this long (one in-game hour).
+        private const int GiveUpCooldownTicks = 2500;
 
         private sealed class Escort
         {
             public Pawn Hunter;
             public readonly List<Pawn> Guards = new List<Pawn>();
             public Pawn Victim;
+            public int Needed;
             public int WaitStartTick = -1;
             // Set once the guard has arrived or the wait timed out, so the hunter never waits twice.
             public bool WaitOver;
@@ -41,6 +45,10 @@ namespace VanillaTuneUp
 
         private static readonly Dictionary<Pawn, Escort> ByHunter = new Dictionary<Pawn, Escort>();
         private static readonly Dictionary<Pawn, Escort> ByGuard = new Dictionary<Pawn, Escort>();
+        // Strict mode: hunter and animal of each hunt given up, with the tick until which it is not taken again.
+        private static readonly Dictionary<(Pawn Hunter, Pawn Victim), int> GivenUp = new Dictionary<(Pawn, Pawn), int>();
+
+        private static bool Strict => VanillaTuneUpMod.Settings.huntGuardStrict;
 
         public static void DrawSettings(Listing_Standard listing)
         {
@@ -48,6 +56,7 @@ namespace VanillaTuneUp
             listing.Label("VTU_HuntGuardMinChance".Translate((settings.huntGuardMinRevengeChance * 100f).ToString("0")),
                 tooltip: "VTU_HuntGuardMinChance_Desc".Translate());
             settings.huntGuardMinRevengeChance = Mathf.Round(listing.Slider(settings.huntGuardMinRevengeChance, 0.05f, 1f) * 20f) / 20f;
+            listing.CheckboxLabeled("VTU_HuntGuardStrict".Translate(), ref settings.huntGuardStrict, "VTU_HuntGuardStrict_Desc".Translate());
         }
 
         /// <summary>The hunter this pawn is guarding right now, or null.</summary>
@@ -60,24 +69,33 @@ namespace VanillaTuneUp
             return escort.Guards.Contains(guard) ? escort.Hunter : null;
         }
 
-        /// <summary>Called when a hunt job starts: picks guards if the victim is dangerous enough.</summary>
-        public static void Request(Pawn hunter, Pawn victim)
+        /// <summary>
+        /// Called when a hunt job starts: picks guards if the victim is dangerous enough. False when strict mode
+        /// gives the hunt up because not enough guards are free.
+        /// </summary>
+        public static bool Request(Pawn hunter, Pawn victim)
         {
             // A downed victim only needs slaughtering, so no guard for that.
             if (hunter?.Map == null || victim == null || victim.Dead || victim.Downed || !hunter.IsColonistPlayerControlled
                 || hunter.CurJob == null || hunter.CurJob.playerForced)
-                return;
+                return true;
             PruneInvalid();
             if (ByHunter.ContainsKey(hunter))
-                return;
+                return true;
             float range = hunter.equipment?.PrimaryEq?.PrimaryVerb?.EffectiveRange ?? 1f;
             float chance = PawnUtility.GetManhunterOnDamageChance(victim, hunter, range * JobDriver_Hunt.MaxRangeFactor);
             if (chance < VanillaTuneUpMod.Settings.huntGuardMinRevengeChance)
-                return;
-            List<Pawn> guards = FindGuards(hunter, GuardsNeeded(victim));
+                return true;
+            int needed = GuardsNeeded(victim);
+            List<Pawn> guards = FindGuards(hunter, needed);
+            if (Strict && guards.Count < needed)
+            {
+                GiveUp(hunter, victim);
+                return false;
+            }
             if (guards.Count == 0)
-                return;
-            var escort = new Escort { Hunter = hunter, Victim = victim };
+                return true;
+            var escort = new Escort { Hunter = hunter, Victim = victim, Needed = needed };
             escort.Guards.AddRange(guards);
             ByHunter[hunter] = escort;
             foreach (Pawn guard in guards)
@@ -87,6 +105,7 @@ namespace VanillaTuneUp
                 // since hauling mods chain the next haul as soon as a haul job ends.
                 guard.jobs.StartJob(JobGiver_HuntGuardFollow.MakeFollowJob(hunter), JobCondition.InterruptForced);
             }
+            return true;
         }
 
         /// <summary>True while the hunter should hold fire because a guard is still on the way.</summary>
@@ -109,7 +128,34 @@ namespace VanillaTuneUp
             if (now - escort.WaitStartTick < MaxWaitTicks)
                 return true;
             escort.WaitOver = true;
+            if (Strict)
+            {
+                GiveUp(hunter, escort.Victim);
+                Release(escort);
+            }
             return false;
+        }
+
+        /// <summary>Strict mode: true when this hunter gave up hunting this animal and should end the job.</summary>
+        public static bool ShouldGiveUp(Pawn hunter, Pawn victim) =>
+            hunter.CurJob != null && !hunter.CurJob.playerForced && IsGivenUp(hunter, victim);
+
+        /// <summary>Strict mode: true while the hunter leaves this animal alone after giving its hunt up.</summary>
+        public static bool IsGivenUp(Pawn hunter, Pawn victim) =>
+            Strict && victim != null && GivenUp.TryGetValue((hunter, victim), out int until) && Find.TickManager.TicksGame < until;
+
+        private static void GiveUp(Pawn hunter, Pawn victim)
+        {
+            int now = Find.TickManager.TicksGame;
+            if (GivenUp.Count > 0)
+            {
+                foreach (var key in new List<(Pawn, Pawn)>(GivenUp.Keys))
+                {
+                    if (GivenUp[key] <= now)
+                        GivenUp.Remove(key);
+                }
+            }
+            GivenUp[(hunter, victim)] = now + GiveUpCooldownTicks;
         }
 
         // Worst case: the victim's revenge pulls in every packmate vanilla would, which needs big threats allowed.
@@ -200,7 +246,10 @@ namespace VanillaTuneUp
                 escort.Guards.RemoveAt(i);
                 ByGuard.Remove(guard);
             }
-            if (escort.Guards.Count > 0)
+            // Strict mode: losing a guard before the first shot means the hunt cannot go ahead as planned.
+            if (Strict && !escort.WaitOver && escort.Guards.Count < escort.Needed)
+                GiveUp(escort.Hunter, escort.Victim);
+            else if (escort.Guards.Count > 0)
                 return true;
             Release(escort);
             return false;
@@ -239,6 +288,7 @@ namespace VanillaTuneUp
         {
             ByHunter.Clear();
             ByGuard.Clear();
+            GivenUp.Clear();
         }
 
         private static void PruneInvalid()
@@ -279,6 +329,11 @@ namespace VanillaTuneUp
                     driver.pawn.rotationTracker.FaceTarget(driver.Victim);
                 if (HuntGuard.ShouldWait(driver.pawn))
                     return;
+                if (HuntGuard.ShouldGiveUp(driver.pawn, driver.Victim))
+                {
+                    driver.EndJobWith(JobCondition.Incompletable);
+                    return;
+                }
                 // Vanilla gives up on a hunt after 5000 ticks; time spent waiting should not count.
                 if (waitBegan >= 0)
                     JobStartTick(driver) += Find.TickManager.TicksGame - waitBegan;
@@ -297,7 +352,8 @@ namespace VanillaTuneUp
                     toil.initAction = () =>
                     {
                         start?.Invoke();
-                        HuntGuard.Request(driver.pawn, driver.Victim);
+                        if (!HuntGuard.Request(driver.pawn, driver.Victim))
+                            driver.EndJobWith(JobCondition.Incompletable);
                     };
                 }
                 else if (toil.debugName == "GotoCastPosition" && gotoCastPos == null)
@@ -311,6 +367,8 @@ namespace VanillaTuneUp
                     {
                         if (HuntGuard.ShouldWait(driver.pawn))
                             driver.JumpToToil(wait);
+                        else if (HuntGuard.ShouldGiveUp(driver.pawn, driver.Victim))
+                            driver.EndJobWith(JobCondition.Incompletable);
                         else
                             check?.Invoke();
                     };
@@ -326,6 +384,18 @@ namespace VanillaTuneUp
                 yield return end;
                 yield return wait;
             }
+        }
+    }
+
+    /// <summary>Strict mode: a hunter that gave a hunt up does not pick the same animal again until the cooldown ends.</summary>
+    [HarmonyPatchCategory("HuntGuard")]
+    [HarmonyPatch(typeof(WorkGiver_HunterHunt), nameof(WorkGiver_HunterHunt.HasJobOnThing))]
+    public static class Patch_WorkGiver_HunterHunt_HasJobOnThing
+    {
+        public static void Postfix(Pawn pawn, Thing t, bool forced, ref bool __result)
+        {
+            if (__result && !forced && t is Pawn victim && HuntGuard.IsGivenUp(pawn, victim))
+                __result = false;
         }
     }
 

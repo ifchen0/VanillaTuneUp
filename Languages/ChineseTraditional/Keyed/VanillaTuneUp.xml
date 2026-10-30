@@ -39,9 +39,11 @@
   <VTU_MuteBirthSounds>靜音分娩與出生音效</VTU_MuteBirthSounds>
   <VTU_MuteBirthSounds_Desc>靜音分娩（早期／後期）與出生音效，其他嬰兒音效不變。</VTU_MuteBirthSounds_Desc>
   <VTU_HuntGuard>危險狩獵派護衛</VTU_HuntGuard>
-  <VTU_HuntGuard_Desc>獵人要狩獵的動物，若受傷反擊率（以該獵人在射擊距離計算）達到下方數值，會派最近的有遠程武器、敵意反應設為攻擊的空閒殖民者擔任護衛：跟著獵人，並射擊任何攻擊獵人的對象。護衛人數1到3位，動物越強、附近會一起反擊的同伴越多，派的人越多。獵人會在射擊位置等所有護衛靠近，最多等30秒。只會挑不餓、不累、沒受傷，且手上工作可以中斷的殖民者；獵物倒下後護衛就回去工作。手動下令的狩獵不受影響。</VTU_HuntGuard_Desc>
+  <VTU_HuntGuard_Desc>獵人要狩獵的動物，若受傷反擊率（以該獵人在射擊距離計算）達到下方數值，會派最近的有遠程武器、敵意反應設為攻擊的空閒殖民者擔任護衛：跟著獵人，並射擊任何攻擊獵人的對象。護衛人數1到3位，動物越強、附近會一起反擊的同伴越多，派的人越多。獵人會在射擊位置等所有護衛靠近，最多等30秒（開啟下方嚴格模式則改為放棄狩獵）。只會挑不餓、不累、沒受傷，且手上工作可以中斷的殖民者；獵物倒下後護衛就回去工作。手動下令的狩獵不受影響。</VTU_HuntGuard_Desc>
   <VTU_HuntGuardMinChance>最低反擊率：{0}%</VTU_HuntGuardMinChance>
   <VTU_HuntGuardMinChance_Desc>動物每次受傷時反擊的機率，與原版對該獵人的計算相同：物種基礎值，距離近時提高，狩獵隱匿越高越低。原版物種基礎值有10%（毛牛、爆炸艾洛普等）、50%（熊、大型貓科、昆蟲等）、100%（獨角獸、狼、座狼等）。</VTU_HuntGuardMinChance_Desc>
+  <VTU_HuntGuardStrict>嚴格模式：護衛不齊就放棄</VTU_HuntGuardStrict>
+  <VTU_HuntGuardStrict_Desc>獵人不會在沒有護衛的情況下開槍，而是放棄這次狩獵：空閒的護衛人數不足、第一槍前有護衛離隊，或30秒後護衛還沒全部靠近時都會放棄。之後這名獵人在遊戲內1小時內不會再狩獵這隻動物。一旦開始射擊，之後護衛離開也會繼續狩獵。</VTU_HuntGuardStrict_Desc>
   <VTU_PrisonerDefaultFoodPolicy>新囚犯的食物政策</VTU_PrisonerDefaultFoodPolicy>
   <VTU_PrisonerDefaultFoodPolicy_Desc>pawn 成為你的囚犯時，自動套用下方選擇的食物政策，不用每抓一個囚犯就手動設定一次。被招募或釋放時，若仍是這個政策，會改回預設政策。政策以名稱比對，各個存檔請使用相同名稱。</VTU_PrisonerDefaultFoodPolicy_Desc>
   <VTU_PrisonerPolicyLabel>新囚犯套用的政策</VTU_PrisonerPolicyLabel>
