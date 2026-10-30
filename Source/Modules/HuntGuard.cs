@@ -10,8 +10,8 @@ using Verse.Profile;
 namespace VanillaTuneUp
 {
     /// <summary>
-    /// Hunting an animal likely to turn on the hunter calls the nearest free armed colonists as guards, more of them
-    /// for a stronger victim or one whose packmates would join its revenge. The guards follow and defend the hunter
+    /// Hunting an animal that can turn on the hunter at all calls the nearest free armed colonists as guards, more of
+    /// them for a tougher victim or one whose packmates would join its revenge. The guards follow and defend the hunter
     /// with the same vanilla AI that obedient animals use for their master, and the hunter holds fire at the cast
     /// position until every guard is close or a time limit runs out. In strict mode a hunter who cannot get every
     /// guard it needs before the first shot gives the hunt up and leaves that animal alone for a while instead.
@@ -19,14 +19,14 @@ namespace VanillaTuneUp
     /// </summary>
     public static class HuntGuard
     {
-        public const float DefaultMinRevengeChance = 0.2f;
         // The hunter shoots anyway once it has waited this long (30 s) for the guards.
         private const int MaxWaitTicks = 1800;
         // Guard counts as arrived within this many cells of the hunter.
         private const float ReadyDistance = 8f;
-        // One guard per this much combat power on the victim's side (a grizzly bear is 200, a thrumbo 500).
-        private const float PowerPerGuard = 200f;
-        private const int MaxGuards = 3;
+        // One guard per this much health scale on the victim's side (a grizzly bear is 2.5, a megasloth 3.6, a
+        // thrumbo 8). Revenge chance only decides whether guards come: every hit rolls it again, so even a small
+        // chance adds up over the many hits a tough animal takes.
+        private const float HealthPerGuard = 3f;
         // Same radius vanilla uses to pull packmates into an animal's revenge (Pawn_MindState.GetPackmates).
         private const float PackRadius = 24f;
         // Strict mode: a hunter that gave a hunt up leaves that animal alone this long (one in-game hour).
@@ -53,9 +53,6 @@ namespace VanillaTuneUp
         public static void DrawSettings(Listing_Standard listing)
         {
             TuneUpSettings settings = VanillaTuneUpMod.Settings;
-            listing.Label("VTU_HuntGuardMinChance".Translate((settings.huntGuardMinRevengeChance * 100f).ToString("0")),
-                tooltip: "VTU_HuntGuardMinChance_Desc".Translate());
-            settings.huntGuardMinRevengeChance = Mathf.Round(listing.Slider(settings.huntGuardMinRevengeChance, 0.05f, 1f) * 20f) / 20f;
             listing.CheckboxLabeled("VTU_HuntGuardStrict".Translate(), ref settings.huntGuardStrict, "VTU_HuntGuardStrict_Desc".Translate());
         }
 
@@ -84,7 +81,7 @@ namespace VanillaTuneUp
                 return true;
             float range = hunter.equipment?.PrimaryEq?.PrimaryVerb?.EffectiveRange ?? 1f;
             float chance = PawnUtility.GetManhunterOnDamageChance(victim, hunter, range * JobDriver_Hunt.MaxRangeFactor);
-            if (chance < VanillaTuneUpMod.Settings.huntGuardMinRevengeChance)
+            if (chance <= 0f)
                 return true;
             int needed = GuardsNeeded(victim);
             List<Pawn> guards = FindGuards(hunter, needed);
@@ -161,7 +158,7 @@ namespace VanillaTuneUp
         // Worst case: the victim's revenge pulls in every packmate vanilla would, which needs big threats allowed.
         private static int GuardsNeeded(Pawn victim)
         {
-            float threat = CombatPower(victim);
+            float threat = Health(victim);
             if (victim.Spawned && Find.Storyteller.difficulty.allowBigThreats)
             {
                 District district = victim.GetDistrict();
@@ -173,15 +170,15 @@ namespace VanillaTuneUp
                     if (p.def != victim.def && (crossAggro == null || !crossAggro.Contains(p.def)))
                         continue;
                     if (p.Position.InHorDistOf(victim.Position, PackRadius) && p.GetDistrict() == district)
-                        threat += CombatPower(p);
+                        threat += Health(p);
                 }
             }
-            return Mathf.Clamp(Mathf.CeilToInt(threat / PowerPerGuard), 1, MaxGuards);
+            // No upper limit: a whole herd calls out as many guards as it takes, like a hunting party.
+            return Mathf.Max(1, Mathf.CeilToInt(threat / HealthPerGuard));
         }
 
-        // Young and wounded animals hit less hard than the kind's listed combat power.
-        private static float CombatPower(Pawn p) =>
-            p.kindDef.combatPower * (p.ageTracker?.CurLifeStage?.bodySizeFactor ?? 1f) * p.health.summaryHealth.SummaryHealthPercent;
+        // Health left to shoot through: the race and life stage's health scale, less what wounds took already.
+        private static float Health(Pawn p) => p.HealthScale * p.health.summaryHealth.SummaryHealthPercent;
 
         private static List<Pawn> FindGuards(Pawn hunter, int count)
         {

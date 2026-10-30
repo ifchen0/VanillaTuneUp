@@ -36,7 +36,7 @@ Tweaks:
 - Right-click to dismiss bundled letters: right-clicking the "N more..." letter dismisses all the letters folded into it; letters still waiting for a choice stay.
 - Quicksave hotkey: F5 saves right away to Quicksave-1, -2 and so on, overwriting the oldest once the set number (5 by default) is reached.
 - Food policy for new prisoners: new prisoners get the food policy you pick.
-- Guards for dangerous hunts: hunting an animal likely to fight back calls nearby armed colonists along as guards, more of them for stronger animals and packs.
+- Guards for dangerous hunts: hunting an animal that can fight back calls nearby armed colonists along as guards, more of them for tougher animals and packs.
 - Hybrid children keep a matching xenotype: a Hybrid child whose genes closely match one heritable xenotype gets that xenotype (Biotech).
 - Tell faction colors apart: factions with nearly identical colors are nudged apart on load.
 - Drag to reorder: right-drag to reorder the bottom bar, architect categories, buildings and command buttons.
