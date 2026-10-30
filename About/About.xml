@@ -32,7 +32,7 @@ Tweaks:
 - Short names on the map: long names under pawns are cut short; hover or select the pawn to see the full name.
 - Ghouls can wear apparel: ghouls keep their clothes when turned and can be ordered to wear clothes and armor, still no weapons (Anomaly).
 - Caravan: abandon all dead at once: one button on the caravan Items tab abandons every human corpse and tainted apparel; animal corpses are kept.
-- Taskbar letter badge: the letters waiting on screen are shown as a small badge over the game's taskbar button, counted and coloured like the most urgent one; critical alerts turn the badge red, or show a red dot when there are no letters; a pause sign shows while the game is paused (Windows only).
+- Taskbar letter badge: the letters waiting on screen are shown as a small badge over the game's taskbar button, counted and coloured like the most urgent one; critical alerts turn the badge red, or show a red dot when there are no letters; with no letters, top-left messages show a coloured dot while on screen; a pause sign shows while the game is paused (Windows only).
 - Right-click to dismiss bundled letters: right-clicking the "N more..." letter dismisses all the letters folded into it; letters still waiting for a choice stay.
 - Quicksave hotkey: F5 saves right away to Quicksave-1, -2 and so on, overwriting the oldest once the set number (5 by default) is reached.
 - Food policy for new prisoners: new prisoners get the food policy you pick.

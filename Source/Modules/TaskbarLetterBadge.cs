@@ -13,6 +13,7 @@ namespace VanillaTuneUp
     /// <summary>
     /// Mirrors the letter stack on a small badge over the game's taskbar button: the number of letters in the stack,
     /// coloured like the most urgent of them (the letter's flash colour). Opening or dismissing letters updates it.
+    /// With no letters, a message on the top left shows a plain dot in the matching letter colour while it is on screen.
     /// While the game is paused the count gives way to a pause sign, on a grey badge when nothing else is showing.
     /// No banners, sounds or flashing.
     /// </summary>
@@ -20,8 +21,11 @@ namespace VanillaTuneUp
     [HarmonyPatch(typeof(LetterStack), nameof(LetterStack.LetterStackUpdate))]
     public static class Patch_LetterStack_LetterStackUpdate
     {
+        private static readonly AccessTools.FieldRef<List<Message>> LiveMessages =
+            AccessTools.StaticFieldRefAccess<List<Message>>(AccessTools.Field(typeof(Messages), "liveMessages"));
+
         public static void Postfix(LetterStack __instance) =>
-            TaskbarLetterBadge.Sync(__instance.LettersListForReading, Find.TickManager?.Paused ?? false);
+            TaskbarLetterBadge.Sync(__instance.LettersListForReading, LiveMessages(), Find.TickManager?.Paused ?? false);
     }
 
     /// <summary>
@@ -44,7 +48,7 @@ namespace VanillaTuneUp
     {
         public static void Postfix()
         {
-            TaskbarLetterBadge.Sync(null, false);
+            TaskbarLetterBadge.Sync(null, null, false);
             TaskbarLetterBadge.SyncAlerts(null);
         }
     }
@@ -57,6 +61,7 @@ namespace VanillaTuneUp
         private static LetterDef shownDef;
         private static bool shownCritical;
         private static bool shownPaused;
+        private static LetterDef shownMessage;
 
         public static void SyncAlerts(List<Alert> alerts)
         {
@@ -78,8 +83,8 @@ namespace VanillaTuneUp
             Redraw();
         }
 
-        /// <summary>Called every frame; the icon is redrawn only when the count, the colour or the pause state changes.</summary>
-        public static void Sync(List<Letter> letters, bool paused)
+        /// <summary>Called every frame; the icon is redrawn only when the count, a colour or the pause state changes.</summary>
+        public static void Sync(List<Letter> letters, List<Message> messages, bool paused)
         {
             int count = 0;
             LetterDef mostUrgent = null;
@@ -94,17 +99,28 @@ namespace VanillaTuneUp
                         mostUrgent = letter.def;
                 }
             }
-            if (count == shownCount && mostUrgent == shownDef && paused == shownPaused)
+            LetterDef message = null;
+            if (messages != null)
+            {
+                foreach (Message msg in messages)
+                {
+                    LetterDef def = msg == null || msg.Expired ? null : MessageColour(msg.def);
+                    if (def != null && (message == null || MoreUrgent(def, message)))
+                        message = def;
+                }
+            }
+            if (count == shownCount && mostUrgent == shownDef && paused == shownPaused && message == shownMessage)
                 return;
             shownCount = count;
             shownDef = mostUrgent;
             shownPaused = paused;
+            shownMessage = message;
             Redraw();
         }
 
         // A critical alert outranks every letter, so it paints the badge in the big-threat colour; with no letters
-        // it is a plain red dot. Pausing swaps the count for a pause sign and keeps the colour; with nothing else to
-        // show the badge is grey.
+        // it is a plain red dot. A message on screen ranks below both and shows a plain dot. Pausing swaps the count
+        // for a pause sign and keeps the colour; with nothing else to show the badge is grey.
         private static void Redraw()
         {
             Color fill;
@@ -112,6 +128,8 @@ namespace VanillaTuneUp
                 fill = LetterDefOf.ThreatBig.flashColor;
             else if (shownCount > 0)
                 fill = shownDef.flashColor;
+            else if (shownMessage != null)
+                fill = shownMessage.flashColor;
             else if (shownPaused)
                 fill = PausedGrey;
             else
@@ -122,8 +140,28 @@ namespace VanillaTuneUp
             // The description is only alt text for accessibility tools; Windows does not show it on the taskbar.
             string tip = shownCount > 0 ? "VTU_TaskbarLetterBadge_Tip".Translate(shownCount).ToString()
                 : shownCritical ? "VTU_TaskbarLetterBadge_CriticalTip".Translate().ToString()
+                : shownMessage != null ? "VTU_TaskbarLetterBadge_MessageTip".Translate().ToString()
                 : "VTU_TaskbarLetterBadge_PausedTip".Translate().ToString();
             TaskbarOverlay.Show(BadgeIcon.Draw(fill, shownCount, shownPaused), tip);
+        }
+
+        // Messages have no colour of their own, so each event type borrows the matching letter's. Feedback on the
+        // player's own clicks (rejected, caution, silent input) and "situation resolved" are left out.
+        private static LetterDef MessageColour(MessageTypeDef def)
+        {
+            if (def == MessageTypeDefOf.ThreatBig)
+                return LetterDefOf.ThreatBig;
+            if (def == MessageTypeDefOf.ThreatSmall)
+                return LetterDefOf.ThreatSmall;
+            if (def == MessageTypeDefOf.PawnDeath)
+                return LetterDefOf.Death;
+            if (def == MessageTypeDefOf.NegativeHealthEvent || def == MessageTypeDefOf.NegativeEvent)
+                return LetterDefOf.NegativeEvent;
+            if (def == MessageTypeDefOf.NeutralEvent || def == MessageTypeDefOf.TaskCompletion)
+                return LetterDefOf.NeutralEvent;
+            if (def == MessageTypeDefOf.PositiveEvent)
+                return LetterDefOf.PositiveEvent;
+            return null;
         }
 
         // Vanilla's own urgency order: letters that pause on a lower auto-pause setting first, then the faster flash.

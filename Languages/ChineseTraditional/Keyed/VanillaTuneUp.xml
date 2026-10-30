@@ -104,9 +104,10 @@
   <VTU_CaravanAbandonDead_Confirm>確定要拋棄{0}具人類屍體和{1}件死者穿過的衣物嗎？</VTU_CaravanAbandonDead_Confirm>
   <VTU_CaravanAbandonDead_Colonists>其中包含以下殖民者的遺體：</VTU_CaravanAbandonDead_Colonists>
   <VTU_TaskbarLetterBadge>工作列信件角標</VTU_TaskbarLetterBadge>
-  <VTU_TaskbarLetterBadge_Desc>把畫面右側待處理的信件以小角標顯示在工作列的遊戲圖示上：數字是信件數，顏色取最緊急的那封（大威脅紅色、小威脅橘色，依此類推）。打開或關閉信件時角標跟著更新。有紅色緊急警示（例如危及生命的病況、殖民者需要救援）時，角標也會變成紅色；沒有信件時則顯示一個紅點。遊戲暫停時數字會換成暫停符號（顏色不變），沒有其他東西要顯示時則是灰色角標。在其他視窗時看一眼工作列就知道遊戲裡發生了事。不會跳出通知、不發出聲音也不閃爍。僅限Windows。</VTU_TaskbarLetterBadge_Desc>
+  <VTU_TaskbarLetterBadge_Desc>把畫面右側待處理的信件以小角標顯示在工作列的遊戲圖示上：數字是信件數，顏色取最緊急的那封（大威脅紅色、小威脅橘色，依此類推）。打開或關閉信件時角標跟著更新。有紅色緊急警示（例如危及生命的病況、殖民者需要救援）時，角標也會變成紅色；沒有信件時則顯示一個紅點。沒有信件時，左上角出現的訊息會在顯示期間以對應顏色的圓點呈現。遊戲暫停時數字會換成暫停符號（顏色不變），沒有其他東西要顯示時則是灰色角標。在其他視窗時看一眼工作列就知道遊戲裡發生了事。不會跳出通知、不發出聲音也不閃爍。僅限Windows。</VTU_TaskbarLetterBadge_Desc>
   <VTU_TaskbarLetterBadge_Tip>RimWorld有{0}封待處理信件</VTU_TaskbarLetterBadge_Tip>
   <VTU_TaskbarLetterBadge_CriticalTip>RimWorld有緊急警示</VTU_TaskbarLetterBadge_CriticalTip>
+  <VTU_TaskbarLetterBadge_MessageTip>RimWorld有新訊息</VTU_TaskbarLetterBadge_MessageTip>
   <VTU_TaskbarLetterBadge_PausedTip>RimWorld已暫停</VTU_TaskbarLetterBadge_PausedTip>
   <VTU_BundleLetterDismiss>右鍵關閉合併信件</VTU_BundleLetterDismiss>
   <VTU_BundleLetterDismiss_Desc>信件太多時，較舊的信件會合併成一封「還有N封...」的信件，原版對它按右鍵沒有反應。開啟後，右鍵點它會一次關閉其中所有信件，和右鍵關閉一般信件一樣。仍在等你做選擇的信件（例如有人請求加入、訪客在門口）本來就不能用右鍵關閉，會保留下來。</VTU_BundleLetterDismiss_Desc>
