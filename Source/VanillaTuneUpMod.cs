@@ -92,10 +92,9 @@ namespace VanillaTuneUp
             new TuneUpModule("CaravanEncounterNoJump", true, null),
             new TuneUpModule("PinnedResources", true, null),
             new TuneUpModule("NutrientPasteStock", true, null),
+            // Main menu additions: mod update list (Steam only) and the Continue button.
             new TuneUpModule("ModUpdateNotes", true, null)
             {
-                IsAvailable = () => Verse.Steam.SteamManager.Initialized,
-                UnavailableKey = "VTU_RequiresSteam",
                 OnActivated = ModUpdateNotes.Scan
             },
             new TuneUpModule("BreakUpFights", true, null),

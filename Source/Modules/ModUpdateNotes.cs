@@ -62,6 +62,9 @@ namespace VanillaTuneUp
 
         public static void Scan()
         {
+            // Without Steam the module still adds the Continue button; the update list just stays empty.
+            if (!SteamManager.Initialized)
+                return;
             Dictionary<string, int> seen = VanillaTuneUpMod.Settings.seenModUpdates;
             // Rebuilt every start from the updates still unread, so read or replaced versions drop out on their own.
             Dictionary<string, int> oldShows = VanillaTuneUpMod.Settings.unreadModUpdateShows;

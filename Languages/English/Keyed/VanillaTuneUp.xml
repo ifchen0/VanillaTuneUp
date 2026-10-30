@@ -80,8 +80,11 @@
   <VTU_PS_DialogTitle>Dispense until you have</VTU_PS_DialogTitle>
   <VTU_PS_DialogNote>Counts paste in storage, being carried and on the ground (now {0}). 0 turns it off.</VTU_PS_DialogNote>
   <VTU_PS_Inspect>Paste stock: {0} / {1}</VTU_PS_Inspect>
-  <VTU_ModUpdateNotes>Mod update notes</VTU_ModUpdateNotes>
-  <VTU_ModUpdateNotes_Desc>The main menu's top-left box (translation credits) becomes a list of your active Steam Workshop mods, most recently updated first. Mods updated since you last opened them are highlighted; click one to read its change notes from the Workshop. An update left unopened for 3 game starts stops being highlighted. Works for every mod. On the first run every mod counts as read.</VTU_ModUpdateNotes_Desc>
+  <VTU_ModUpdateNotes>Main menu: Continue button and mod update notes</VTU_ModUpdateNotes>
+  <VTU_ModUpdateNotes_Desc>Adds a Continue button at the top of the main menu that loads your newest save (autosaves included), with the usual version and mod list warnings; hover it to see which save it loads. Steam version only: the main menu's top-left box (translation credits) becomes a list of your active Steam Workshop mods, most recently updated first. Mods updated since you last opened them are highlighted; click one to read its change notes from the Workshop. An update left unopened for 3 game starts stops being highlighted. Works for every mod. On the first run every mod counts as read.</VTU_ModUpdateNotes_Desc>
+  <VTU_MM_Continue>Continue</VTU_MM_Continue>
+  <VTU_MM_ContinueTip>Load the newest save: {0}
+Saved {1}</VTU_MM_ContinueTip>
   <VTU_MU_Title>Mod updates ({0} new)</VTU_MU_Title>
   <VTU_MU_MarkAllRead>Mark all as read</VTU_MU_MarkAllRead>
   <VTU_MU_OpenChangeLog>Open change notes page</VTU_MU_OpenChangeLog>
