@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 using RimWorld;
 using Verse;
@@ -12,11 +13,12 @@ namespace VanillaTuneUp
     /// <summary>
     /// Trader caravans and visitor groups leave early as soon as any member, pack animals included, gets mild
     /// hypothermia or heatstroke: they wait at a spot just outside the colony and their Defend duty never seeks a safe
-    /// temperature. Every few in-game minutes while waiting, if the temperature at that spot is outside the safe range
-    /// of the most sensitive member or anything hostile to the group is active on the map, the waiting spot moves into
-    /// a room: a barn when the group has animals, otherwise a dining room, with a storeroom as the fallback for both.
-    /// The room must itself be within the safe range and reachable by every member. The group goes back to its original
-    /// spot once the threat is gone and the temperature there is well inside the range again.
+    /// temperature. Every few in-game minutes while waiting, if the temperature at that spot is near the safe limit of
+    /// the most sensitive member or anything hostile to the group is active on the map, the waiting spot moves into a
+    /// room: a barn when the group has animals, otherwise a dining room, with a storeroom as the fallback for both.
+    /// The room must be comfortably inside the safe range, reachable by every member and not already taken by another
+    /// sheltering group (first come, first served). The group goes back to its original spot once the threat is gone
+    /// and the temperature there is well inside the range again. Without a usable room, vanilla behaviour stays.
     /// </summary>
     [HarmonyPatchCategory("VisitorShelter")]
     [HarmonyPatch(typeof(LordToil), nameof(LordToil.LordToilTick))]
@@ -24,16 +26,25 @@ namespace VanillaTuneUp
     {
         // Often enough to get inside before a raid arrives; the check itself is a few pawns and the threat cache.
         private const int CheckInterval = 250;
+        // After a failed room search, wait an in-game hour before scanning the map's rooms again.
+        private const int RetryInterval = GenDate.TicksPerHour;
         // Shelter a little before the safe range is left; go back out only when well inside it, to avoid flip-flopping.
         private const float EnterMargin = 2f;
         private const float LeaveMargin = 6f;
-        internal const int CellTries = 10;
+        private const string ArrivedMemo = "TravelArrived";
 
-        private static readonly Type DefendTraderCaravanType = AccessTools.TypeByName("RimWorld.LordToil_DefendTraderCaravan");
         private static readonly AccessTools.FieldRef<LordJob_TradeWithColony, IntVec3> TradeChillSpot =
             AccessTools.FieldRefAccess<LordJob_TradeWithColony, IntVec3>("chillSpot");
         private static readonly AccessTools.FieldRef<LordJob_VisitColony, IntVec3> VisitChillSpot =
             AccessTools.FieldRefAccess<LordJob_VisitColony, IntVec3>("chillSpot");
+        private static readonly AccessTools.FieldRef<Trigger_Memo, string> MemoOf =
+            AccessTools.FieldRefAccess<Trigger_Memo, string>("memo");
+
+        // Both lord jobs hold other LordToil_DefendPoint toils of the same class (defending after an attack, on the way
+        // in or out); the waiting one is the toil entered when the group arrives at its chill spot. The visitors' exit
+        // subgraph has a TravelArrived transition of its own (to LordToil_ExitMap), hence the target type check.
+        private static readonly ConditionalWeakTable<StateGraph, LordToil> WaitingToils = new ConditionalWeakTable<StateGraph, LordToil>();
+        private static readonly ConditionalWeakTable<Lord, StrongBox<int>> NextSearch = new ConditionalWeakTable<Lord, StrongBox<int>>();
 
         public static void Postfix(LordToil __instance)
         {
@@ -46,29 +57,29 @@ namespace VanillaTuneUp
         private static bool TryGetHome(LordToil_DefendPoint toil, out IntVec3 home)
         {
             Lord lord = toil.lord;
-            if (lord.LordJob is LordJob_TradeWithColony trade)
-            {
-                // The toil defending the trader after an attack is the same class; only the waiting one (added last).
-                home = TradeChillSpot(trade);
-                return toil.GetType() == DefendTraderCaravanType
-                    && lord.Graph.lordToils.LastOrDefault(t => t.GetType() == DefendTraderCaravanType) == toil;
-            }
-            if (lord.LordJob is LordJob_VisitColony visit && toil.GetType() == typeof(LordToil_DefendPoint))
-            {
-                home = VisitChillSpot(visit);
-                return true;
-            }
             home = IntVec3.Invalid;
-            return false;
+            if (lord.faction == null)
+                return false;
+            if (lord.LordJob is LordJob_TradeWithColony trade)
+                home = TradeChillSpot(trade);
+            else if (lord.LordJob is LordJob_VisitColony visit)
+                home = VisitChillSpot(visit);
+            else
+                return false;
+            return WaitingToil(lord.Graph) == toil;
         }
 
-        /// <summary>The room a sheltering group is waiting in, or null when it waits at its original spot.</summary>
-        public static Room ShelterOf(Pawn pawn)
+        private static LordToil WaitingToil(StateGraph graph) =>
+            WaitingToils.GetValue(graph, g => g.transitions.FirstOrDefault(t => t.target is LordToil_DefendPoint
+                && t.triggers.Any(tr => tr is Trigger_Memo memo && MemoOf(memo) == ArrivedMemo))?.target);
+
+        /// <summary>The room a group is sheltering in, or null when it is not sheltering.</summary>
+        public static Room ShelterRoomOf(Lord lord)
         {
-            if (!(pawn.GetLord()?.CurLordToil is LordToil_DefendPoint toil) || !TryGetHome(toil, out IntVec3 home)
+            if (!(lord?.CurLordToil is LordToil_DefendPoint toil) || !TryGetHome(toil, out IntVec3 home)
                 || toil.FlagLoc == home || !toil.FlagLoc.IsValid)
                 return null;
-            Room room = toil.FlagLoc.GetRoom(pawn.Map);
+            Room room = toil.FlagLoc.GetRoom(lord.Map);
             return room != null && !room.PsychologicallyOutdoors ? room : null;
         }
 
@@ -90,52 +101,98 @@ namespace VanillaTuneUp
                 safe.max = Math.Min(safe.max, range.max);
                 hasAnimals |= pawn.RaceProps.Animal;
             }
+            // No temperature suits every member at once, so no room can help.
+            if (safe.min + 2 * EnterMargin > safe.max)
+                return;
 
             float outside = home.GetTemperature(map);
             bool threat = GenHostility.AnyHostileActiveThreatTo(map, lord.faction);
             IntVec3 current = toil.FlagLoc;
             if (current == home)
             {
-                if (!threat && outside >= safe.min + EnterMargin && outside <= safe.max - EnterMargin)
+                if (!threat && Within(outside, safe, EnterMargin))
                     return;
-                if (TryFindShelter(lord, safe, hasAnimals, out IntVec3 cell, out Room room))
-                {
-                    Move(toil, cell);
-                    Pawn trader = TraderCaravanUtility.FindTrader(lord);
-                    Pawn look = trader ?? lord.ownedPawns.FirstOrDefault(p => p.Spawned);
-                    string group = (trader != null ? "VTU_VisitorShelter_Traders" : "VTU_VisitorShelter_Visitors").Translate(lord.faction.Name);
-                    string reason = threat ? "VTU_VisitorShelter_ReasonEnemies"
-                        : outside < safe.min + EnterMargin ? "VTU_VisitorShelter_ReasonCold" : "VTU_VisitorShelter_ReasonHeat";
-                    Messages.Message("VTU_VisitorShelter_Moved".Translate(group, reason.Translate(), room.GetRoomRoleLabel()).CapitalizeFirst(),
-                        look != null ? new LookTargets(look) : new LookTargets(cell, map), MessageTypeDefOf.NeutralEvent);
-                }
+                Shelter(toil, safe, hasAnimals, threat, outside, home);
                 return;
             }
 
-            if (!threat && outside >= safe.min + LeaveMargin && outside <= safe.max - LeaveMargin)
+            if (!threat && Within(outside, safe, LeaveMargin))
             {
-                Move(toil, home);
+                Move(toil, home, interrupt: false);
                 return;
             }
-            // Still unsafe outside: stay unless the room became unusable (deconstructed, door left open, heater off).
-            Room currentRoom = current.GetRoom(map);
-            if (currentRoom != null && !currentRoom.PsychologicallyOutdoors && safe.Includes(currentRoom.Temperature))
+            // Still unsafe outside: stay while the room is safe or at least better than outside (a heater may just be
+            // catching up), otherwise look for another room, and go back to vanilla behaviour without one.
+            Room room = current.GetRoom(map);
+            float roomDistance = room == null || room.PsychologicallyOutdoors ? float.MaxValue : Distance(room.Temperature, safe);
+            if (roomDistance == 0f || roomDistance < Distance(outside, safe))
                 return;
-            Move(toil, TryFindShelter(lord, safe, hasAnimals, out IntVec3 other, out _) ? other : home);
+            Shelter(toil, safe, hasAnimals, threat, outside, home);
         }
 
-        private static void Move(LordToil_DefendPoint toil, IntVec3 cell)
+        private static void Shelter(LordToil_DefendPoint toil, FloatRange safe, bool hasAnimals, bool threat, float outside, IntVec3 home)
+        {
+            Lord lord = toil.lord;
+            StrongBox<int> next = NextSearch.GetOrCreateValue(lord);
+            if (Find.TickManager.TicksGame < next.Value)
+            {
+                if (toil.FlagLoc != home)
+                    Move(toil, home, interrupt: false);
+                return;
+            }
+            if (!TryFindShelter(lord, safe, hasAnimals, out IntVec3 cell, out Room room))
+            {
+                next.Value = Find.TickManager.TicksGame + RetryInterval;
+                if (toil.FlagLoc != home)
+                    Move(toil, home, interrupt: false);
+                return;
+            }
+            Move(toil, cell, interrupt: true);
+            Pawn trader = TraderCaravanUtility.FindTrader(lord);
+            Pawn look = trader ?? lord.ownedPawns.FirstOrDefault(p => p.Spawned);
+            string group = (trader != null ? "VTU_VisitorShelter_Traders" : "VTU_VisitorShelter_Visitors").Translate(lord.faction.Name);
+            string reason = threat ? "VTU_VisitorShelter_ReasonEnemies"
+                : outside < safe.min + EnterMargin ? "VTU_VisitorShelter_ReasonCold" : "VTU_VisitorShelter_ReasonHeat";
+            Messages.Message("VTU_VisitorShelter_Moved".Translate(group, reason.Translate(), room.GetRoomRoleLabel()).CapitalizeFirst(),
+                look != null ? new LookTargets(look) : new LookTargets(cell, lord.Map), MessageTypeDefOf.NeutralEvent);
+        }
+
+        private static bool Within(float temperature, FloatRange safe, float margin) =>
+            temperature >= safe.min + margin && temperature <= safe.max - margin;
+
+        private static float Distance(float temperature, FloatRange safe) =>
+            temperature < safe.min ? safe.min - temperature : temperature > safe.max ? temperature - safe.max : 0f;
+
+        // Going inside interrupts current jobs and wakes sleepers, as vanilla lord transitions do; otherwise a member
+        // asleep outside would sleep on in the cold until rested. Going back out lets them finish what they are doing.
+        private static void Move(LordToil_DefendPoint toil, IntVec3 cell, bool interrupt)
         {
             toil.SetDefendPoint(cell);
             toil.UpdateAllDuties();
+            if (!interrupt)
+                return;
+            foreach (Pawn pawn in toil.lord.ownedPawns)
+            {
+                if (!pawn.Spawned)
+                    continue;
+                if (!pawn.Awake())
+                    RestUtility.WakeUp(pawn);
+                if (pawn.jobs?.curJob != null)
+                    pawn.jobs.EndCurrentJob(JobCondition.InterruptForced);
+            }
         }
-
-        internal static IEnumerable<IntVec3> WaitCells(Room room, Map map) =>
-            room.Cells.Where(c => c.Standable(map) && c.GetDoor(map) == null);
 
         private static bool TryFindShelter(Lord lord, FloatRange safe, bool hasAnimals, out IntVec3 cell, out Room shelter)
         {
             Map map = lord.Map;
+            // First come, first served: a room another group already shelters in is not shared.
+            var taken = new HashSet<Room>();
+            foreach (Lord other in map.lordManager.lords)
+            {
+                Room room = other == lord ? null : ShelterRoomOf(other);
+                if (room != null)
+                    taken.Add(room);
+            }
             string[] roles = hasAnimals ? new[] { "Barn", "Storeroom" } : new[] { "DiningRoom", "Storeroom" };
             foreach (string roleName in roles)
             {
@@ -143,18 +200,18 @@ namespace VanillaTuneUp
                 if (role == null)
                     continue;
                 IEnumerable<Room> rooms = map.regionGrid.AllRooms
-                    .Where(r => r.Role == role && !r.PsychologicallyOutdoors && !r.Fogged && safe.Includes(r.Temperature))
+                    .Where(r => r.Role == role && !r.PsychologicallyOutdoors && !r.Fogged && !taken.Contains(r)
+                        && Within(r.Temperature, safe, EnterMargin))
                     .OrderByDescending(r => r.CellCount);
                 foreach (Room room in rooms)
                 {
-                    foreach (IntVec3 c in WaitCells(room, map).InRandomOrder().Take(CellTries))
+                    // Reachability is decided per region, so one cell per room tells whether everyone can get in.
+                    if (room.Cells.Where(c => c.Standable(map)).TryRandomElement(out IntVec3 c)
+                        && lord.ownedPawns.All(p => !p.Spawned || p.CanReach(c, PathEndMode.OnCell, Danger.Deadly)))
                     {
-                        if (lord.ownedPawns.All(p => !p.Spawned || p.CanReach(c, PathEndMode.OnCell, Danger.Deadly)))
-                        {
-                            cell = c;
-                            shelter = room;
-                            return true;
-                        }
+                        cell = c;
+                        shelter = room;
+                        return true;
                     }
                 }
             }
@@ -166,24 +223,36 @@ namespace VanillaTuneUp
 
     /// <summary>
     /// Moving the waiting spot is not enough: guards and other members keep wandering up to 7 cells around it, out the
-    /// door into the cold. While a group shelters, its wandering stays inside the shelter room.
+    /// door into the cold. While a group shelters, vanilla wandering is kept but only accepts cells in the shelter room.
     /// </summary>
     [HarmonyPatchCategory("VisitorShelter")]
     [HarmonyPatch(typeof(JobGiver_Wander), "GetExactWanderDest")]
     public static class Patch_JobGiver_Wander_GetExactWanderDest
     {
+        private static readonly AccessTools.FieldRef<JobGiver_Wander, float> WanderRadius =
+            AccessTools.FieldRefAccess<JobGiver_Wander, float>("wanderRadius");
+        private static readonly AccessTools.FieldRef<JobGiver_Wander, Func<Pawn, IntVec3, IntVec3, bool>> Validator =
+            AccessTools.FieldRefAccess<JobGiver_Wander, Func<Pawn, IntVec3, IntVec3, bool>>("wanderDestValidator");
+        private static readonly AccessTools.FieldRef<JobGiver_Wander, Danger> MaxDanger =
+            AccessTools.FieldRefAccess<JobGiver_Wander, Danger>("maxDanger");
+        private static readonly AccessTools.FieldRef<JobGiver_Wander, bool> CanBashDoors =
+            AccessTools.FieldRefAccess<JobGiver_Wander, bool>("canBashDoors");
+
         public static bool Prefix(JobGiver_Wander __instance, Pawn pawn, ref IntVec3 __result)
         {
             if (!(__instance is JobGiver_WanderNearDutyLocation))
                 return true;
-            Room room = VisitorShelter.ShelterOf(pawn);
+            Lord lord = pawn.GetLord();
+            Room room = VisitorShelter.ShelterRoomOf(lord);
             if (room == null)
                 return true;
-            IntVec3 cell = VisitorShelter.WaitCells(room, pawn.Map).InRandomOrder().Take(VisitorShelter.CellTries)
-                .FirstOrDefault(c => pawn.CanReach(c, PathEndMode.OnCell, Danger.Deadly));
-            if (!cell.IsValid || cell == default(IntVec3))
-                return true;
-            __result = cell;
+            // Wander around the shelter spot rather than the duty focus: carriers follow the trader, who may be outside.
+            IntVec3 root = lord.CurLordToil.FlagLoc;
+            float radius = pawn.mindState.duty?.wanderRadius ?? WanderRadius(__instance);
+            Func<Pawn, IntVec3, IntVec3, bool> validator = Validator(__instance);
+            __result = RCellFinder.RandomWanderDestFor(pawn, root, radius,
+                (p, c, r) => c.GetRoom(p.Map) == room && (validator == null || validator(p, c, r)),
+                PawnUtility.ResolveMaxDanger(pawn, MaxDanger(__instance)), CanBashDoors(__instance));
             return false;
         }
     }
