@@ -80,7 +80,7 @@
   <VTU_PS_DialogNote>計算倉庫裡、搬運中與地上的營養膏（目前 {0}）。設為 0 即關閉。</VTU_PS_DialogNote>
   <VTU_PS_Inspect>營養膏庫存：{0} / {1}</VTU_PS_Inspect>
   <VTU_ModUpdateNotes>主選單：繼續遊戲按鈕與模組更新說明</VTU_ModUpdateNotes>
-  <VTU_ModUpdateNotes_Desc>主選單最上方加一個「繼續遊戲」按鈕，讀取最新的存檔（包括自動存檔），版本和模組清單不符時照常提示；滑鼠移上去可看到會讀取哪個存檔。限Steam版：主選單左上角的方框（翻譯人員名單）改為列出已啟用的Steam工作坊模組，最近更新的排在最前面。上次查看後有更新的模組會標亮，點選即可看工作坊上的更新說明。沒點開的更新經過3次遊戲啟動後就不再標亮。適用所有模組；第一次啟用時全部視為已讀。</VTU_ModUpdateNotes_Desc>
+  <VTU_ModUpdateNotes_Desc>主選單最上方加一個「繼續遊戲」按鈕，讀取最新的存檔（包括自動存檔），版本和模組清單不符時照常提示；滑鼠移上去可看到會讀取哪個存檔，在主選單按Enter也有同樣效果（按鍵可在選項 > 鍵盤中更改）。限Steam版：主選單左上角的方框（翻譯人員名單）改為列出已啟用的Steam工作坊模組，最近更新的排在最前面。上次查看後有更新的模組會標亮，點選即可看工作坊上的更新說明。沒點開的更新經過3次遊戲啟動後就不再標亮。適用所有模組；第一次啟用時全部視為已讀。</VTU_ModUpdateNotes_Desc>
   <VTU_MM_Continue>繼續遊戲</VTU_MM_Continue>
   <VTU_MM_ContinueTip>讀取最新存檔：{0}
 存檔時間：{1}</VTU_MM_ContinueTip>

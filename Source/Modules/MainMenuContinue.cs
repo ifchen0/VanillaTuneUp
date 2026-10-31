@@ -10,16 +10,26 @@ namespace VanillaTuneUp
 {
     /// <summary>
     /// "Continue" button at the top of the main menu's option list that loads the newest save, autosaves included.
-    /// Loading goes through the same version and mod list checks as the Load game dialog. Part of the ModUpdateNotes
-    /// module, which groups the main menu additions.
+    /// Enter (VTU_Continue key binding) does the same. Loading goes through the same version and mod list checks as
+    /// the Load game dialog. Part of the ModUpdateNotes module, which groups the main menu additions.
     /// </summary>
     public static class MainMenuContinue
     {
         // The save folder is read at most this often; the menu is drawn every frame.
         private const float RefreshSeconds = 2f;
 
+        // The hotkey is ignored this long after the menu reappears (a dialog closed, back from a game), so an Enter
+        // held or repeated from the dialog that just closed does not load a save.
+        private const float HotkeyDelaySeconds = 0.5f;
+
+        // Gap between two menu draws that counts as the menu having been hidden.
+        private const float HiddenGapSeconds = 0.2f;
+
         private static FileInfo latest;
         private static float lastRefresh = -RefreshSeconds;
+        private static KeyBindingDef keyDef;
+        private static float lastDrawn = -1f;
+        private static float shownSince;
 
         // Set while DoMainMenuControls runs until its first option list (the left column) is drawn.
         public static bool PendingInsert;
@@ -44,6 +54,25 @@ namespace VanillaTuneUp
             if (!file.Exists)
                 return;
             GameDataSaveLoader.CheckVersionAndLoadGame(Path.GetFileNameWithoutExtension(file.Name));
+        }
+
+        /// <summary>
+        /// VTU_Continue key binding (Enter by default) on the start screen. Vanilla draws the menu only while no
+        /// dialog is open, so the key does nothing behind the Load game dialog or a message box.
+        /// </summary>
+        public static void HandleHotkey()
+        {
+            float now = Time.realtimeSinceStartup;
+            if (now - lastDrawn > HiddenGapSeconds)
+                shownSince = now;
+            lastDrawn = now;
+            keyDef ??= DefDatabase<KeyBindingDef>.GetNamedSilentFail("VTU_Continue");
+            if (keyDef == null || !keyDef.KeyDownEvent)
+                return;
+            Event.current.Use();
+            FileInfo file = Latest;
+            if (now - shownSince >= HotkeyDelaySeconds && file != null)
+                Load(file);
         }
     }
 
@@ -72,7 +101,12 @@ namespace VanillaTuneUp
     public static class Patch_MainMenuDrawer_DoMainMenuControls
     {
         // Only the start screen; the in-game Esc menu is drawn by the same method.
-        public static void Prefix() => MainMenuContinue.PendingInsert = Current.ProgramState == ProgramState.Entry;
+        public static void Prefix()
+        {
+            MainMenuContinue.PendingInsert = Current.ProgramState == ProgramState.Entry;
+            if (MainMenuContinue.PendingInsert)
+                MainMenuContinue.HandleHotkey();
+        }
 
         public static void Finalizer() => MainMenuContinue.PendingInsert = false;
     }

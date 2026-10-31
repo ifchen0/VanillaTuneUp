@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
   <VTU_Quicksave.label>快速存檔</VTU_Quicksave.label>
+  <VTU_Continue.label>繼續遊戲（讀取最新存檔）</VTU_Continue.label>
 </LanguageData>

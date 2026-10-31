@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <Operation Class="VanillaTuneUp.PatchOperationTuneUp">
+    <module>ModUpdateNotes</module>
+    <operations>
+      <li Class="PatchOperationAdd">
+        <xpath>Defs</xpath>
+        <value>
+          <!-- Own category: the main menu has no other key bindings, so Enter does not clash with in-game Accept. -->
+          <KeyBindingCategoryDef>
+            <defName>VTU_MainMenu</defName>
+            <label>main menu</label>
+            <description>Controls on the main menu.</description>
+          </KeyBindingCategoryDef>
+          <KeyBindingDef>
+            <defName>VTU_Continue</defName>
+            <label>continue (load newest save)</label>
+            <category>VTU_MainMenu</category>
+            <defaultKeyCodeA>Return</defaultKeyCodeA>
+            <defaultKeyCodeB>KeypadEnter</defaultKeyCodeB>
+          </KeyBindingDef>
+        </value>
+      </li>
+    </operations>
+  </Operation>
+</Patch>
