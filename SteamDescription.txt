@@ -2,7 +2,7 @@ Small fixes and optional tweaks for vanilla RimWorld, collected in one mod.
 
 [h2]How it works[/h2][list]
 [*]Turn each part on or off in [i]Options > Mod settings > Vanilla Tune-Up[/i] (restart to apply).
-[*]Fixes are on by default; tweaks are off until you turn them on.
+[*]Fixes are on by default. Tweaks marked (on by default) only change the interface or do nothing until you use them; the other tweaks are off until you turn them on.
 [*]If one part fails to load (for example after a game update), only that part is turned off.
 [/list]
 
@@ -23,19 +23,19 @@ Small fixes and optional tweaks for vanilla RimWorld, collected in one mod.
 [*][b]Xenogerm queue[/b] (Biotech): a bill-style queue for the gene assembler (X times, until you have X, or forever).
 [*][b]Mute labor and birth sounds[/b] (Biotech).
 [*][b]Remove fog of war:[/b] reveals the map on generation or load, except fogged areas where revealing would trigger something. Rock and ore stay hidden until mined.
-[*][b]Faction icons in caravan lists:[/b] shows the faction icon of guests, prisoners and other non-colony pawns.
-[*][b]Caravan encounters stay on the current map:[/b] caravan event dialogs (meetings, demands, mod events such as Real Ruins) open without switching to the world map.
-[*][b]Pin resources:[/b] left-click a resource in the categorized resource list to keep it shown while its category is collapsed, even at 0.
-[*][b]Nutrient paste stock:[/b] a "dispense until you have X" target for nutrient paste dispensers, shared by the whole map.
-[*][b]Main menu: Continue button and mod update notes[/b]: a Continue button (or Enter) loads your newest save. Steam version: the top-left box lists your Workshop mods by update time, newly updated ones highlighted; click one to read its change notes.
+[*][b]Faction icons in caravan lists[/b] (on by default): shows the faction icon of guests, prisoners and other non-colony pawns.
+[*][b]Caravan encounters stay on the current map[/b] (on by default): caravan event dialogs (meetings, demands, mod events such as Real Ruins) open without switching to the world map.
+[*][b]Pin resources[/b] (on by default): left-click a resource in the categorized resource list to keep it shown while its category is collapsed, even at 0.
+[*][b]Nutrient paste stock[/b] (on by default): a "dispense until you have X" target for nutrient paste dispensers, shared by the whole map.
+[*][b]Main menu: Continue button and mod update notes[/b] (on by default): a Continue button (or Enter) loads your newest save. Steam version: the top-left box lists your Workshop mods by update time, newly updated ones highlighted; click one to read its change notes.
 [*][b]Break up social fights:[/b] bystanders may step in to stop a social fight; Social skill helps, and a failed attempt can turn into a brawl. Rivals and Bloodlust pawns may join in instead.
-[*][b]Short names on the map:[/b] long names under pawns are cut to about one and a half cells wide, following the zoom, so they do not cover their neighbours. Hover over or select the pawn to see the full name.
+[*][b]Short names on the map[/b] (on by default): long names under pawns are cut to about one and a half cells wide, following the zoom, so they do not cover their neighbours. Hover over or select the pawn to see the full name.
 [*][b]Ghouls can wear apparel[/b] (Anomaly): ghouls keep their clothes when turned and can be ordered to wear apparel. They never change clothes on their own and still cannot use weapons.
-[*][b]Caravan: abandon all dead at once:[/b] a button on the caravan Items tab abandons every human corpse and tainted apparel after one confirmation. Animal corpses are kept.
-[*][b]Taskbar letter badge:[/b] a small badge on the game's taskbar button shows how many letters are waiting, coloured like the most urgent one. Critical alerts turn it red; a pause sign shows while paused. No pop-ups, sounds or flashing. Windows only.
-[*][b]Right-click to dismiss bundled letters:[/b] right-clicking the "N more..." letter dismisses all the letters inside it; letters still waiting for your choice stay.
+[*][b]Caravan: abandon all dead at once[/b] (on by default): a button on the caravan Items tab abandons every human corpse and tainted apparel after one confirmation. Animal corpses are kept.
+[*][b]Taskbar letter badge[/b] (on by default): a small badge on the game's taskbar button shows how many letters are waiting, coloured like the most urgent one. Critical alerts turn it red; a pause sign shows while paused. No pop-ups, sounds or flashing. Windows only.
+[*][b]Right-click to dismiss bundled letters[/b] (on by default): right-clicking the "N more..." letter dismisses all the letters inside it; letters still waiting for your choice stay.
 [*][b]Visitors take shelter:[/b] in cold, heat or with enemies around, trader caravans and visitors wait in a barn, dining room or storeroom instead of leaving early.
-[*][b]Confirm before closing the game window:[/b] closing the window during a game asks first, like Quit to OS in the menu; commitment mode saves, then quits.
+[*][b]Confirm before closing the game window[/b] (on by default): closing the window during a game asks first, like Quit to OS in the menu; commitment mode saves, then quits.
 [*][b]Quicksave hotkey:[/b] F5 saves without opening the menu, rotating through Quicksave-1, -2 and so on like autosaves (5 by default, set in the mod settings). The key can be changed under Keyboard in the game options.
 [*][b]Food policy for new prisoners:[/b] new prisoners get the food policy you pick, and go back to the default when recruited.
 [*][b]Guards for dangerous hunts:[/b] when the animal could take revenge, nearby colonists with ranged weapons come along as guards, more for tougher animals and packs, and the hunter waits for them before the first shot. Optional strict mode gives the hunt up instead of shooting alone.

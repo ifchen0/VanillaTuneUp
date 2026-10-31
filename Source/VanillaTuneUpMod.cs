@@ -44,7 +44,10 @@ namespace VanillaTuneUp
         /// <summary>Still being tuned; marked as such next to its name.</summary>
         public bool IsExperimental;
 
-        public bool DefaultOn => !IsTweak;
+        /// <summary>A tweak small enough to start enabled: it only changes something once used, or only the UI.</summary>
+        public bool OnByDefault;
+
+        public bool DefaultOn => !IsTweak || OnByDefault;
         public bool IsActive => State == ModuleState.Active;
         public string Label => IsExperimental
             ? ("VTU_" + Id).Translate() + " " + "VTU_Experimental".Translate()
@@ -89,32 +92,35 @@ namespace VanillaTuneUp
                 UnavailableKey = "VTU_RequiresBiotech"
             },
             new TuneUpModule("RemoveFogOfWar", true, null),
-            new TuneUpModule("CaravanFactionIcon", true, null),
-            new TuneUpModule("CaravanEncounterNoJump", true, null),
-            new TuneUpModule("PinnedResources", true, null),
-            new TuneUpModule("NutrientPasteStock", true, null),
+            new TuneUpModule("CaravanFactionIcon", true, null) { OnByDefault = true },
+            new TuneUpModule("CaravanEncounterNoJump", true, null) { OnByDefault = true },
+            new TuneUpModule("PinnedResources", true, null) { OnByDefault = true },
+            new TuneUpModule("NutrientPasteStock", true, null) { OnByDefault = true },
             // Main menu additions: mod update list (Steam only) and the Continue button.
             new TuneUpModule("ModUpdateNotes", true, null)
             {
+                OnByDefault = true,
                 OnActivated = ModUpdateNotes.Scan
             },
             new TuneUpModule("BreakUpFights", true, null),
-            new TuneUpModule("ShortMapNames", true, null),
+            new TuneUpModule("ShortMapNames", true, null) { OnByDefault = true },
             new TuneUpModule("GhoulApparel", true, null)
             {
                 IsAvailable = () => ModsConfig.AnomalyActive,
                 UnavailableKey = "VTU_RequiresAnomaly"
             },
-            new TuneUpModule("CaravanAbandonDead", true, null),
+            new TuneUpModule("CaravanAbandonDead", true, null) { OnByDefault = true },
             new TuneUpModule("TaskbarLetterBadge", true, null)
             {
+                OnByDefault = true,
                 IsAvailable = () => Environment.OSVersion.Platform == PlatformID.Win32NT,
                 UnavailableKey = "VTU_RequiresWindows"
             },
-            new TuneUpModule("BundleLetterDismiss", true, null),
+            new TuneUpModule("BundleLetterDismiss", true, null) { OnByDefault = true },
             new TuneUpModule("VisitorShelter", true, null),
             new TuneUpModule("ConfirmCloseWindow", true, null)
             {
+                OnByDefault = true,
                 OnActivated = ConfirmCloseWindow.Hook
             },
             // Modules with extra settings go last, the longest at the end, so plain toggles stay near the top.
