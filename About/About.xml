@@ -35,6 +35,7 @@ Tweaks:
 - Taskbar letter badge: the letters waiting on screen are shown as a small badge over the game's taskbar button, counted and coloured like the most urgent one; critical alerts turn the badge red, or show a red dot when there are no letters; with no letters, top-left messages show a coloured dot while on screen; a pause sign shows while the game is paused (Windows only).
 - Right-click to dismiss bundled letters: right-clicking the "N more..." letter dismisses all the letters folded into it; letters still waiting for a choice stay.
 - Visitors take shelter: in cold, heat or while enemies are around, trader caravans and visitors wait in a barn, dining room or storeroom instead of leaving early.
+- Confirm before closing the game window: closing the window during a game asks first, like Quit to OS in the menu; commitment mode saves, then quits.
 - Quicksave hotkey: F5 saves right away to Quicksave-1, -2 and so on, overwriting the oldest once the set number (5 by default) is reached.
 - Food policy for new prisoners: new prisoners get the food policy you pick.
 - Guards for dangerous hunts: hunting an animal that can fight back calls nearby armed colonists along as guards, more of them for tougher animals and packs.

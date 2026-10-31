@@ -113,6 +113,10 @@ namespace VanillaTuneUp
             },
             new TuneUpModule("BundleLetterDismiss", true, null),
             new TuneUpModule("VisitorShelter", true, null),
+            new TuneUpModule("ConfirmCloseWindow", true, null)
+            {
+                OnActivated = ConfirmCloseWindow.Hook
+            },
             // Modules with extra settings go last, the longest at the end, so plain toggles stay near the top.
             new TuneUpModule("Quicksave", true, null)
             {
