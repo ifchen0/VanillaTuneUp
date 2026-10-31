@@ -46,11 +46,30 @@ namespace VanillaTuneUp
         private static readonly ConditionalWeakTable<StateGraph, LordToil> WaitingToils = new ConditionalWeakTable<StateGraph, LordToil>();
         private static readonly ConditionalWeakTable<Lord, StrongBox<int>> NextSearch = new ConditionalWeakTable<Lord, StrongBox<int>>();
 
+        // Set on the first unexpected exception (another mod reshaping lord graphs, say): one error, then both patches
+        // step aside for the rest of the session and groups behave as in vanilla.
+        public static bool Failed { get; private set; }
+
         public static void Postfix(LordToil __instance)
         {
-            if (__instance is LordToil_DefendPoint toil && toil.lord.ticksInToil % CheckInterval == 0
-                && TryGetHome(toil, out IntVec3 home))
-                Check(toil, home);
+            if (Failed)
+                return;
+            try
+            {
+                if (__instance is LordToil_DefendPoint toil && toil.lord.ticksInToil % CheckInterval == 0
+                    && TryGetHome(toil, out IntVec3 home))
+                    Check(toil, home);
+            }
+            catch (Exception e)
+            {
+                Fail(e);
+            }
+        }
+
+        internal static void Fail(Exception e)
+        {
+            Failed = true;
+            Log.Error($"[Vanilla Tune-Up] VisitorShelter: unexpected error, turned off for this session: {e}");
         }
 
         /// <summary>The original waiting spot, if this toil is the waiting toil of a trader caravan or visitor group.</summary>
@@ -240,20 +259,28 @@ namespace VanillaTuneUp
 
         public static bool Prefix(JobGiver_Wander __instance, Pawn pawn, ref IntVec3 __result)
         {
-            if (!(__instance is JobGiver_WanderNearDutyLocation))
+            if (VisitorShelter.Failed || !(__instance is JobGiver_WanderNearDutyLocation))
                 return true;
-            Lord lord = pawn.GetLord();
-            Room room = VisitorShelter.ShelterRoomOf(lord);
-            if (room == null)
+            try
+            {
+                Lord lord = pawn.GetLord();
+                Room room = VisitorShelter.ShelterRoomOf(lord);
+                if (room == null)
+                    return true;
+                // Wander around the shelter spot rather than the duty focus: carriers follow the trader, who may be outside.
+                IntVec3 root = lord.CurLordToil.FlagLoc;
+                float radius = pawn.mindState.duty?.wanderRadius ?? WanderRadius(__instance);
+                Func<Pawn, IntVec3, IntVec3, bool> validator = Validator(__instance);
+                __result = RCellFinder.RandomWanderDestFor(pawn, root, radius,
+                    (p, c, r) => c.GetRoom(p.Map) == room && (validator == null || validator(p, c, r)),
+                    PawnUtility.ResolveMaxDanger(pawn, MaxDanger(__instance)), CanBashDoors(__instance));
+                return false;
+            }
+            catch (Exception e)
+            {
+                VisitorShelter.Fail(e);
                 return true;
-            // Wander around the shelter spot rather than the duty focus: carriers follow the trader, who may be outside.
-            IntVec3 root = lord.CurLordToil.FlagLoc;
-            float radius = pawn.mindState.duty?.wanderRadius ?? WanderRadius(__instance);
-            Func<Pawn, IntVec3, IntVec3, bool> validator = Validator(__instance);
-            __result = RCellFinder.RandomWanderDestFor(pawn, root, radius,
-                (p, c, r) => c.GetRoom(p.Map) == room && (validator == null || validator(p, c, r)),
-                PawnUtility.ResolveMaxDanger(pawn, MaxDanger(__instance)), CanBashDoors(__instance));
-            return false;
+            }
         }
     }
 }
