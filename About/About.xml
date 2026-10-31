@@ -16,6 +16,7 @@ Fixes:
 - Food policy during mental breaks: wardens no longer bring restricted food to a prisoner having a mental break.
 - Tend bleeding prisoners first: wardens skip feeding while a prisoner is bleeding.
 - Prisoner food delivery keeps up: when prisoners get hungry, one trip brings food for everyone in the cell who needs it.
+- Stuck on the way to bed after being downed: a pawn knocked down on the way to bed walks on to it after getting up, instead of standing still until it collapses.
 - Official translation fixes: fixes quest text shown as ERR and generated text left in English that a translation file cannot override (currently Traditional Chinese).
 
 Tweaks:

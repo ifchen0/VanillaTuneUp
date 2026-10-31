@@ -67,6 +67,7 @@ namespace VanillaTuneUp
             new TuneUpModule("PrisonerFoodPolicy", false, "ifchen0.prisonpatch"),
             new TuneUpModule("PrisonerBleeding", false, "ifchen0.prisonpatch"),
             new TuneUpModule("PrisonerFoodDelivery", false, null),
+            new TuneUpModule("BedWalkAfterDowned", false, null),
             new TuneUpModule("TranslationFixes", false, null)
             {
                 // Translations are already injected by the time patches are applied.
