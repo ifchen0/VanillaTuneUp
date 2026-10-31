@@ -115,6 +115,14 @@ Saved {1}</VTU_MM_ContinueTip>
   <VTU_TaskbarLetterBadge_PausedTip>RimWorld is paused</VTU_TaskbarLetterBadge_PausedTip>
   <VTU_BundleLetterDismiss>Right-click to dismiss bundled letters</VTU_BundleLetterDismiss>
   <VTU_BundleLetterDismiss_Desc>When too many letters pile up, the oldest ones are folded into a single "N more..." letter that ignores right-click. Right-clicking it now dismisses all the letters inside at once, like right-clicking a normal letter. Letters that still wait for your choice (such as someone asking to join or visitors at the gate) cannot be dismissed with a right click and stay.</VTU_BundleLetterDismiss_Desc>
+  <VTU_VisitorShelter>Visitors take shelter from bad weather and enemies</VTU_VisitorShelter>
+  <VTU_VisitorShelter_Desc>Trader caravans and visitor groups wait just outside the colony and leave early as soon as any member, pack animals included, starts getting hypothermia or heatstroke. When the temperature at their spot gets close to the limit of the most sensitive member, or anything hostile to them is active on the map, they move into a barn if they brought animals, otherwise a dining room, with a storeroom as the fallback for both. The room must be at a safe temperature and reachable by all of them. They go back outside once the enemies are gone and the weather is mild again. Checked every few in-game minutes; groups already suffering on the way in may still leave, and guards still fight enemies that come near.</VTU_VisitorShelter_Desc>
+  <VTU_VisitorShelter_Moved>Because of {1}, {0} moved into the {2} for now.</VTU_VisitorShelter_Moved>
+  <VTU_VisitorShelter_Traders>the trader caravan from {0}</VTU_VisitorShelter_Traders>
+  <VTU_VisitorShelter_Visitors>visitors from {0}</VTU_VisitorShelter_Visitors>
+  <VTU_VisitorShelter_ReasonCold>the cold</VTU_VisitorShelter_ReasonCold>
+  <VTU_VisitorShelter_ReasonHeat>the heat</VTU_VisitorShelter_ReasonHeat>
+  <VTU_VisitorShelter_ReasonEnemies>enemies on the map</VTU_VisitorShelter_ReasonEnemies>
   <VTU_Quicksave>Quicksave hotkey</VTU_Quicksave>
   <VTU_Quicksave_Desc>Press F5 during play to save right away, without opening the menu. Saves are named Quicksave-1, Quicksave-2 and so on; once all of them exist, the oldest one is overwritten, the same way autosaves rotate. Pressing again before any game time has passed (for example while paused) overwrites the same file instead. The key can be changed in Options > Keyboard (Game section). In commitment mode the game's single save file is used, like autosave.</VTU_Quicksave_Desc>
   <VTU_QuicksaveCount>Quicksave files to keep: {0}</VTU_QuicksaveCount>
