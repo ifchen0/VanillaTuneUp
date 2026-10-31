@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using HarmonyLib;
 using RimWorld;
@@ -24,6 +25,7 @@ namespace VanillaTuneUp
         {
             QuestFactionRules.Apply();
             UntranslatedRules.Apply();
+            TribalNameSyllables.Apply();
         }
 
         /// <summary>Rewrites every rule in the pack with <paramref name="rewrite"/>; returns how many changed.</summary>
@@ -207,6 +209,56 @@ namespace VanillaTuneUp
             }
             if (fixedCount > 0)
                 Log.Message($"[Vanilla Tune-Up] Fixed {fixedCount} untranslated rule(s) in the official translation.");
+        }
+    }
+
+    /// <summary>
+    /// Traditional Chinese tribal names are much longer than English ones. A tribal word is built from 2-4 entries
+    /// of the Galician syllable list, but the translated entries are 1-5 characters (about 2.4 on average), and one
+    /// Chinese character is already one syllable. The tribal word list was also replaced by that same syllable list.
+    /// Split every syllable entry into single characters (duplicates kept, so common characters stay common), and
+    /// do the same to the word list while it is still a copy of the syllable list. A mod's Strings file is appended
+    /// to the official one rather than replacing it, so the loaded lists are rewritten in place.
+    /// </summary>
+    public static class TribalNameSyllables
+    {
+        private const string TraditionalChinese = "ChineseTraditional";
+        private const string SyllableFile = "WordParts/Syllables_Galician";
+        private const string TribalWordFile = "Words/Foreign/Tribal";
+
+        public static void Apply()
+        {
+            LoadedLanguage language = LanguageDatabase.activeLanguage;
+            if (language?.folderName == null || !language.folderName.StartsWith(TraditionalChinese))
+                return;
+            if (!language.TryGetStringsFromFile(SyllableFile, out List<string> syllables))
+                return;
+            bool wordsAreSyllables = language.TryGetStringsFromFile(TribalWordFile, out List<string> words)
+                && words.SequenceEqual(syllables);
+            if (!SplitIntoCharacters(syllables))
+                return;
+            if (wordsAreSyllables)
+            {
+                words.Clear();
+                words.AddRange(syllables);
+            }
+            Log.Message($"[Vanilla Tune-Up] Split Traditional Chinese tribal name syllables into {syllables.Count} single characters.");
+        }
+
+        /// <summary>Replaces each multi-character entry with its characters; returns whether anything changed.</summary>
+        private static bool SplitIntoCharacters(List<string> list)
+        {
+            List<string> split = new List<string>();
+            foreach (string entry in list)
+            {
+                foreach (char c in entry.Trim())
+                    split.Add(c.ToString());
+            }
+            if (split.SequenceEqual(list))
+                return false;
+            list.Clear();
+            list.AddRange(split);
+            return true;
         }
     }
 
