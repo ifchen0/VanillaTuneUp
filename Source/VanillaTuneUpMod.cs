@@ -134,6 +134,10 @@ namespace VanillaTuneUp
                 OnByDefault = true,
                 DrawSettings = InspectTabCamera.DrawSettings
             },
+            new TuneUpModule("FieldTending", true, null)
+            {
+                DrawSettings = FieldTending.DrawSettings
+            },
             new TuneUpModule("Quicksave", true, null)
             {
                 DrawSettings = Quicksave.DrawSettings
@@ -185,6 +189,7 @@ namespace VanillaTuneUp
         public bool huntGuardStrict;
         public int quicksaveCount = Quicksave.DefaultCount;
         public bool inspectTabCameraOnOpen = true;
+        public bool fieldTendBeforeCapture = true;
         public List<string> pinnedResources = new List<string>();
         // Resource readout categories left open; only used once the player has toggled one.
         public bool resourceCategoriesRecorded;
@@ -271,6 +276,7 @@ namespace VanillaTuneUp
             Scribe_Values.Look(ref huntGuardStrict, "huntGuardStrict", false);
             Scribe_Values.Look(ref quicksaveCount, "quicksaveCount", Quicksave.DefaultCount);
             Scribe_Values.Look(ref inspectTabCameraOnOpen, "inspectTabCameraOnOpen", true);
+            Scribe_Values.Look(ref fieldTendBeforeCapture, "fieldTendBeforeCapture", true);
             Scribe_Values.Look(ref compactBarShowLabels, "compactBarShowLabels", true);
             Scribe_Values.Look(ref compactBarShowIcons, "compactBarShowIcons", true);
             Scribe_Values.Look(ref compactBarShowWeapons, "compactBarShowWeapons", false);

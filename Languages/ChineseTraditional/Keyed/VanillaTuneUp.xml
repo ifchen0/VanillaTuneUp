@@ -129,6 +129,10 @@
   <VTU_InspectTabCamera_Desc>鏡頭跳到殖民者時（上一個/下一個殖民者快捷鍵、雙擊殖民者列的頭像、信件）會把對象放在畫面正中央，但左下角資訊欄開著分頁（紀錄、裝備、社交、角色、需求、健康）時，左半邊會被分頁擋住。開啟後，分頁開著時會改把對象放在分頁右側未被遮住區域的正中央，只調整水平位置。</VTU_InspectTabCamera_Desc>
   <VTU_InspectTabCameraOnOpen>開啟分頁擋住選取的角色時也移動鏡頭</VTU_InspectTabCameraOnOpen>
   <VTU_InspectTabCameraOnOpen_Desc>打開或切換到會擋住目前選取角色的分頁時，鏡頭會水平移動，讓角色出現在分頁右側。角色原本就看得到、或關閉分頁時，鏡頭不會動。</VTU_InspectTabCameraOnOpen_Desc>
+  <VTU_FieldTending>就地治療與省藥</VTU_FieldTending>
+  <VTU_FieldTending_Desc>倒在床外的殖民者或囚犯，如果6小時內會失血致死，或沒有空床可用，會直接在原地治療。原地治療快速流血的傷患時，只用醫生身上的藥，沒有就不用藥，不會先跑去倉庫拿。傷口全是沒流血的外傷時，改用醫療設定允許範圍內最便宜的藥；流血傷和疾病仍用最好的藥。</VTU_FieldTending_Desc>
+  <VTU_FieldTendBeforeCapture>逮捕前先為快速流血者止血</VTU_FieldTendBeforeCapture>
+  <VTU_FieldTendBeforeCapture_Desc>命令殖民者俘虜或逮捕倒地的對象時，如果對方6小時內會失血致死，會先在原地治療（用身上的藥，沒有就不用藥），再把人帶走。</VTU_FieldTendBeforeCapture_Desc>
   <VTU_Quicksave>快速存檔快捷鍵</VTU_Quicksave>
   <VTU_Quicksave_Desc>遊戲中按F5直接存檔，不用打開選單。存檔依序命名為Quicksave-1、Quicksave-2……，全部用過後會覆寫最舊的一個，和自動存檔的輪替方式相同。遊戲時間還沒前進就再按一次（例如暫停中），會覆寫同一個存檔。按鍵可在選項 > 鍵盤（遊戲分類）中更改。永久死亡模式下會存到該遊戲唯一的存檔，和自動存檔相同。</VTU_Quicksave_Desc>
   <VTU_QuicksaveCount>保留的快速存檔數量：{0}</VTU_QuicksaveCount>
