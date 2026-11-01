@@ -7,6 +7,7 @@ using HarmonyLib;
 using RimWorld;
 using Verse;
 using Verse.AI;
+using Verse.AI.Group;
 
 namespace VanillaTuneUp
 {
@@ -118,9 +119,10 @@ namespace VanillaTuneUp
     }
 
     /// <summary>
-    /// Optional: a colonist told to capture or arrest a downed pawn who would bleed to death within 6 hours tends
-    /// them where they lie first (carried medicine or none), then carries on with the capture. Each target is
-    /// tried once per in-game hour, so a tend that cannot happen does not keep replacing the capture.
+    /// Optional: a colonist told to capture or arrest a downed pawn who would bleed to death within 6 hours takes
+    /// them prisoner on the spot, tends them where they lie (carried medicine or none), then carries them to the
+    /// bed as ordered. Each target is tried once per in-game hour, so a tend that cannot happen does not keep
+    /// replacing the capture.
     /// </summary>
     [HarmonyPatchCategory("FieldTending")]
     [HarmonyPatch(typeof(Pawn_JobTracker), nameof(Pawn_JobTracker.StartJob))]
@@ -147,12 +149,40 @@ namespace VanillaTuneUp
                 return;
             last.Value = now;
 
+            // Take them prisoner on the spot, so recovering mid-tend leaves a prisoner, not an enemy on its feet.
+            MakePrisoner(target, doctor);
             Job tend = JobMaker.MakeJob(JobDefOf.TendPatient, target, HealthAIUtility.FindBestMedicine(doctor, target, onlyUseInventory: true));
             tend.count = 1;
             // Not forced, the tend job would end at once: the target is not a patient the colony tends on its own.
             tend.playerForced = true;
             __instance.jobQueue.EnqueueFirst(newJob, tag);
             newJob = tend;
+        }
+
+        /// <summary>
+        /// What JobDriver_TakeToBed does when it reaches the target (arrest-resistance toil, then CheckMakeTakeePrisoner),
+        /// done before the tend. The capture job queued after the tend then finds a prisoner and only carries them
+        /// to the bed. A downed target never resists, so the arrest-resistance roll is left out.
+        /// </summary>
+        private static void MakePrisoner(Pawn target, Pawn capturer)
+        {
+            if (target.IsPrisonerOfColony)
+                return;
+            target.GetLord()?.Notify_PawnAttemptArrested(target);
+            GenClamor.DoClamor(target, 10f, ClamorDefOf.Harm);
+            if (!target.IsSlave)
+            {
+                bool lodger = target.IsQuestLodger();
+                Faction homeFaction = target.HomeFaction;
+                QuestUtility.SendQuestTargetSignals(target.questTags, "Arrested", target.Named("SUBJECT"));
+                if (target.Faction != null)
+                    QuestUtility.SendQuestTargetSignals(target.Faction.questTags, "FactionMemberArrested", target.Faction.Named("FACTION"));
+                if (lodger)
+                    target.SetFaction(homeFaction);
+            }
+            target.guest.CapturedBy(Faction.OfPlayer, capturer);
+            if (target.playerSettings == null)
+                target.playerSettings = new Pawn_PlayerSettings(target);
         }
     }
 
