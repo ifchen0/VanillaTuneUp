@@ -119,10 +119,11 @@ namespace VanillaTuneUp
     }
 
     /// <summary>
-    /// Optional: a colonist told to capture or arrest a downed pawn who would bleed to death within 6 hours takes
-    /// them prisoner on the spot, tends them where they lie (carried medicine or none), then carries them to the
-    /// bed as ordered. Each target is tried once per in-game hour, so a tend that cannot happen does not keep
-    /// replacing the capture.
+    /// Optional: a colonist told to capture or arrest a downed pawn who would bleed to death within 6 hours tends
+    /// them where they lie first (carried medicine or none), then carries them to the bed as ordered. The target
+    /// is taken prisoner as the tend begins, so recovering mid-tend leaves a prisoner rather than an enemy on its
+    /// feet. Each target is tried once per in-game hour, so a tend that cannot happen does not keep replacing the
+    /// capture.
     /// </summary>
     [HarmonyPatchCategory("FieldTending")]
     [HarmonyPatch(typeof(Pawn_JobTracker), nameof(Pawn_JobTracker.StartJob))]
@@ -132,6 +133,11 @@ namespace VanillaTuneUp
             AccessTools.FieldRefAccess<Pawn_JobTracker, Pawn>("pawn");
 
         private static readonly ConditionalWeakTable<Pawn, StrongBox<int>> lastTry = new ConditionalWeakTable<Pawn, StrongBox<int>>();
+
+        /// <summary>Tend jobs started in place of a capture or arrest; their target is taken prisoner on arrival.</summary>
+        private static readonly ConditionalWeakTable<Job, object> captureTends = new ConditionalWeakTable<Job, object>();
+
+        public static bool IsCaptureTend(Job job) => captureTends.TryGetValue(job, out _);
 
         public static void Prefix(Pawn_JobTracker __instance, ref Job newJob, JobTag? tag)
         {
@@ -149,12 +155,11 @@ namespace VanillaTuneUp
                 return;
             last.Value = now;
 
-            // Take them prisoner on the spot, so recovering mid-tend leaves a prisoner, not an enemy on its feet.
-            MakePrisoner(target, doctor);
             Job tend = JobMaker.MakeJob(JobDefOf.TendPatient, target, HealthAIUtility.FindBestMedicine(doctor, target, onlyUseInventory: true));
             tend.count = 1;
             // Not forced, the tend job would end at once: the target is not a patient the colony tends on its own.
             tend.playerForced = true;
+            captureTends.Add(tend, null);
             __instance.jobQueue.EnqueueFirst(newJob, tag);
             newJob = tend;
         }
@@ -164,7 +169,7 @@ namespace VanillaTuneUp
         /// done before the tend. The capture job queued after the tend then finds a prisoner and only carries them
         /// to the bed. A downed target never resists, so the arrest-resistance roll is left out.
         /// </summary>
-        private static void MakePrisoner(Pawn target, Pawn capturer)
+        public static void MakePrisoner(Pawn target, Pawn capturer)
         {
             if (target.IsPrisonerOfColony)
                 return;
@@ -183,6 +188,44 @@ namespace VanillaTuneUp
             target.guest.CapturedBy(Faction.OfPlayer, capturer);
             if (target.playerSettings == null)
                 target.playerSettings = new Pawn_PlayerSettings(target);
+        }
+    }
+
+    /// <summary>
+    /// Takes the target of a capture-replacing tend prisoner as the tend itself begins: a pre-init action on the
+    /// toil just before FinalizeTend (vanilla's tend wait), so the doctor has arrived, fetched any medicine and is
+    /// about to treat. Runs again on each repeat tend, where MakePrisoner returns at once.
+    /// </summary>
+    [HarmonyPatchCategory("FieldTending")]
+    [HarmonyPatch(typeof(JobDriver_TendPatient), "MakeNewToils")]
+    public static class Patch_JobDriver_TendPatient_MakeNewToils
+    {
+        public static void Postfix(JobDriver_TendPatient __instance, ref IEnumerable<Toil> __result)
+        {
+            if (__instance.job != null && Patch_Pawn_JobTracker_StartJob.IsCaptureTend(__instance.job))
+                __result = CaptureOnTendStart(__result, __instance);
+        }
+
+        private static IEnumerable<Toil> CaptureOnTendStart(IEnumerable<Toil> toils, JobDriver_TendPatient driver)
+        {
+            Toil previous = null;
+            bool hooked = false;
+            foreach (Toil toil in toils)
+            {
+                if (!hooked && previous != null && toil.debugName == "FinalizeTend")
+                {
+                    previous.AddPreInitAction(() =>
+                    {
+                        if (driver.job.targetA.Thing is Pawn target && target.Spawned)
+                            Patch_Pawn_JobTracker_StartJob.MakePrisoner(target, driver.pawn);
+                    });
+                    hooked = true;
+                }
+                previous = toil;
+                yield return toil;
+            }
+            if (!hooked)
+                Log.WarningOnce("[Vanilla Tune-Up] Could not find the tend step in JobDriver_TendPatient; capture targets turn prisoner when carried, as in vanilla.", 0x5654544E);
         }
     }
 
