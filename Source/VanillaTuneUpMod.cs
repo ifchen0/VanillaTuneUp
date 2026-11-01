@@ -47,6 +47,9 @@ namespace VanillaTuneUp
         /// <summary>A tweak small enough to start enabled: it only changes something once used, or only the UI.</summary>
         public bool OnByDefault;
 
+        /// <summary>A layout-only fix with no toggle: not listed in the settings and always on unless its legacy mod is active.</summary>
+        public bool IsHidden;
+
         public bool DefaultOn => !IsTweak || OnByDefault;
         public bool IsActive => State == ModuleState.Active;
         public string Label => IsExperimental
@@ -76,6 +79,8 @@ namespace VanillaTuneUp
                 IsAvailable = () => ModsConfig.BiotechActive,
                 UnavailableKey = "VTU_RequiresBiotech"
             },
+            // Unaligned Icon Fix moves the same buttons its own way; leave them to it when it is active.
+            new TuneUpModule("PlaySettingsIconGap", false, "Ilarion.UnalignedIconFix") { IsHidden = true },
             new TuneUpModule("TranslationFixes", false, null)
             {
                 // Translations are already injected by the time patches are applied.
@@ -243,7 +248,7 @@ namespace VanillaTuneUp
         }
 
         public bool IsEnabled(TuneUpModule module) =>
-            overrides.TryGetValue(module.Id, out bool on) ? on : module.DefaultOn;
+            !module.IsHidden && overrides.TryGetValue(module.Id, out bool on) ? on : module.DefaultOn;
 
         public bool IsSet(TuneUpModule module) => overrides.ContainsKey(module.Id);
 
@@ -348,7 +353,7 @@ namespace VanillaTuneUp
             int shown = 0;
             foreach (TuneUpModule module in Modules.All)
             {
-                if (module.IsTweak != tweaks || !search.filter.Matches(module.Label) && !search.filter.Matches(module.Description))
+                if (module.IsHidden || module.IsTweak != tweaks || !search.filter.Matches(module.Label) && !search.filter.Matches(module.Description))
                     continue;
                 if (!header)
                 {

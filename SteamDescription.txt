@@ -16,6 +16,7 @@ Small fixes and optional tweaks for vanilla RimWorld, collected in one mod.
 [*][b]Tend bleeding prisoners first:[/b] wardens skip feeding while a prisoner is bleeding or has surgery scheduled, so tending and surgery come first.
 [*][b]Prisoner food delivery keeps up:[/b] when prisoners get hungry, one trip brings enough for everyone in the cell who needs food.
 [*][b]Ejected genepacks stay out[/b] (Biotech): genepacks you eject from a gene bank get auto-load turned off, so haulers no longer carry them straight back in.
+[*][b]Aligned corner icons:[/b] the search and codex buttons in the bottom-right corner no longer push the icons after them off the grid. Always on; skipped when Unaligned Icon Fix is active.
 [*][b]Official translation fixes:[/b] fixes quest text shown as [i]ERR:[/i] and generated text left in English that a translation file cannot override, and a duplicate message after social fights (currently Traditional Chinese).
 [/list]
 
