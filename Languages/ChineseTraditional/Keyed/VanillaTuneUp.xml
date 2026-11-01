@@ -125,6 +125,10 @@
   <VTU_VisitorShelter_ReasonEnemies>地圖上有敵人</VTU_VisitorShelter_ReasonEnemies>
   <VTU_ConfirmCloseWindow>關閉遊戲視窗前確認</VTU_ConfirmCloseWindow>
   <VTU_ConfirmCloseWindow_Desc>遊戲進行中按下視窗的關閉按鈕（或Alt+F4）會直接關閉。開啟後改走和遊戲選單「退出遊戲」相同的流程：有尚未保存的進度時會先跳出確認視窗；永久死亡模式則會先存檔再退出。在主選單時仍會直接關閉。</VTU_ConfirmCloseWindow_Desc>
+  <VTU_InspectTabCamera>鏡頭跳轉避開開啟中的資訊分頁</VTU_InspectTabCamera>
+  <VTU_InspectTabCamera_Desc>鏡頭跳到殖民者時（上一個/下一個殖民者快捷鍵、雙擊殖民者列的頭像、信件）會把對象放在畫面正中央，但左下角資訊欄開著分頁（紀錄、裝備、社交、角色、需求、健康）時，左半邊會被分頁擋住。開啟後，分頁開著時會改把對象放在分頁右側未被遮住區域的正中央，只調整水平位置。</VTU_InspectTabCamera_Desc>
+  <VTU_InspectTabCameraOnOpen>開啟分頁擋住選取的角色時也移動鏡頭</VTU_InspectTabCameraOnOpen>
+  <VTU_InspectTabCameraOnOpen_Desc>打開或切換到會擋住目前選取角色的分頁時，鏡頭會水平移動，讓角色出現在分頁右側。角色原本就看得到、或關閉分頁時，鏡頭不會動。</VTU_InspectTabCameraOnOpen_Desc>
   <VTU_Quicksave>快速存檔快捷鍵</VTU_Quicksave>
   <VTU_Quicksave_Desc>遊戲中按F5直接存檔，不用打開選單。存檔依序命名為Quicksave-1、Quicksave-2……，全部用過後會覆寫最舊的一個，和自動存檔的輪替方式相同。遊戲時間還沒前進就再按一次（例如暫停中），會覆寫同一個存檔。按鍵可在選項 > 鍵盤（遊戲分類）中更改。永久死亡模式下會存到該遊戲唯一的存檔，和自動存檔相同。</VTU_Quicksave_Desc>
   <VTU_QuicksaveCount>保留的快速存檔數量：{0}</VTU_QuicksaveCount>
