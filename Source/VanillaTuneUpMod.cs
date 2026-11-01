@@ -146,6 +146,11 @@ namespace VanillaTuneUp
             {
                 DrawSettings = PrisonerDefaultFoodPolicy.DrawSettings
             },
+            // Don't Eat My Food blocks the same food search outright; leave it to that mod when it is active.
+            new TuneUpModule("VisitorFood", true, "wowgag.donteatmyfood")
+            {
+                DrawSettings = VisitorFood.DrawSettings
+            },
             new TuneUpModule("HuntGuard", true, null)
             {
                 DrawSettings = HuntGuard.DrawSettings
@@ -185,6 +190,9 @@ namespace VanillaTuneUp
         public bool hybridIncludeXenogenes;
         // Food policy name given to new prisoners; empty leaves vanilla behavior.
         public string prisonerFoodPolicy = "";
+        // Visitors may eat colony food once this hungry with none of their own; empty policy = any food.
+        public HungerCategory visitorFoodHunger = HungerCategory.UrgentlyHungry;
+        public string visitorFoodPolicy = "";
         public float factionColorMinDistance = FactionColors.DefaultMinDistance;
         public bool huntGuardStrict;
         public int quicksaveCount = Quicksave.DefaultCount;
@@ -272,6 +280,8 @@ namespace VanillaTuneUp
             Scribe_Values.Look(ref dragReorderMigrated, "dragReorderMigrated", false);
             Scribe_Values.Look(ref hybridIncludeXenogenes, "hybridIncludeXenogenes", false);
             Scribe_Values.Look(ref prisonerFoodPolicy, "prisonerFoodPolicy", "");
+            Scribe_Values.Look(ref visitorFoodHunger, "visitorFoodHunger", HungerCategory.UrgentlyHungry);
+            Scribe_Values.Look(ref visitorFoodPolicy, "visitorFoodPolicy", "");
             Scribe_Values.Look(ref factionColorMinDistance, "factionColorMinDistance", FactionColors.DefaultMinDistance);
             Scribe_Values.Look(ref huntGuardStrict, "huntGuardStrict", false);
             Scribe_Values.Look(ref quicksaveCount, "quicksaveCount", Quicksave.DefaultCount);
@@ -295,6 +305,7 @@ namespace VanillaTuneUp
             {
                 overrides ??= new Dictionary<string, bool>();
                 prisonerFoodPolicy ??= "";
+                visitorFoodPolicy ??= "";
                 compactBarRaceZoom ??= new Dictionary<string, float>();
                 pinnedResources ??= new List<string>();
                 openResourceCategories ??= new List<string>();

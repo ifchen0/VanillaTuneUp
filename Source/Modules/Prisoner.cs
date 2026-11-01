@@ -278,23 +278,24 @@ namespace VanillaTuneUp
         }
 
         /// <summary>The policy named in the settings in the current game, or null when unset or missing.</summary>
-        public static FoodPolicy Configured()
+        public static FoodPolicy Configured() => FindPolicy(VanillaTuneUpMod.Settings.prisonerFoodPolicy);
+
+        /// <summary>The food policy with this name in the current game, or null when unset or missing.</summary>
+        public static FoodPolicy FindPolicy(string label)
         {
-            string label = VanillaTuneUpMod.Settings.prisonerFoodPolicy;
             if (label.NullOrEmpty())
                 return null;
             return Current.Game?.foodRestrictionDatabase?.AllFoodRestrictions.Find(p => p.label == label);
         }
 
-        public static void DrawSettings(Listing_Standard listing)
+        /// <summary>A labelled button that picks a food policy of the loaded game by name, with a warning when it is missing.</summary>
+        public static void DrawPolicyPicker(Listing_Standard listing, string labelKey, string noneKey, string missingKey,
+            string selected, Action<string> select)
         {
-            TuneUpSettings settings = VanillaTuneUpMod.Settings;
-            string current = settings.prisonerFoodPolicy.NullOrEmpty()
-                ? "VTU_PrisonerPolicyNone".Translate().ToString()
-                : settings.prisonerFoodPolicy;
+            string current = selected.NullOrEmpty() ? noneKey.Translate().ToString() : selected;
             List<FoodPolicy> policies = Current.Game?.foodRestrictionDatabase?.AllFoodRestrictions;
             Rect row = listing.GetRect(30f);
-            Widgets.Label(row.LeftHalf(), "VTU_PrisonerPolicyLabel".Translate());
+            Widgets.Label(row.LeftHalf(), labelKey.Translate());
             if (policies == null)
             {
                 // Outside a game there is no policy list to pick from.
@@ -308,21 +309,28 @@ namespace VanillaTuneUp
             {
                 var options = new List<FloatMenuOption>
                 {
-                    new FloatMenuOption("VTU_PrisonerPolicyNone".Translate(), () => settings.prisonerFoodPolicy = "")
+                    new FloatMenuOption(noneKey.Translate(), () => select(""))
                 };
                 foreach (FoodPolicy policy in policies)
                 {
                     string label = policy.label;
-                    options.Add(new FloatMenuOption(label, () => settings.prisonerFoodPolicy = label));
+                    options.Add(new FloatMenuOption(label, () => select(label)));
                 }
                 Find.WindowStack.Add(new FloatMenu(options));
             }
-            if (!settings.prisonerFoodPolicy.NullOrEmpty() && Configured() == null)
+            if (!selected.NullOrEmpty() && FindPolicy(selected) == null)
             {
                 GUI.color = ColorLibrary.Gold;
-                listing.Label("VTU_PrisonerPolicyMissing".Translate(settings.prisonerFoodPolicy));
+                listing.Label(missingKey.Translate(selected));
                 GUI.color = Color.white;
             }
+        }
+
+        public static void DrawSettings(Listing_Standard listing)
+        {
+            TuneUpSettings settings = VanillaTuneUpMod.Settings;
+            DrawPolicyPicker(listing, "VTU_PrisonerPolicyLabel", "VTU_PrisonerPolicyNone", "VTU_PrisonerPolicyMissing",
+                settings.prisonerFoodPolicy, label => settings.prisonerFoodPolicy = label);
             FoodPolicy configured = Configured();
             if (configured != null && listing.ButtonText("VTU_PrisonerPolicyApplyAll".Translate()))
             {

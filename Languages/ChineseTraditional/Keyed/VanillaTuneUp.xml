@@ -51,6 +51,12 @@
   <VTU_PrisonerPolicyMissing>這個存檔沒有名為「{0}」的食物政策，新囚犯會維持預設政策。</VTU_PrisonerPolicyMissing>
   <VTU_PrisonerPolicyApplyAll>套用到目前所有囚犯</VTU_PrisonerPolicyApplyAll>
   <VTU_PrisonerPolicyApplied>已將 {0} 名囚犯的食物政策改為「{1}」。</VTU_PrisonerPolicyApplied>
+  <VTU_VisitorFood>訪客不吃殖民地的食物</VTU_VisitorFood>
+  <VTU_VisitorFood_Desc>商隊、訪客和友軍援兵（包括馱獸）身上還有食物時，不會去吃儲存區或居住區裡的食物，也不會吃種植區和花盆裡的作物。自己的食物吃完、餓到下方設定的程度後，才能吃殖民地的食物，而且只限所選食物政策允許的項目（動物不受政策限制）。地圖上其他地方的野生食物和草地仍然可以吃，所以不會有人餓死在基地旁。</VTU_VisitorFood_Desc>
+  <VTU_VisitorFoodHungerLabel>從這個飢餓程度起可吃殖民地食物</VTU_VisitorFoodHungerLabel>
+  <VTU_VisitorFoodPolicyLabel>可吃的殖民地食物</VTU_VisitorFoodPolicyLabel>
+  <VTU_VisitorFoodPolicyNone>任何食物</VTU_VisitorFoodPolicyNone>
+  <VTU_VisitorFoodPolicyMissing>這個存檔沒有名為「{0}」的食物政策，飢餓的訪客可以吃任何殖民地食物。</VTU_VisitorFoodPolicyMissing>
   <VTU_HybridXenotype>混種後代沿用相符的種族</VTU_HybridXenotype>
   <VTU_HybridXenotype_Desc>被標為「混合」的後代，若種系基因與某個可遺傳種族的相符度超過 80%（依基因複雜度加權，不計膚色與髮色），就改為該種族；同分時隨機選一個。出生時與每次讀檔都會檢查；基因本身不變，除非開啟下方選項，否則帶有異種基因的 pawn 不處理。</VTU_HybridXenotype_Desc>
   <VTU_HybridIncludeXenogenes>也檢查經過改造的 pawn</VTU_HybridIncludeXenogenes>
