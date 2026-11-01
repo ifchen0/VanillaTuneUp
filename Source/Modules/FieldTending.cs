@@ -17,8 +17,10 @@ namespace VanillaTuneUp
     ///   6 hours, or when no bed is free for them (vanilla tends humanlikes only in bed, so they waited untended).
     /// - Tending a fast bleeder where they lie uses only medicine the doctor carries, or none, instead of walking
     ///   to a stockpile first.
-    /// - Patients with no bleeding and no disease that can kill get the cheapest allowed medicine instead of the
-    ///   best one. Bleeding wounds and deadly diseases (infection, flu, plague, carcinoma, ...) still get the best.
+    /// - Patients with no untended wound that can get infected and no disease that can kill get the cheapest
+    ///   allowed medicine instead of the best one. Better medicine only raises tend quality, which lowers the
+    ///   infection chance of a wound and speeds its healing (it never changes whether bleeding stops), so wounds
+    ///   that can get infected (cuts, bites, gunshots, burns, frostbite) and deadly diseases still get the best.
     /// </summary>
     public static class FieldTending
     {
@@ -59,19 +61,23 @@ namespace VanillaTuneUp
             patient != doctor && LyingOutsideBed(patient) && (BleedingFast(patient) || !HasBed(patient, doctor));
 
         /// <summary>
-        /// No bleeding and no deadly disease still running. The tend timer is ignored: a disease tended a few hours
-        /// ago is not tendable now, but the next tend for another wound should still get the best medicine.
-        /// Chronic conditions that cannot kill (asthma, gut worms, mechanites) do not count.
+        /// No untended wound that can get infected and no deadly disease still running. For diseases the tend timer
+        /// is ignored: one tended a few hours ago is not tendable now, but the next tend for another wound should
+        /// still get the best medicine. Wounds that cannot get infected (bruises, cracks) and chronic conditions that
+        /// cannot kill (asthma, gut worms, mechanites) do not count.
         /// </summary>
         public static bool OnlyMinorWounds(Pawn patient)
         {
-            HediffSet set = patient.health.hediffSet;
-            if (set.BleedRateTotal > 0f)
-                return false;
-            List<Hediff> hediffs = set.hediffs;
+            List<Hediff> hediffs = patient.health.hediffSet.hediffs;
             for (int i = 0; i < hediffs.Count; i++)
             {
-                if (!(hediffs[i] is Hediff_Injury) && hediffs[i].TendableNow(ignoreTimer: true) && CanKill(hediffs[i].def))
+                Hediff h = hediffs[i];
+                if (h is Hediff_Injury)
+                {
+                    if (h.TendableNow() && h.TryGetComp<HediffComp_Infecter>() != null)
+                        return false;
+                }
+                else if (h.TendableNow(ignoreTimer: true) && CanKill(h.def))
                     return false;
             }
             return true;

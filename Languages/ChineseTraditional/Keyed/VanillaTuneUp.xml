@@ -130,7 +130,7 @@
   <VTU_InspectTabCameraOnOpen>開啟分頁擋住選取的角色時也移動鏡頭</VTU_InspectTabCameraOnOpen>
   <VTU_InspectTabCameraOnOpen_Desc>打開或切換到會擋住目前選取角色的分頁時，鏡頭會水平移動，讓角色出現在分頁右側。角色原本就看得到、或關閉分頁時，鏡頭不會動。</VTU_InspectTabCameraOnOpen_Desc>
   <VTU_FieldTending>就地治療與省藥</VTU_FieldTending>
-  <VTU_FieldTending_Desc>倒在床外的殖民者或囚犯，如果6小時內會失血致死，或沒有空床可用，會直接在原地治療。原地治療快速流血的傷患時，只用醫生身上的藥，沒有就不用藥，不會先跑去倉庫拿。沒有流血、也沒有致命疾病時，改用醫療設定允許範圍內最便宜的藥；有流血傷或致命疾病（感染、流感、瘟疫、癌腫等）時仍用最好的藥，即使該疾病剛治療過、尚未到下次治療時間也一樣。</VTU_FieldTending_Desc>
+  <VTU_FieldTending_Desc>倒在床外的殖民者或囚犯，如果6小時內會失血致死，或沒有空床可用，會直接在原地治療。原地治療快速流血的傷患時，只用醫生身上的藥，沒有就不用藥，不會先跑去倉庫拿。好藥只會降低傷口的感染機率、加快癒合，止血效果並不會比較好。因此沒有未治療的可感染傷口、也沒有致命疾病時，改用醫療設定允許範圍內最便宜的藥；有會感染的傷口（割傷、咬傷、槍傷、燒傷、凍傷）或致命疾病（感染、流感、瘟疫、癌腫等）時仍用最好的藥，即使該疾病剛治療過、尚未到下次治療時間也一樣。</VTU_FieldTending_Desc>
   <VTU_FieldTendBeforeCapture>逮捕前先為快速流血者止血</VTU_FieldTendBeforeCapture>
   <VTU_FieldTendBeforeCapture_Desc>命令殖民者俘虜或逮捕倒地的對象時，如果對方6小時內會失血致死，會先在原地治療（用身上的藥，沒有就不用藥），再把人帶走。開始治療時就會將對方轉為囚犯，避免治療途中恢復行動又變回敵人。</VTU_FieldTendBeforeCapture_Desc>
   <VTU_Quicksave>快速存檔快捷鍵</VTU_Quicksave>

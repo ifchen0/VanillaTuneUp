@@ -38,7 +38,7 @@ Tweaks:
 - Visitors take shelter: in cold, heat or while enemies are around, trader caravans and visitors wait in a barn, dining room or storeroom instead of leaving early.
 - Confirm before closing the game window (on by default): closing the window during a game asks first, like Quit to OS in the menu; commitment mode saves, then quits.
 - Camera jumps avoid the open inspect tab (on by default): with a tab such as gear or health open, jumping to a colonist centres them in the uncovered screen area to the right of the tab; optionally also when a tab opens over the selected pawn.
-- Field tending and cheaper medicine: a downed pawn outside a bed is tended where they lie if they would bleed to death within 6 hours or no bed is free (fast bleeders get only carried medicine or none); without bleeding or a deadly disease the cheapest allowed medicine is used; optionally tends fast bleeders before capturing them.
+- Field tending and cheaper medicine: a downed pawn outside a bed is tended where they lie if they would bleed to death within 6 hours or no bed is free (fast bleeders get only carried medicine or none); without a wound that can get infected or a deadly disease the cheapest allowed medicine is used; optionally tends fast bleeders before capturing them.
 - Quicksave hotkey: F5 saves right away to Quicksave-1, -2 and so on, overwriting the oldest once the set number (5 by default) is reached.
 - Food policy for new prisoners: new prisoners get the food policy you pick.
 - Guards for dangerous hunts: hunting an animal that can fight back calls nearby armed colonists along as guards, more of them for tougher animals and packs.
