@@ -46,7 +46,7 @@ namespace VanillaTuneUp
                 Log.Warning("[Vanilla Tune-Up] VisitorFood: could not find the food validator; visitors eat colony food as in vanilla.");
         }
 
-        private static bool IsFoodValidator(object operand) => operand switch
+        internal static bool IsFoodValidator(object operand) => operand switch
         {
             FieldInfo field => field.Name == "foodValidator" && field.FieldType == typeof(Predicate<Thing>),
             LocalBuilder local => local.LocalType == typeof(Predicate<Thing>),

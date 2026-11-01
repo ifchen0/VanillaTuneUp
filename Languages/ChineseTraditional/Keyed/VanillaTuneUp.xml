@@ -122,7 +122,7 @@
   <VTU_BundleLetterDismiss>右鍵關閉合併信件</VTU_BundleLetterDismiss>
   <VTU_BundleLetterDismiss_Desc>信件太多時，較舊的信件會合併成一封「還有N封...」的信件，原版對它按右鍵沒有反應。開啟後，右鍵點它會一次關閉其中所有信件，和右鍵關閉一般信件一樣。仍在等你做選擇的信件（例如有人請求加入、訪客在門口）本來就不能用右鍵關閉，會保留下來。</VTU_BundleLetterDismiss_Desc>
   <VTU_VisitorShelter>訪客遇到惡劣天氣或敵人會進屋避難</VTU_VisitorShelter>
-  <VTU_VisitorShelter_Desc>商隊和訪客在殖民地外圍等待，只要任何一個成員（包括馱獸）開始失溫或中暑就會提早離開。開啟後，當落腳處的溫度接近成員中最不耐冷熱者的極限，或地圖上有與他們敵對的威脅時，他們會移到室內：有帶動物就去穀倉，沒有就去食堂，找不到時都改去儲物室。房間本身必須在安全溫度內，且所有成員都走得到。敵人離開、天氣回暖後會回到室外。每隔幾遊戲分鐘檢查一次；在入場途中就已經受凍的隊伍仍可能離開，護衛也仍會迎擊靠近的敵人。</VTU_VisitorShelter_Desc>
+  <VTU_VisitorShelter_Desc>商隊和訪客在殖民地外圍等待，只要任何一個成員（包括馱獸）開始失溫或中暑就會提早離開。開啟後，當落腳處的溫度接近成員中最不耐冷熱者的極限，或地圖上有與他們敵對的威脅時，他們會移到室內：有帶動物就去穀倉，沒有就去食堂，找不到時都改去儲物室。房間本身必須在安全溫度內，且所有成員都走得到。避難期間吃東西也留在房間內：坐房間裡的餐桌或站著吃，要到極度飢餓才會去房間外拿食物。敵人離開、天氣回暖後會回到室外。每隔幾遊戲分鐘檢查一次；在入場途中就已經受凍的隊伍仍可能離開，護衛也仍會迎擊靠近的敵人。</VTU_VisitorShelter_Desc>
   <VTU_VisitorShelter_Moved>{0}因為{1}，暫時到{2}避難。</VTU_VisitorShelter_Moved>
   <VTU_VisitorShelter_Traders>{0}的商隊</VTU_VisitorShelter_Traders>
   <VTU_VisitorShelter_Visitors>來自{0}的訪客</VTU_VisitorShelter_Visitors>

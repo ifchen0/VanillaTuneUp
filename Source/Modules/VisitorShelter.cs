@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using HarmonyLib;
 using RimWorld;
@@ -100,6 +102,16 @@ namespace VanillaTuneUp
                 return null;
             Room room = toil.FlagLoc.GetRoom(lord.Map);
             return room != null && !room.PsychologicallyOutdoors ? room : null;
+        }
+
+        /// <summary>Whether a food source is in the room; a dispenser counts by the cell its users stand on.</summary>
+        internal static bool InRoom(Thing t, Room room)
+        {
+            Map map = t.MapHeld;
+            if (map == null)
+                return false;
+            IntVec3 cell = t.Spawned && t.def.hasInteractionCell ? t.InteractionCell : t.PositionHeld;
+            return cell.GetRoom(map) == room;
         }
 
         private static void Check(LordToil_DefendPoint toil, IntVec3 home)
@@ -281,6 +293,136 @@ namespace VanillaTuneUp
                 VisitorShelter.Fail(e);
                 return true;
             }
+        }
+    }
+
+    /// <summary>
+    /// Food lying around the colony draws a sheltering member out of the room just like wandering would. While the
+    /// group shelters, the food search on the map only accepts food in the shelter room, until the eater gets urgently
+    /// hungry; food the member carries is not affected.
+    /// </summary>
+    [HarmonyPatchCategory("VisitorShelter")]
+    [HarmonyPatch(typeof(FoodUtility), nameof(FoodUtility.BestFoodSourceOnMap))]
+    public static class Patch_FoodUtility_BestFoodSourceOnMap
+    {
+        private const HungerCategory LeaveRoomHunger = HungerCategory.UrgentlyHungry;
+
+        /// <summary>Wraps the food validator where vanilla stores it, like VisitorFood does; the two wrappers stack.</summary>
+        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            MethodInfo wrap = AccessTools.Method(typeof(Patch_FoodUtility_BestFoodSourceOnMap), nameof(Wrap));
+            bool wrapped = false;
+            foreach (CodeInstruction code in instructions)
+            {
+                if (!wrapped && (code.opcode == OpCodes.Stfld || code.opcode == OpCodes.Stloc || code.opcode == OpCodes.Stloc_S)
+                    && VisitorFood.IsFoodValidator(code.operand))
+                {
+                    yield return new CodeInstruction(OpCodes.Ldarg_0);
+                    yield return new CodeInstruction(OpCodes.Ldarg_1);
+                    yield return new CodeInstruction(OpCodes.Call, wrap);
+                    wrapped = true;
+                }
+                yield return code;
+            }
+            if (!wrapped)
+                Log.Warning("[Vanilla Tune-Up] VisitorShelter: could not find the food validator; sheltering visitors may leave the room for food.");
+        }
+
+        public static Predicate<Thing> Wrap(Predicate<Thing> validator, Pawn getter, Pawn eater)
+        {
+            if (VisitorShelter.Failed || getter != eater)
+                return validator;
+            try
+            {
+                Room room = VisitorShelter.ShelterRoomOf(eater?.GetLord());
+                if (room == null || eater.needs?.food == null || eater.needs.food.CurCategory >= LeaveRoomHunger)
+                    return validator;
+                return t => VisitorShelter.InRoom(t, room) && validator(t);
+            }
+            catch (Exception e)
+            {
+                VisitorShelter.Fail(e);
+                return validator;
+            }
+        }
+    }
+
+    /// <summary>
+    /// After picking up food, vanilla walks to the nearest free chair at a table within 32 cells, wherever it is, and
+    /// only avoids rooms at an unsafe temperature: enemies do not count, and the group shelters a little before the
+    /// outside gets unsafe. While a group shelters, its members sit at a table in the shelter room, otherwise eat
+    /// standing in the room.
+    /// </summary>
+    [HarmonyPatchCategory("VisitorShelter")]
+    [HarmonyPatch(typeof(Toils_Ingest), nameof(Toils_Ingest.TryFindChairOrSpot))]
+    public static class Patch_Toils_Ingest_TryFindChairOrSpot
+    {
+        public static void Postfix(Pawn pawn, Thing ingestible, ref IntVec3 cell, ref bool __result)
+        {
+            if (VisitorShelter.Failed)
+                return;
+            try
+            {
+                Lord lord = pawn.GetLord();
+                Room room = VisitorShelter.ShelterRoomOf(lord);
+                Map map = pawn.Map;
+                if (room == null || __result && cell.GetRoom(map) == room)
+                    return;
+                if (!(UsesChair(ingestible) && TryFindChairInRoom(pawn, room, out cell)))
+                {
+                    cell = RCellFinder.SpotToChewStandingNear(pawn, ingestible,
+                        c => c.GetRoom(map) == room && pawn.CanReserveSittableOrSpot(c));
+                    // Still outside the room (on the way in): eat at the shelter spot.
+                    if (!cell.IsValid || cell.GetRoom(map) != room)
+                        cell = pawn.GetRoom() == room ? pawn.Position : lord.CurLordToil.FlagLoc;
+                }
+                __result = true;
+            }
+            catch (Exception e)
+            {
+                VisitorShelter.Fail(e);
+            }
+        }
+
+        // Vanilla skips chairs for food whose chairSearchRadius is 0.
+        private static bool UsesChair(Thing ingestible)
+        {
+            ThingDef def = ingestible.def.ingestible != null ? ingestible.def
+                : (ingestible as Building_NutrientPasteDispenser)?.DispensableDef;
+            return def?.ingestible != null && def.ingestible.chairSearchRadius > 0f;
+        }
+
+        /// <summary>The closest chair in the room that vanilla would take, minus the distance limit.</summary>
+        private static bool TryFindChairInRoom(Pawn pawn, Room room, out IntVec3 cell)
+        {
+            Map map = pawn.Map;
+            cell = IntVec3.Invalid;
+            float best = float.MaxValue;
+            foreach (Thing t in room.ContainedAndAdjacentThings)
+            {
+                if (t.def.building == null || !t.def.building.isSittable || t.GetRoom() != room || t.IsForbidden(pawn)
+                    || !t.IsSociallyProper(pawn) || t.IsBurning() || t.HostileTo(pawn) || !pawn.CanReserve(t)
+                    || !Toils_Ingest.TryFindFreeSittingSpotOnThing(t, pawn, out IntVec3 spot) || !NextToTable(spot, map))
+                    continue;
+                float distance = (spot - pawn.Position).LengthHorizontalSquared;
+                if (distance < best && pawn.CanReach(spot, PathEndMode.OnCell, Danger.Deadly))
+                {
+                    best = distance;
+                    cell = spot;
+                }
+            }
+            return cell.IsValid;
+        }
+
+        private static bool NextToTable(IntVec3 spot, Map map)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                Building edifice = (spot + GenAdj.CardinalDirections[i]).GetEdifice(map);
+                if (edifice != null && edifice.def.surfaceType == SurfaceType.Eat)
+                    return true;
+            }
+            return false;
         }
     }
 }
