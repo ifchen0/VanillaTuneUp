@@ -10,7 +10,7 @@
 Fixes:
 - Faction leaders: fixes the "Faction leader for X is null" error.
 - History graph: removes the History tab lag in long-running colonies.
-- Right-click menu: stops the stutter while a right-click menu is open on the map.
+- Right-click menu: stops the stutter when a right-click menu opens and while it is open on the map.
 - Trade setup: removes the freeze when a trade window opens with many items (and with Auto Seller).
 - Mechs in sieges: fixes the error spam when a siege includes mechs added by other mods.
 - Food policy during mental breaks: wardens no longer bring restricted food to a prisoner having a mental break.

@@ -9,7 +9,7 @@ Small fixes and optional tweaks for vanilla RimWorld, collected in one mod.
 [h2]Fixes[/h2][list]
 [*][b]Faction leaders:[/b] fixes the [i]Faction leader for X is null[/i] error by generating a new leader, as vanilla does when one dies.
 [*][b]History graph:[/b] removes the History tab lag in long-running colonies (15-19 ms to under 1 ms per frame in a large test colony).
-[*][b]Right-click menu:[/b] stops the stutter while a right-click menu is open on the map.
+[*][b]Right-click menu:[/b] stops the stutter when a right-click menu opens and while it is open on the map.
 [*][b]Trade setup:[/b] removes the freeze when a trade window opens in a colony with many items, including Auto Seller trades.
 [*][b]Mechs in sieges:[/b] fixes the [i]Exception while ticking lord with job RimWorld.LordJob_Siege[/i] spam when a siege includes modded mechs.
 [*][b]Food policy during mental breaks:[/b] wardens no longer bring restricted food to a prisoner having a mental break.

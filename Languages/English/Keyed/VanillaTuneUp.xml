@@ -18,7 +18,7 @@
   <VTU_HistoryGraph>History graph performance</VTU_HistoryGraph>
   <VTU_HistoryGraph_Desc>Removes the History tab lag in long-running colonies. The graph looks the same; peaks and dips stay visible.</VTU_HistoryGraph_Desc>
   <VTU_RightClickMenu>Right-click menu lag</VTU_RightClickMenu>
-  <VTU_RightClickMenu_Desc>Stops the stutter while a right-click menu is open on the map. Options are re-checked every 5 seconds instead of every 4th frame, and still on click.</VTU_RightClickMenu_Desc>
+  <VTU_RightClickMenu_Desc>Stops the stutter when a right-click menu opens and while it is open on the map. Options are generated once on opening instead of three times, re-checked every 5 seconds instead of every 4th frame, and still on click.</VTU_RightClickMenu_Desc>
   <VTU_TradeDeal>Trade setup freeze</VTU_TradeDeal>
   <VTU_TradeDeal_Desc>Removes the long freeze when a trade window opens in a colony with many items. With Auto Seller, its trades no longer rebuild the trade list a second time.</VTU_TradeDeal_Desc>
   <VTU_SiegeBuilder>Mechs in sieges</VTU_SiegeBuilder>

@@ -18,7 +18,7 @@
   <VTU_HistoryGraph>歷史圖表效能</VTU_HistoryGraph>
   <VTU_HistoryGraph_Desc>消除長期殖民地開啟歷史分頁時的卡頓。圖表外觀不變，高峰與低谷仍會顯示。</VTU_HistoryGraph_Desc>
   <VTU_RightClickMenu>右鍵選單卡頓</VTU_RightClickMenu>
-  <VTU_RightClickMenu_Desc>消除地圖上開著右鍵選單時的卡頓。選項改為每 5 秒重新檢查一次（原版每 4 幀一次），點選時仍會即時檢查。</VTU_RightClickMenu_Desc>
+  <VTU_RightClickMenu_Desc>消除地圖上打開右鍵選單時與開著時的卡頓。開啟時只產生一次選項（原版三次），之後每 5 秒重新檢查一次（原版每 4 幀一次），點選時仍會即時檢查。</VTU_RightClickMenu_Desc>
   <VTU_TradeDeal>交易開啟卡頓</VTU_TradeDeal>
   <VTU_TradeDeal_Desc>消除物品很多的殖民地開啟交易視窗時的長時間凍結。搭配 Auto Seller 時，它的每筆交易也不會再重建第二次交易清單。</VTU_TradeDeal_Desc>
   <VTU_SiegeBuilder>圍攻中的機械體</VTU_SiegeBuilder>
