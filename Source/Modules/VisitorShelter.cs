@@ -15,9 +15,10 @@ namespace VanillaTuneUp
     /// <summary>
     /// Trader caravans and visitor groups leave early as soon as any member, pack animals included, gets mild
     /// hypothermia or heatstroke: they wait at a spot just outside the colony and their Defend duty never seeks a safe
-    /// temperature. Every few in-game minutes while waiting, if the temperature at that spot is near the safe limit of
-    /// the most sensitive member or anything hostile to the group is active on the map, the waiting spot moves into a
-    /// room: a barn when the group has animals, otherwise a dining room, with a storeroom as the fallback for both.
+    /// temperature. Every few in-game minutes while waiting or still walking in, if the temperature at that spot is
+    /// near the safe limit of the most sensitive member or anything hostile to the group is active on the map, the
+    /// waiting spot (or the destination of the walk in) moves into a room: a barn when the group has animals,
+    /// otherwise a dining room, with a storeroom as the fallback for both.
     /// The room must be comfortably inside the safe range, reachable by every member and not already taken by another
     /// sheltering group (first come, first served). The group goes back to its original spot once the threat is gone
     /// and the temperature there is well inside the range again. Without a usable room, vanilla behaviour stays.
@@ -44,8 +45,9 @@ namespace VanillaTuneUp
 
         // Both lord jobs hold other LordToil_DefendPoint toils of the same class (defending after an attack, on the way
         // in or out); the waiting one is the toil entered when the group arrives at its chill spot. The visitors' exit
-        // subgraph has a TravelArrived transition of its own (to LordToil_ExitMap), hence the target type check.
-        private static readonly ConditionalWeakTable<StateGraph, LordToil> WaitingToils = new ConditionalWeakTable<StateGraph, LordToil>();
+        // subgraph has a TravelArrived transition of its own (to LordToil_ExitMap), hence the target type check. The
+        // source of that transition is the toil walking them in.
+        private static readonly ConditionalWeakTable<StateGraph, Transition> ArrivedTransitions = new ConditionalWeakTable<StateGraph, Transition>();
         private static readonly ConditionalWeakTable<Lord, StrongBox<int>> NextSearch = new ConditionalWeakTable<Lord, StrongBox<int>>();
 
         // Set on the first unexpected exception (another mod reshaping lord graphs, say): one error, then both patches
@@ -58,9 +60,11 @@ namespace VanillaTuneUp
                 return;
             try
             {
-                if (__instance is LordToil_DefendPoint toil && toil.lord.ticksInToil % CheckInterval == 0
-                    && TryGetHome(toil, out IntVec3 home))
-                    Check(toil, home);
+                // Also on the first tick in a toil, so a group that arrives in its shelter does not walk back out first.
+                int ticks = __instance.lord.ticksInToil;
+                if ((__instance is LordToil_DefendPoint || __instance is LordToil_Travel)
+                    && (ticks % CheckInterval == 0 || ticks == 1) && TryGetHome(__instance, out IntVec3 home))
+                    Check(__instance, home);
             }
             catch (Exception e)
             {
@@ -74,8 +78,11 @@ namespace VanillaTuneUp
             Log.Error($"[Vanilla Tune-Up] VisitorShelter: unexpected error, turned off for this session: {e}");
         }
 
-        /// <summary>The original waiting spot, if this toil is the waiting toil of a trader caravan or visitor group.</summary>
-        private static bool TryGetHome(LordToil_DefendPoint toil, out IntVec3 home)
+        /// <summary>
+        /// The original waiting spot, if this toil is the waiting toil of a trader caravan or visitor group, or the toil
+        /// that walks them there (vanilla also sends them home when they get too cold or hot on the way in).
+        /// </summary>
+        private static bool TryGetHome(LordToil toil, out IntVec3 home)
         {
             Lord lord = toil.lord;
             home = IntVec3.Invalid;
@@ -87,20 +94,24 @@ namespace VanillaTuneUp
                 home = VisitChillSpot(visit);
             else
                 return false;
-            return WaitingToil(lord.Graph) == toil;
+            Transition arrived = ArrivedTransition(lord.Graph);
+            return arrived != null && (arrived.target == toil || toil is LordToil_Travel && arrived.sources.Contains(toil));
         }
 
-        private static LordToil WaitingToil(StateGraph graph) =>
-            WaitingToils.GetValue(graph, g => g.transitions.FirstOrDefault(t => t.target is LordToil_DefendPoint
-                && t.triggers.Any(tr => tr is Trigger_Memo memo && MemoOf(memo) == ArrivedMemo))?.target);
+        private static Transition ArrivedTransition(StateGraph graph) =>
+            ArrivedTransitions.GetValue(graph, g => g.transitions.FirstOrDefault(t => t.target is LordToil_DefendPoint
+                && t.triggers.Any(tr => tr is Trigger_Memo memo && MemoOf(memo) == ArrivedMemo)));
 
-        /// <summary>The room a group is sheltering in, or null when it is not sheltering.</summary>
+        /// <summary>The room a group is sheltering in or heading to, or null when it is not sheltering.</summary>
         public static Room ShelterRoomOf(Lord lord)
         {
-            if (!(lord?.CurLordToil is LordToil_DefendPoint toil) || !TryGetHome(toil, out IntVec3 home)
-                || toil.FlagLoc == home || !toil.FlagLoc.IsValid)
+            LordToil toil = lord?.CurLordToil;
+            if (toil == null || !TryGetHome(toil, out IntVec3 home))
                 return null;
-            Room room = toil.FlagLoc.GetRoom(lord.Map);
+            IntVec3 spot = SpotOf(toil);
+            if (spot == home || !spot.IsValid)
+                return null;
+            Room room = spot.GetRoom(lord.Map);
             return room != null && !room.PsychologicallyOutdoors ? room : null;
         }
 
@@ -114,7 +125,7 @@ namespace VanillaTuneUp
             return cell.GetRoom(map) == room;
         }
 
-        private static void Check(LordToil_DefendPoint toil, IntVec3 home)
+        private static void Check(LordToil toil, IntVec3 home)
         {
             Lord lord = toil.lord;
             Map map = lord.Map;
@@ -138,7 +149,7 @@ namespace VanillaTuneUp
 
             float outside = home.GetTemperature(map);
             bool threat = GenHostility.AnyHostileActiveThreatTo(map, lord.faction);
-            IntVec3 current = toil.FlagLoc;
+            IntVec3 current = SpotOf(toil);
             if (current == home)
             {
                 if (!threat && Within(outside, safe, EnterMargin))
@@ -161,20 +172,20 @@ namespace VanillaTuneUp
             Shelter(toil, safe, hasAnimals, threat, outside, home);
         }
 
-        private static void Shelter(LordToil_DefendPoint toil, FloatRange safe, bool hasAnimals, bool threat, float outside, IntVec3 home)
+        private static void Shelter(LordToil toil, FloatRange safe, bool hasAnimals, bool threat, float outside, IntVec3 home)
         {
             Lord lord = toil.lord;
             StrongBox<int> next = NextSearch.GetOrCreateValue(lord);
             if (Find.TickManager.TicksGame < next.Value)
             {
-                if (toil.FlagLoc != home)
+                if (SpotOf(toil) != home)
                     Move(toil, home, interrupt: false);
                 return;
             }
             if (!TryFindShelter(lord, safe, hasAnimals, out IntVec3 cell, out Room room))
             {
                 next.Value = Find.TickManager.TicksGame + RetryInterval;
-                if (toil.FlagLoc != home)
+                if (SpotOf(toil) != home)
                     Move(toil, home, interrupt: false);
                 return;
             }
@@ -194,11 +205,19 @@ namespace VanillaTuneUp
         private static float Distance(float temperature, FloatRange safe) =>
             temperature < safe.min ? safe.min - temperature : temperature > safe.max ? temperature - safe.max : 0f;
 
+        /// <summary>Where the group is headed: the waiting toil's defend point, or the arrival toil's destination.</summary>
+        internal static IntVec3 SpotOf(LordToil toil) => toil is LordToil_DefendPoint defend ? defend.FlagLoc
+            : toil.data is LordToilData_Travel travel ? travel.dest : IntVec3.Invalid;
+
         // Going inside interrupts current jobs and wakes sleepers, as vanilla lord transitions do; otherwise a member
-        // asleep outside would sleep on in the cold until rested. Going back out lets them finish what they are doing.
-        private static void Move(LordToil_DefendPoint toil, IntVec3 cell, bool interrupt)
+        // asleep outside would sleep on in the cold until rested, and travellers would walk on to the old destination.
+        // Going back out lets them finish what they are doing.
+        private static void Move(LordToil toil, IntVec3 cell, bool interrupt)
         {
-            toil.SetDefendPoint(cell);
+            if (toil is LordToil_DefendPoint defend)
+                defend.SetDefendPoint(cell);
+            else
+                ((LordToil_Travel)toil).SetDestination(cell);
             toil.UpdateAllDuties();
             if (!interrupt)
                 return;
@@ -252,6 +271,14 @@ namespace VanillaTuneUp
         }
     }
 
+    /// <summary>LordToil_Travel overrides LordToilTick, so the base method patch never runs for the walk in.</summary>
+    [HarmonyPatchCategory("VisitorShelter")]
+    [HarmonyPatch(typeof(LordToil_Travel), nameof(LordToil_Travel.LordToilTick))]
+    public static class Patch_LordToil_Travel_LordToilTick
+    {
+        public static void Postfix(LordToil __instance) => VisitorShelter.Postfix(__instance);
+    }
+
     /// <summary>
     /// Moving the waiting spot is not enough: guards and other members keep wandering up to 7 cells around it, out the
     /// door into the cold. While a group shelters, vanilla wandering is kept but only accepts cells in the shelter room.
@@ -280,7 +307,7 @@ namespace VanillaTuneUp
                 if (room == null)
                     return true;
                 // Wander around the shelter spot rather than the duty focus: carriers follow the trader, who may be outside.
-                IntVec3 root = lord.CurLordToil.FlagLoc;
+                IntVec3 root = VisitorShelter.SpotOf(lord.CurLordToil);
                 float radius = pawn.mindState.duty?.wanderRadius ?? WanderRadius(__instance);
                 Func<Pawn, IntVec3, IntVec3, bool> validator = Validator(__instance);
                 __result = RCellFinder.RandomWanderDestFor(pawn, root, radius,
@@ -374,7 +401,7 @@ namespace VanillaTuneUp
                         c => c.GetRoom(map) == room && pawn.CanReserveSittableOrSpot(c));
                     // Still outside the room (on the way in): eat at the shelter spot.
                     if (!cell.IsValid || cell.GetRoom(map) != room)
-                        cell = pawn.GetRoom() == room ? pawn.Position : lord.CurLordToil.FlagLoc;
+                        cell = pawn.GetRoom() == room ? pawn.Position : VisitorShelter.SpotOf(lord.CurLordToil);
                 }
                 __result = true;
             }
