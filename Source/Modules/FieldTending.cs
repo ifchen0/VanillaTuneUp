@@ -17,8 +17,8 @@ namespace VanillaTuneUp
     ///   6 hours, or when no bed is free for them (vanilla tends humanlikes only in bed, so they waited untended).
     /// - Tending a fast bleeder where they lie uses only medicine the doctor carries, or none, instead of walking
     ///   to a stockpile first.
-    /// - Patients whose wounds needing tend are all non-bleeding injuries get the cheapest allowed medicine instead
-    ///   of the best one. Bleeding wounds and diseases (infections, flu, plague, ...) still get the best.
+    /// - Patients with no bleeding and no disease that can kill get the cheapest allowed medicine instead of the
+    ///   best one. Bleeding wounds and deadly diseases (infection, flu, plague, carcinoma, ...) still get the best.
     /// </summary>
     public static class FieldTending
     {
@@ -58,7 +58,11 @@ namespace VanillaTuneUp
         public static bool CanTendInPlace(Pawn patient, Pawn doctor) =>
             patient != doctor && LyingOutsideBed(patient) && (BleedingFast(patient) || !HasBed(patient, doctor));
 
-        /// <summary>Every wound needing tend is an injury that is not bleeding: no disease, no bleeding.</summary>
+        /// <summary>
+        /// No bleeding and no deadly disease still running. The tend timer is ignored: a disease tended a few hours
+        /// ago is not tendable now, but the next tend for another wound should still get the best medicine.
+        /// Chronic conditions that cannot kill (asthma, gut worms, mechanites) do not count.
+        /// </summary>
         public static bool OnlyMinorWounds(Pawn patient)
         {
             HediffSet set = patient.health.hediffSet;
@@ -67,10 +71,27 @@ namespace VanillaTuneUp
             List<Hediff> hediffs = set.hediffs;
             for (int i = 0; i < hediffs.Count; i++)
             {
-                if (hediffs[i].TendableNow() && !(hediffs[i] is Hediff_Injury))
+                if (!(hediffs[i] is Hediff_Injury) && hediffs[i].TendableNow(ignoreTimer: true) && CanKill(hediffs[i].def))
                     return false;
             }
             return true;
+        }
+
+        private static readonly Dictionary<HediffDef, bool> canKill = new Dictionary<HediffDef, bool>();
+
+        /// <summary>
+        /// Lethal at some severity, life-threatening at some stage, or destroying its body part at some stage
+        /// (carcinoma kills that way when it grows in a vital organ). Read from the def, so modded diseases count.
+        /// </summary>
+        public static bool CanKill(HediffDef def)
+        {
+            if (!canKill.TryGetValue(def, out bool result))
+            {
+                result = def.lethalSeverity > 0f
+                    || (def.stages != null && def.stages.Any(s => s.lifeThreatening || s.destroyPart));
+                canKill[def] = result;
+            }
+            return result;
         }
 
         public static void DrawSettings(Listing_Standard listing)
