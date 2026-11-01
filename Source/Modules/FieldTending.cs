@@ -176,13 +176,31 @@ namespace VanillaTuneUp
                 return;
             last.Value = now;
 
-            Job tend = JobMaker.MakeJob(JobDefOf.TendPatient, target, HealthAIUtility.FindBestMedicine(doctor, target, onlyUseInventory: true));
+            Job tend = JobMaker.MakeJob(JobDefOf.TendPatient, target, CarriedMedicineForPrisoner(doctor, target));
             tend.count = 1;
             // Not forced, the tend job would end at once: the target is not a patient the colony tends on its own.
             tend.playerForced = true;
             captureTends.Add(tend, null);
             __instance.jobQueue.EnqueueFirst(newJob, tag);
             newJob = tend;
+        }
+
+        /// <summary>
+        /// Best carried medicine the target may get once they are a prisoner. Before capture they have no player
+        /// settings, so vanilla would allow any carried medicine; the medical care check in JobDriver_TendPatient
+        /// then fails the tend as soon as they turn prisoner if it is better than the prisoners' default.
+        /// </summary>
+        private static Thing CarriedMedicineForPrisoner(Pawn doctor, Pawn target)
+        {
+            MedicalCareCategory care = target.IsPrisonerOfColony && target.playerSettings != null
+                ? target.playerSettings.medCare
+                : Find.PlaySettings.defaultCareForPrisoner;
+            if (care <= MedicalCareCategory.NoMeds)
+                return null;
+            return doctor.inventory.innerContainer
+                .Where(t => t.def.IsMedicine && care.AllowsMedicine(t.def) && !t.IsForbidden(doctor) && doctor.CanReserve(t, 10, 1))
+                .OrderByDescending(t => t.def.GetStatValueAbstract(StatDefOf.MedicalPotency))
+                .FirstOrDefault();
         }
 
         /// <summary>
