@@ -85,8 +85,8 @@
   <VTU_PS_DialogTitle>取得營養膏直到有</VTU_PS_DialogTitle>
   <VTU_PS_DialogNote>計算倉庫裡、搬運中與地上的營養膏（目前 {0}）。設為 0 即關閉。</VTU_PS_DialogNote>
   <VTU_PS_Inspect>營養膏庫存：{0} / {1}</VTU_PS_Inspect>
-  <VTU_ModUpdateNotes>主選單：繼續遊戲按鈕與模組更新說明</VTU_ModUpdateNotes>
-  <VTU_ModUpdateNotes_Desc>主選單最上方加一個「繼續遊戲」按鈕，讀取最新的存檔（包括自動存檔），版本和模組清單不符時照常提示；滑鼠移上去可看到會讀取哪個存檔，在主選單按Enter也有同樣效果（按鍵可在選項 > 鍵盤中更改）。限Steam版：主選單左上角的方框（翻譯人員名單）改為列出已啟用的Steam工作坊模組，最近更新的排在最前面。上次查看後有更新的模組會標亮，點選即可看工作坊上的更新說明。沒點開的更新經過3次遊戲啟動後就不再標亮。適用所有模組；第一次啟用時全部視為已讀。</VTU_ModUpdateNotes_Desc>
+  <VTU_ModUpdateNotes>模組更新說明</VTU_ModUpdateNotes>
+  <VTU_ModUpdateNotes_Desc>主選單左上角的方框（翻譯人員名單）改為列出已啟用的Steam工作坊模組，最近更新的排在最前面。上次查看後有更新的模組會標亮，點選即可看工作坊上的更新說明。沒點開的更新經過3次遊戲啟動後就不再標亮。適用所有模組；第一次啟用時全部視為已讀。</VTU_ModUpdateNotes_Desc>
   <VTU_MM_Continue>繼續遊戲</VTU_MM_Continue>
   <VTU_MM_ContinueTip>讀取最新存檔：{0}
 存檔時間：{1}</VTU_MM_ContinueTip>
@@ -139,8 +139,9 @@
   <VTU_FieldTending_Desc>倒在床外的殖民者或囚犯，如果6小時內會失血致死，或沒有空床可用，會直接在原地治療。原地治療快速流血的傷患時，只用醫生身上的藥，沒有就不用藥，不會先跑去倉庫拿。好藥只會降低傷口的感染機率、加快癒合，止血效果並不會比較好。因此沒有未治療的可感染傷口、也沒有致命疾病時，改用醫療設定允許範圍內最便宜的藥；有會感染的傷口（割傷、咬傷、槍傷、燒傷、凍傷）或致命疾病（感染、流感、瘟疫、癌腫等）時仍用最好的藥，即使該疾病剛治療過、尚未到下次治療時間也一樣。</VTU_FieldTending_Desc>
   <VTU_FieldTendBeforeCapture>逮捕前先為快速流血者止血</VTU_FieldTendBeforeCapture>
   <VTU_FieldTendBeforeCapture_Desc>命令殖民者俘虜或逮捕倒地的對象時，如果對方6小時內會失血致死，會先在原地治療（用身上的藥，沒有就不用藥），再把人帶走。開始治療時就會將對方轉為囚犯，避免治療途中恢復行動又變回敵人。</VTU_FieldTendBeforeCapture_Desc>
-  <VTU_Quicksave>快速存檔快捷鍵</VTU_Quicksave>
-  <VTU_Quicksave_Desc>遊戲中按F5直接存檔，不用打開選單。存檔依序命名為Quicksave-1、Quicksave-2……，全部用過後會覆寫最舊的一個，和自動存檔的輪替方式相同。遊戲時間還沒前進就再按一次（例如暫停中），會覆寫同一個存檔。按鍵可在選項 > 鍵盤（遊戲分類）中更改。永久死亡模式下會存到該遊戲唯一的存檔，和自動存檔相同。</VTU_Quicksave_Desc>
+  <VTU_Quicksave>快速存檔、儲存並退出、繼續遊戲</VTU_Quicksave>
+  <VTU_Quicksave_Desc>遊戲中按F5直接存檔，不用打開選單。存檔依序命名為Quicksave-1、Quicksave-2……，全部用過後會覆寫最舊的一個，和自動存檔的輪替方式相同。遊戲時間還沒前進就再按一次（例如暫停中），會覆寫同一個存檔。按鍵可在選項 > 鍵盤（遊戲分類）中更改。永久死亡模式下會存到該遊戲唯一的存檔，和自動存檔相同。「確定要退出嗎？」的確認視窗會多一個「儲存並退出」按鈕，先快速存檔再退出。主選單最上方加一個「繼續遊戲」按鈕，讀取最新的存檔（包括自動存檔和快速存檔），版本和模組清單不符時照常提示；滑鼠移上去可看到會讀取哪個存檔，在主選單按Enter也有同樣效果（按鍵可在選項 > 鍵盤中更改）。</VTU_Quicksave_Desc>
+  <VTU_SaveAndQuit>儲存並退出</VTU_SaveAndQuit>
   <VTU_QuicksaveCount>保留的快速存檔數量：{0}</VTU_QuicksaveCount>
   <VTU_QuicksaveUnavailable>目前無法存檔。</VTU_QuicksaveUnavailable>
 

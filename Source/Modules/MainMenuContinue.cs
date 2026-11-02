@@ -11,7 +11,7 @@ namespace VanillaTuneUp
     /// <summary>
     /// "Continue" button at the top of the main menu's option list that loads the newest save, autosaves included.
     /// Enter (VTU_Continue key binding) does the same. Loading goes through the same version and mod list checks as
-    /// the Load game dialog. Part of the ModUpdateNotes module, which groups the main menu additions.
+    /// the Load game dialog. Part of the Quicksave module, which groups the save and load shortcuts.
     /// </summary>
     public static class MainMenuContinue
     {
@@ -96,7 +96,7 @@ namespace VanillaTuneUp
         }
     }
 
-    [HarmonyPatchCategory("ModUpdateNotes")]
+    [HarmonyPatchCategory("Quicksave")]
     [HarmonyPatch(typeof(MainMenuDrawer), nameof(MainMenuDrawer.DoMainMenuControls))]
     public static class Patch_MainMenuDrawer_DoMainMenuControls
     {
@@ -111,7 +111,7 @@ namespace VanillaTuneUp
         public static void Finalizer() => MainMenuContinue.PendingInsert = false;
     }
 
-    [HarmonyPatchCategory("ModUpdateNotes")]
+    [HarmonyPatchCategory("Quicksave")]
     [HarmonyPatch(typeof(OptionListingUtility), nameof(OptionListingUtility.DrawOptionListing))]
     public static class Patch_OptionListingUtility_DrawOptionListing
     {

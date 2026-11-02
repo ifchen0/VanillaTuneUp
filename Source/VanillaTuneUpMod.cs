@@ -101,10 +101,11 @@ namespace VanillaTuneUp
             new TuneUpModule("CaravanEncounterNoJump", true, null) { OnByDefault = true },
             new TuneUpModule("PinnedResources", true, null) { OnByDefault = true },
             new TuneUpModule("NutrientPasteStock", true, null) { OnByDefault = true },
-            // Main menu additions: mod update list (Steam only) and the Continue button.
             new TuneUpModule("ModUpdateNotes", true, null)
             {
                 OnByDefault = true,
+                IsAvailable = () => Verse.Steam.SteamManager.Initialized,
+                UnavailableKey = "VTU_RequiresSteam",
                 OnActivated = ModUpdateNotes.Scan
             },
             new TuneUpModule("BreakUpFights", true, null),
@@ -138,6 +139,7 @@ namespace VanillaTuneUp
             {
                 DrawSettings = FieldTending.DrawSettings
             },
+            // Save and load shortcuts: F5 quicksave, save and quit, main menu Continue.
             new TuneUpModule("Quicksave", true, null)
             {
                 DrawSettings = Quicksave.DrawSettings

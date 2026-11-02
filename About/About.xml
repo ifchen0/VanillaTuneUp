@@ -28,7 +28,7 @@ Tweaks:
 - Caravan encounters stay on the current map (on by default): caravan event dialogs open without switching to the world map.
 - Pin resources (on by default): left-click a resource in the categorized resource list to keep it shown while its category is collapsed, even at 0.
 - Nutrient paste stock (on by default): a "dispense until you have X" target for nutrient paste dispensers, shared by the whole map.
-- Main menu (on by default): a Continue button (or Enter) that loads your newest save; the top-left box lists your active Workshop mods by update time, newly updated ones highlighted, with their change notes (Steam version).
+- Mod update notes (on by default, Steam version): the main menu's top-left box lists your active Workshop mods by update time, newly updated ones highlighted, with their change notes.
 - Break up social fights: anyone who sees a social fight nearby may step in to stop it.
 - Short names on the map (on by default): long names under pawns are cut short; hover or select the pawn to see the full name.
 - Ghouls can wear apparel: ghouls keep their clothes when turned and can be ordered to wear clothes and armor, still no weapons (Anomaly).
@@ -39,7 +39,7 @@ Tweaks:
 - Confirm before closing the game window (on by default): closing the window during a game asks first, like Quit to OS in the menu; commitment mode saves, then quits.
 - Camera jumps avoid the open inspect tab (on by default): with a tab such as gear or health open, jumping to a colonist centres them in the uncovered screen area to the right of the tab; optionally also when a tab opens over the selected pawn.
 - Field tending and cheaper medicine: a downed pawn outside a bed is tended where they lie if they would bleed to death within 6 hours or no bed is free (fast bleeders get only carried medicine or none); without a wound that can get infected or a deadly disease the cheapest allowed medicine is used; optionally tends fast bleeders before capturing them.
-- Quicksave hotkey: F5 saves right away to Quicksave-1, -2 and so on, overwriting the oldest once the set number (5 by default) is reached.
+- Quicksave, save and quit, Continue: F5 saves right away to Quicksave-1, -2 and so on, overwriting the oldest once the set number (5 by default) is reached; the quit confirmation gets a "Save and quit" button; a main menu Continue button (or Enter) loads your newest save.
 - Food policy for new prisoners: new prisoners get the food policy you pick.
 - Visitors leave colony food alone: traders, visitors and allies eat their own food; once it runs out and they get hungry enough, they may eat colony food your chosen policy allows.
 - Guards for dangerous hunts: hunting an animal that can fight back calls nearby armed colonists along as guards, more of them for tougher animals and packs.
