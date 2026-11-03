@@ -15,41 +15,62 @@ namespace VanillaTuneUp
     /// Prison breaks and slave rebellions with fewer all-at-once riots:
     /// - Escaping prisoners have no keys: they cannot open doors and have to break through them.
     /// - Prisoners and slaves use recreation buildings in the room of their own bed (vanilla gives them no
-    ///   recreation need, so they never do). Having actually used one within the last day multiplies their prison
-    ///   break or rebellion interval.
+    ///   recreation need, so they never do), and it moves the vanilla values the break and rebellion intervals
+    ///   already read: for a prisoner the "days since last prison break" (as if it had broken out about 5 days ago,
+    ///   about x2 at first and back to x1 by day 10, never pulling a real recent break back), for a slave suppression
+    ///   (about +10% per full session). The prisoner tab tooltip gains the line vanilla leaves out for that factor.
     /// - Vanilla pulls every prisoner of a joining cell into a break, and every slave on the map or nearby into a
     ///   rebellion. Each one now joins with chance (initiator's interval / own interval), so pawns less inclined to
     ///   break out than the one who started it (recreation, a recent break, high suppression) often stay put.
     /// </summary>
     public static class PrisonBreak
     {
-        private const int RecreationWindowTicks = GenDate.TicksPerDay;
         // A pawn looks for recreation again once this long has passed since the last time, outside recreation hours.
         private const int RecreationRetryTicks = GenDate.TicksPerDay / 2;
-        public const float DefaultRecreationFactor = 2f;
+        // Where vanilla's days-since-prison-break curve (0 d x20, 5 d x1.5, 10 d x1) gives x2.
+        public const float CalmedDays = 4.86f;
+        // Suppression gained per tick of recreation: +10% over a 4000-tick session (chess, poker, television).
+        public const float SuppressionPerTick = 0.1f / 4000f;
 
         private static readonly ConditionalWeakTable<Pawn, StrongBox<int>> lastRecreation = new ConditionalWeakTable<Pawn, StrongBox<int>>();
+        private static readonly SimpleCurve DaysSinceBreakCurve =
+            (SimpleCurve)AccessTools.Field(typeof(PrisonBreakUtility), "PrisonBreakMTBFactorForDaysSincePrisonBreak").GetValue(null);
 
         public static bool UsesRules(Pawn pawn) =>
             pawn != null && pawn.needs?.joy == null && (pawn.IsPrisonerOfColony || pawn.IsSlaveOfColony);
 
-        public static void NoteRecreation(Pawn pawn) =>
-            lastRecreation.GetOrCreateValue(pawn).Value = Find.TickManager.TicksGame;
+        /// <summary>One recreation tick (or several, for delta): calms a prisoner or raises a slave's suppression.</summary>
+        public static void NoteRecreation(Pawn pawn, int delta)
+        {
+            int now = Find.TickManager.TicksGame;
+            lastRecreation.GetOrCreateValue(pawn).Value = now;
+            if (pawn.IsPrisonerOfColony)
+            {
+                int calmedTick = now - Mathf.RoundToInt(CalmedDays * GenDate.TicksPerDay);
+                Pawn_GuestTracker guest = pawn.guest;
+                // Only ever later: a real break a day ago (x20) must not be eased by a game of chess.
+                if (!guest.everParticipatedInPrisonBreak || guest.lastPrisonBreakTicks < calmedTick)
+                {
+                    guest.everParticipatedInPrisonBreak = true;
+                    guest.lastPrisonBreakTicks = calmedTick;
+                }
+            }
+            else if (pawn.needs.TryGetNeed(out Need_Suppression suppression))
+                suppression.CurLevel += SuppressionPerTick * delta;
+        }
 
         private static int TicksSinceRecreation(Pawn pawn) =>
             lastRecreation.TryGetValue(pawn, out StrongBox<int> box) && box.Value > 0
                 ? Find.TickManager.TicksGame - box.Value
                 : int.MaxValue;
 
-        public static bool HadRecreation(Pawn pawn) => TicksSinceRecreation(pawn) <= RecreationWindowTicks;
-
-        public static float RecreationFactor => VanillaTuneUpMod.Settings.prisonRecreationFactor;
-
-        public static void DrawSettings(Listing_Standard listing)
+        /// <summary>Vanilla's days-since-prison-break factor for this prisoner, 1 when it has none.</summary>
+        public static float CalmFactor(Pawn pawn)
         {
-            TuneUpSettings settings = VanillaTuneUpMod.Settings;
-            listing.Label("VTU_PrisonRecreationFactor".Translate(settings.prisonRecreationFactor.ToString("0.#")));
-            settings.prisonRecreationFactor = Mathf.Round(listing.Slider(settings.prisonRecreationFactor, 1f, 5f) * 2f) / 2f;
+            Pawn_GuestTracker guest = pawn.guest;
+            if (guest == null || !guest.everParticipatedInPrisonBreak || DaysSinceBreakCurve == null)
+                return 1f;
+            return DaysSinceBreakCurve.Evaluate((Find.TickManager.TicksGame - guest.lastPrisonBreakTicks) / (float)GenDate.TicksPerDay);
         }
 
         // ---------- Recreation ----------
@@ -229,7 +250,7 @@ namespace VanillaTuneUp
             Job job = pawn.CurJob;
             if (job?.def.joyKind == null || job.doUntilGatheringEnded || !PrisonBreak.UsesRules(pawn))
                 return true;
-            PrisonBreak.NoteRecreation(pawn);
+            PrisonBreak.NoteRecreation(pawn, delta);
             if (job.def.joySkill != null)
                 pawn.skills?.GetSkill(job.def.joySkill).Learn(job.def.joyXpPerTick * delta);
             __result = false;
@@ -242,32 +263,23 @@ namespace VanillaTuneUp
         }
     }
 
+    /// <summary>
+    /// Vanilla applies the days-since-prison-break factor without listing it in the prisoner tab tooltip; recreation
+    /// now drives it too, so show it. Display only, the interval is unchanged.
+    /// </summary>
     [HarmonyPatchCategory("PrisonBreak")]
     [HarmonyPatch(typeof(PrisonBreakUtility), nameof(PrisonBreakUtility.InitiatePrisonBreakMtbDays))]
-    public static class PrisonBreak_RecreationMtb
+    public static class PrisonBreak_CalmTooltip
     {
-        public static void Postfix(Pawn pawn, StringBuilder sb, ref float __result)
+        public static void Postfix(Pawn pawn, StringBuilder sb, float __result)
         {
-            if (__result <= 0f || !PrisonBreak.HadRecreation(pawn))
+            if (sb == null || __result <= 0f)
                 return;
-            float factor = PrisonBreak.RecreationFactor;
-            __result *= factor;
-            if (sb != null)
-            {
-                sb.AppendLineIfNotEmpty();
-                sb.Append("  - " + "VTU_PrisonRecreationMtb".Translate() + ": " + factor.ToStringPercent());
-            }
-        }
-    }
-
-    [HarmonyPatchCategory("PrisonBreak")]
-    [HarmonyPatch(typeof(SlaveRebellionUtility), "InitiateSlaveRebellionMtbDaysHelper")]
-    public static class PrisonBreak_RecreationRebellionMtb
-    {
-        public static void Postfix(Pawn pawn, ref float __result)
-        {
-            if (__result > 0f && PrisonBreak.HadRecreation(pawn))
-                __result *= PrisonBreak.RecreationFactor;
+            float factor = PrisonBreak.CalmFactor(pawn);
+            if (Mathf.Approximately(factor, 1f))
+                return;
+            sb.AppendLineIfNotEmpty();
+            sb.Append("  - " + "VTU_PrisonCalmedDown".Translate() + ": " + factor.ToStringPercent());
         }
     }
 

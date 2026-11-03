@@ -43,7 +43,7 @@ Tweaks:
 - Field tending and cheaper medicine: a downed pawn outside a bed is tended where they lie if they would bleed to death within 6 hours or no bed is free (fast bleeders get only carried medicine or none); without a wound that can get infected or a deadly disease the cheapest allowed medicine is used; optionally tends fast bleeders before capturing them.
 - Quicksave, save and quit, Continue: F5 saves right away to Quicksave-1, -2 and so on, overwriting the oldest once the set number (5 by default) is reached; the quit confirmation gets a "Save and quit" button; a main menu Continue button (or Enter) loads your newest save.
 - Food policy for new prisoners and slaves: new prisoners and slaves get the food policy you pick for each.
-- Calmer prison breaks and slave rebellions: escaping prisoners have no keys; prisoners and slaves use recreation buildings in their room, which makes breaks rarer; each one decides on their own whether to join a break or rebellion.
+- Calmer prison breaks and slave rebellions: escaping prisoners have no keys; prisoners and slaves use recreation buildings in their room, which calms prisoners and raises slaves' suppression; each one decides on their own whether to join a break or rebellion.
 - Visitors leave colony food alone: traders, visitors and allies eat their own food; once it runs out and they get hungry enough, they may eat colony food your chosen policy allows.
 - Guards for dangerous hunts: hunting an animal that can fight back calls nearby armed colonists along as guards, more of them for tougher animals and packs.
 - Hybrid children keep a matching xenotype: a Hybrid child whose genes closely match one heritable xenotype gets that xenotype (Biotech).
