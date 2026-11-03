@@ -46,11 +46,11 @@
   <VTU_HuntGuard_Desc>When a hunter goes after an animal with any revenge chance on harm (for that hunter, at shooting range), the nearest free colonists with a ranged weapon and hostility response set to attack come along as guards: they follow the hunter and shoot anything that attacks them. There is no upper limit on guards: more are sent for an animal with more health or one with packmates close by that would join its revenge (one guard per 3 health scale: a grizzly bear is 2.5, a megasloth 3.6, a thrumbo 8). The hunter waits at the shooting spot until every guard is close, for up to 30 seconds (strict mode below gives the hunt up instead). Guards are only picked from colonists who are not hungry, tired, hurt or busy with work that cannot be interrupted, and they go back to normal work once the animal is down. Hunts you order by hand are left alone.</VTU_HuntGuard_Desc>
   <VTU_HuntGuardStrict>Strict mode: give up without full guard</VTU_HuntGuardStrict>
   <VTU_HuntGuardStrict_Desc>The hunter gives the hunt up instead of shooting without guards: when fewer guards are free than the animal needs, when a guard drops out before the first shot, or when they are not all close after 30 seconds. That hunter then leaves the animal alone for one in-game hour. Once the shooting has started, the hunt goes on even if guards leave.</VTU_HuntGuardStrict_Desc>
-  <VTU_PrisonerDefaultFoodPolicy>Food policy for new prisoners and slaves</VTU_PrisonerDefaultFoodPolicy>
-  <VTU_PrisonerDefaultFoodPolicy_Desc>Pawns get the food policy chosen below when they become your prisoners or slaves, so a prisoner-only or slave-only policy no longer has to be set by hand each time. A pawn that stops being a prisoner or slave (recruited, released, enslaved, emancipated) while still on that policy goes back to the default policy. The policy is matched by name, so use the same name in every save.</VTU_PrisonerDefaultFoodPolicy_Desc>
+  <VTU_PrisonerDefaultFoodPolicy>Default policies for new prisoners and slaves</VTU_PrisonerDefaultFoodPolicy>
+  <VTU_PrisonerDefaultFoodPolicy_Desc>Pawns get the food policy chosen below when they become your prisoners or slaves, and new slaves also get the apparel policy chosen below (such as Ideology's own Slave policy, whose collars and straps slow suppression loss), so these no longer have to be set by hand each time. A pawn that stops being a prisoner or slave (recruited, released, enslaved, emancipated) while still on that policy goes back to the default policy. Prisoners get no apparel policy: they never dress by one in vanilla. Policies are matched by name, so use the same names in every save.</VTU_PrisonerDefaultFoodPolicy_Desc>
   <VTU_PrisonerPolicyLabel>Policy for new prisoners</VTU_PrisonerPolicyLabel>
   <VTU_PrisonerPolicyNone>No change (vanilla)</VTU_PrisonerPolicyNone>
-  <VTU_PrisonerPolicyNoGame>Load a save to pick a food policy.</VTU_PrisonerPolicyNoGame>
+  <VTU_PrisonerPolicyNoGame>Load a save to pick a policy.</VTU_PrisonerPolicyNoGame>
   <VTU_PrisonerPolicyMissing>This save has no food policy named "{0}"; new prisoners keep the default policy.</VTU_PrisonerPolicyMissing>
   <VTU_PrisonerPolicyApplyAll>Apply to current prisoners</VTU_PrisonerPolicyApplyAll>
   <VTU_PrisonerPolicyApplied>{0} prisoners now use the food policy "{1}".</VTU_PrisonerPolicyApplied>
@@ -58,6 +58,10 @@
   <VTU_SlavePolicyMissing>This save has no food policy named "{0}"; new slaves keep the default policy.</VTU_SlavePolicyMissing>
   <VTU_SlavePolicyApplyAll>Apply to current slaves</VTU_SlavePolicyApplyAll>
   <VTU_SlavePolicyApplied>{0} slaves now use the food policy "{1}".</VTU_SlavePolicyApplied>
+  <VTU_SlaveApparelLabel>Apparel policy for new slaves</VTU_SlaveApparelLabel>
+  <VTU_SlaveApparelMissing>This save has no apparel policy named "{0}"; new slaves keep the default policy.</VTU_SlaveApparelMissing>
+  <VTU_SlaveApparelApplyAll>Apply to current slaves</VTU_SlaveApparelApplyAll>
+  <VTU_SlaveApparelApplied>{0} slaves now use the apparel policy "{1}".</VTU_SlaveApparelApplied>
   <VTU_PrisonBreak>Calmer prison breaks and slave rebellions</VTU_PrisonBreak>
   <VTU_PrisonBreak_Desc>Escaping prisoners have no keys: they cannot open doors and have to break doors (or walls) to get out. Prisoners and slaves use the recreation buildings (television, chess table and so on) in the room of their own bed. Recreation calms a prisoner the way a recent break does in vanilla (about half as likely to break out, wearing off over 10 days), so prisoners play every couple of days; it raises a slave's suppression (about 10% per session), and slaves play during recreation hours or whenever their suppression is below 30%, so a poorly suppressed slave stops working before it rebels. Instead of every prisoner in the cell, or every slave nearby, joining a break or rebellion, each one joins with a chance that drops the less inclined they are than the one who started it (recreation, a recent break, high suppression).</VTU_PrisonBreak_Desc>
   <VTU_PrisonCalmedDown>Calmed down (recreation or a recent break)</VTU_PrisonCalmedDown>

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using RimWorld;
@@ -250,11 +251,13 @@ namespace VanillaTuneUp
     }
 
     /// <summary>
-    /// Vanilla gives every new prisoner and slave the default food policy, so a prisoner-only or slave-only policy has
-    /// to be picked by hand each time. Give the policy named in the settings to a pawn when it becomes a prisoner or
+    /// Vanilla gives every new prisoner and slave the default food policy and every new slave the default apparel
+    /// policy, so a prisoner-only or slave-only policy (Ideology even makes a "Slave" apparel policy at the start) has
+    /// to be picked by hand each time. Give the policies named in the settings to a pawn when it becomes a prisoner or
     /// slave of the colony, and put it back on the default policy when it stops being one (recruited, released,
-    /// enslaved, emancipated) while still on that policy. Policies are saved per game, so the settings store policy
-    /// names and match them in the loaded save.
+    /// enslaved, emancipated) while still on that policy. Apparel is for slaves only: prisoners never dress by a
+    /// policy in vanilla. Policies are saved per game, so the settings store policy names and match them in the
+    /// loaded save.
     /// </summary>
     [HarmonyPatchCategory("PrisonerDefaultFoodPolicy")]
     [HarmonyPatch(typeof(Pawn_GuestTracker), nameof(Pawn_GuestTracker.SetGuestStatus))]
@@ -283,19 +286,30 @@ namespace VanillaTuneUp
 
         public static void Postfix(Pawn ___pawn, Role __state)
         {
-            Pawn_FoodRestrictionTracker tracker = ___pawn?.foodRestriction;
-            if (tracker == null)
+            if (___pawn == null)
                 return;
             Role role = RoleOf(___pawn);
             if (role == __state)
                 return;
             // Enslaving a prisoner leaves the prisoner policy and takes the slave one in the same call.
-            FoodPolicy old = PolicyFor(__state);
-            if (old != null && tracker.CurrentFoodPolicy == old)
-                tracker.CurrentFoodPolicy = Current.Game.foodRestrictionDatabase.DefaultFoodRestriction();
-            FoodPolicy policy = PolicyFor(role);
-            if (policy != null)
-                tracker.CurrentFoodPolicy = policy;
+            Pawn_FoodRestrictionTracker food = ___pawn.foodRestriction;
+            if (food != null)
+            {
+                FoodPolicy old = PolicyFor(__state);
+                if (old != null && food.CurrentFoodPolicy == old)
+                    food.CurrentFoodPolicy = Current.Game.foodRestrictionDatabase.DefaultFoodRestriction();
+                FoodPolicy policy = PolicyFor(role);
+                if (policy != null)
+                    food.CurrentFoodPolicy = policy;
+            }
+            Pawn_OutfitTracker outfits = ___pawn.outfits;
+            ApparelPolicy apparel = ConfiguredApparelForSlaves();
+            if (outfits == null || apparel == null)
+                return;
+            if (role == Role.Slave)
+                outfits.CurrentApparelPolicy = apparel;
+            else if (__state == Role.Slave && outfits.CurrentApparelPolicy == apparel)
+                outfits.CurrentApparelPolicy = Current.Game.outfitDatabase.DefaultOutfit();
         }
 
         /// <summary>The prisoner policy named in the settings in the current game, or null when unset or missing.</summary>
@@ -303,6 +317,9 @@ namespace VanillaTuneUp
 
         /// <summary>The slave policy named in the settings in the current game, or null when unset or missing.</summary>
         public static FoodPolicy ConfiguredForSlaves() => FindPolicy(VanillaTuneUpMod.Settings.slaveFoodPolicy);
+
+        /// <summary>The slave apparel policy named in the settings in the current game, or null when unset or missing.</summary>
+        public static ApparelPolicy ConfiguredApparelForSlaves() => FindApparelPolicy(VanillaTuneUpMod.Settings.slaveApparelPolicy);
 
         /// <summary>The food policy with this name in the current game, or null when unset or missing.</summary>
         public static FoodPolicy FindPolicy(string label)
@@ -312,17 +329,33 @@ namespace VanillaTuneUp
             return Current.Game?.foodRestrictionDatabase?.AllFoodRestrictions.Find(p => p.label == label);
         }
 
+        private static ApparelPolicy FindApparelPolicy(string label)
+        {
+            if (label.NullOrEmpty())
+                return null;
+            return Current.Game?.outfitDatabase?.AllOutfits.Find(p => p.label == label);
+        }
+
         /// <summary>A labelled button that picks a food policy of the loaded game by name, with a warning when it is missing.</summary>
         public static void DrawPolicyPicker(Listing_Standard listing, string labelKey, string noneKey, string missingKey,
-            string selected, Action<string> select)
+            string selected, Action<string> select) =>
+            DrawPicker(listing, labelKey, noneKey, missingKey, selected, select,
+                Current.Game?.foodRestrictionDatabase?.AllFoodRestrictions.Select(p => p.label).ToList());
+
+        private static void DrawApparelPicker(Listing_Standard listing, string labelKey, string noneKey, string missingKey,
+            string selected, Action<string> select) =>
+            DrawPicker(listing, labelKey, noneKey, missingKey, selected, select,
+                Current.Game?.outfitDatabase?.AllOutfits.Select(p => p.label).ToList());
+
+        // labels is null outside a game, where there is no policy list to pick from.
+        private static void DrawPicker(Listing_Standard listing, string labelKey, string noneKey, string missingKey,
+            string selected, Action<string> select, List<string> labels)
         {
             string current = selected.NullOrEmpty() ? noneKey.Translate().ToString() : selected;
-            List<FoodPolicy> policies = Current.Game?.foodRestrictionDatabase?.AllFoodRestrictions;
             Rect row = listing.GetRect(30f);
             Widgets.Label(row.LeftHalf(), labelKey.Translate());
-            if (policies == null)
+            if (labels == null)
             {
-                // Outside a game there is no policy list to pick from.
                 Widgets.Label(row.RightHalf(), current);
                 GUI.color = Color.gray;
                 listing.Label("VTU_PrisonerPolicyNoGame".Translate());
@@ -335,14 +368,11 @@ namespace VanillaTuneUp
                 {
                     new FloatMenuOption(noneKey.Translate(), () => select(""))
                 };
-                foreach (FoodPolicy policy in policies)
-                {
-                    string label = policy.label;
+                foreach (string label in labels)
                     options.Add(new FloatMenuOption(label, () => select(label)));
-                }
                 Find.WindowStack.Add(new FloatMenu(options));
             }
-            if (!selected.NullOrEmpty() && FindPolicy(selected) == null)
+            if (!selected.NullOrEmpty() && !labels.Contains(selected))
             {
                 GUI.color = ColorLibrary.Gold;
                 listing.Label(missingKey.Translate(selected));
@@ -355,31 +385,52 @@ namespace VanillaTuneUp
             TuneUpSettings settings = VanillaTuneUpMod.Settings;
             DrawPolicyPicker(listing, "VTU_PrisonerPolicyLabel", "VTU_PrisonerPolicyNone", "VTU_PrisonerPolicyMissing",
                 settings.prisonerFoodPolicy, label => settings.prisonerFoodPolicy = label);
-            DrawApplyButton(listing, Configured(), "VTU_PrisonerPolicyApplyAll", "VTU_PrisonerPolicyApplied",
-                PawnsFinder.AllMapsCaravansAndTravellingTransporters_Alive_PrisonersOfColony);
+            FoodPolicy prisonerFood = Configured();
+            DrawApplyButton(listing, prisonerFood?.label, "VTU_PrisonerPolicyApplyAll", "VTU_PrisonerPolicyApplied",
+                PawnsFinder.AllMapsCaravansAndTravellingTransporters_Alive_PrisonersOfColony,
+                pawn => SetFood(pawn, prisonerFood));
             if (!ModsConfig.IdeologyActive)
                 return;
             listing.Gap(6f);
             DrawPolicyPicker(listing, "VTU_SlavePolicyLabel", "VTU_PrisonerPolicyNone", "VTU_SlavePolicyMissing",
                 settings.slaveFoodPolicy, label => settings.slaveFoodPolicy = label);
-            DrawApplyButton(listing, ConfiguredForSlaves(), "VTU_SlavePolicyApplyAll", "VTU_SlavePolicyApplied",
-                PawnsFinder.AllMapsCaravansAndTravellingTransporters_Alive_SlavesOfColony);
+            FoodPolicy slaveFood = ConfiguredForSlaves();
+            DrawApplyButton(listing, slaveFood?.label, "VTU_SlavePolicyApplyAll", "VTU_SlavePolicyApplied",
+                PawnsFinder.AllMapsCaravansAndTravellingTransporters_Alive_SlavesOfColony,
+                pawn => SetFood(pawn, slaveFood));
+            listing.Gap(6f);
+            DrawApparelPicker(listing, "VTU_SlaveApparelLabel", "VTU_PrisonerPolicyNone", "VTU_SlaveApparelMissing",
+                settings.slaveApparelPolicy, label => settings.slaveApparelPolicy = label);
+            ApparelPolicy slaveApparel = ConfiguredApparelForSlaves();
+            DrawApplyButton(listing, slaveApparel?.label, "VTU_SlaveApparelApplyAll", "VTU_SlaveApparelApplied",
+                PawnsFinder.AllMapsCaravansAndTravellingTransporters_Alive_SlavesOfColony,
+                pawn => SetApparel(pawn, slaveApparel));
         }
 
-        private static void DrawApplyButton(Listing_Standard listing, FoodPolicy configured, string buttonKey,
-            string messageKey, List<Pawn> pawns)
+        private static bool SetFood(Pawn pawn, FoodPolicy policy)
         {
-            if (configured == null || !listing.ButtonText(buttonKey.Translate()))
+            if (pawn.foodRestriction == null)
+                return false;
+            pawn.foodRestriction.CurrentFoodPolicy = policy;
+            return true;
+        }
+
+        private static bool SetApparel(Pawn pawn, ApparelPolicy policy)
+        {
+            if (pawn.outfits == null)
+                return false;
+            pawn.outfits.CurrentApparelPolicy = policy;
+            return true;
+        }
+
+        // apply sets the policy on one pawn and says whether it could.
+        private static void DrawApplyButton(Listing_Standard listing, string policyLabel, string buttonKey,
+            string messageKey, List<Pawn> pawns, Func<Pawn, bool> apply)
+        {
+            if (policyLabel == null || !listing.ButtonText(buttonKey.Translate()))
                 return;
-            int count = 0;
-            foreach (Pawn pawn in pawns)
-            {
-                if (pawn.foodRestriction == null)
-                    continue;
-                pawn.foodRestriction.CurrentFoodPolicy = configured;
-                count++;
-            }
-            Messages.Message(messageKey.Translate(count, configured.label), MessageTypeDefOf.TaskCompletion, historical: false);
+            int count = pawns.Count(apply);
+            Messages.Message(messageKey.Translate(count, policyLabel), MessageTypeDefOf.TaskCompletion, historical: false);
         }
     }
 }

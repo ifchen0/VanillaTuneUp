@@ -42,7 +42,7 @@ Small fixes and optional tweaks for vanilla RimWorld, collected in one mod.
 [*][b]Camera jumps avoid the open inspect tab[/b] (on by default): the colonist is centred beside the tab, not under it.
 [*][b]Field tending and cheaper medicine:[/b] fast bleeders or patients with no free bed are tended where they lie; minor wounds get the cheapest allowed medicine.
 [*][b]Quicksave, save and quit, Continue:[/b] F5 quicksave, a "Save and quit" button and a main menu Continue button.
-[*][b]Food policy for new prisoners and slaves:[/b] they get the policy you pick.
+[*][b]Default policies for new prisoners and slaves:[/b] the food policy you pick, plus an apparel policy for slaves.
 [*][b]Visitors leave colony food alone:[/b] until their own runs out and they get hungry enough.
 [*][b]Guards for dangerous hunts:[/b] armed colonists escort the hunter when the animal could fight back.
 [*][b]Hybrid children keep a matching xenotype[/b] (Biotech).
