@@ -2,60 +2,57 @@ Small fixes and optional tweaks for vanilla RimWorld, collected in one mod.
 
 [h2]How it works[/h2][list]
 [*]Turn each part on or off in [i]Options > Mod settings > Vanilla Tune-Up[/i] (restart to apply).
-[*]Fixes are on by default. Tweaks marked (on by default) only change the interface or do nothing until you use them; the other tweaks are off until you turn them on.
+[*]Fixes are on by default. Tweaks marked (on by default) only change the interface or wait until you use them; other tweaks are off until you turn them on.
 [*]If one part fails to load (for example after a game update), only that part is turned off.
 [/list]
 
 [h2]Fixes[/h2][list]
-[*][b]Faction leaders:[/b] fixes the [i]Faction leader for X is null[/i] error by generating a new leader, as vanilla does when one dies.
-[*][b]History graph:[/b] removes the History tab lag in long-running colonies (15-19 ms to under 1 ms per frame in a large test colony).
-[*][b]Right-click menu:[/b] stops the stutter when a right-click menu opens and while it is open on the map.
-[*][b]Trade setup:[/b] removes the freeze when a trade window opens in a colony with many items, including Auto Seller trades.
-[*][b]Mechs in sieges:[/b] fixes the [i]Exception while ticking lord with job RimWorld.LordJob_Siege[/i] spam when a siege includes modded mechs.
-[*][b]Food policy during mental breaks:[/b] wardens no longer bring restricted food to a prisoner having a mental break.
-[*][b]Tend bleeding prisoners first:[/b] wardens skip feeding while a prisoner is bleeding or has surgery scheduled, so tending and surgery come first.
-[*][b]Prisoner food delivery keeps up:[/b] when prisoners get hungry, one trip brings enough for everyone in the cell who needs food.
-[*][b]Ejected genepacks stay out[/b] (Biotech): genepacks you eject from a gene bank get auto-load turned off, so haulers no longer carry them straight back in.
-[*][b]Aligned corner icons:[/b] the search and codex buttons in the bottom-right corner no longer push the icons after them off the grid. Always on; skipped when Unaligned Icon Fix is active.
-[*][b]Official translation fixes:[/b] fixes quest text shown as [i]ERR:[/i] and generated text left in English that a translation file cannot override, and a duplicate message after social fights (currently Traditional Chinese).
+[*][b]Faction leaders:[/b] fixes [i]Faction leader for X is null[/i] by generating a new leader.
+[*][b]History graph:[/b] removes the History tab lag in long-running colonies.
+[*][b]Right-click menu:[/b] no more stutter while a right-click menu is open on the map.
+[*][b]Trade setup:[/b] no freeze when a trade window opens with many items, Auto Seller included.
+[*][b]Mechs in sieges:[/b] fixes [i]Exception while ticking lord with job RimWorld.LordJob_Siege[/i] with modded mechs.
+[*][b]Prisoner food and tending:[/b] wardens respect food policy during mental breaks, tend bleeding prisoners before feeding, and feed a whole cell in one trip.
+[*][b]Ejected genepacks stay out[/b] (Biotech): haulers no longer carry them straight back into the gene bank.
+[*][b]Aligned corner icons:[/b] the bottom-right search and codex buttons no longer push other icons off the grid.
+[*][b]Official translation fixes:[/b] quest text shown as [i]ERR:[/i] and untranslatable generated text (currently Traditional Chinese).
 [/list]
 
 [h2]Tweaks[/h2][list]
-[*][b]Xenogerm queue[/b] (Biotech): a bill-style queue for the gene assembler (X times, until you have X, or forever).
+[*][b]Xenogerm queue[/b] (Biotech): a bill-style queue for the gene assembler.
 [*][b]Mute labor and birth sounds[/b] (Biotech).
-[*][b]Remove fog of war:[/b] reveals the map on generation or load, except fogged areas where revealing would trigger something. Rock and ore stay hidden until mined.
-[*][b]Faction icons in caravan lists[/b] (on by default): shows the faction icon of guests, prisoners and other non-colony pawns.
-[*][b]Caravan encounters stay on the current map[/b] (on by default): caravan event dialogs (meetings, demands, mod events such as Real Ruins) open without switching to the world map.
-[*][b]Pin resources[/b] (on by default): left-click a resource in the categorized resource list to keep it shown while its category is collapsed, even at 0.
-[*][b]Nutrient paste stock[/b] (on by default): a "dispense until you have X" target for nutrient paste dispensers, shared by the whole map.
-[*][b]Mod update notes[/b] (on by default, Steam version): the main menu's top-left box lists your Workshop mods by update time, newly updated ones highlighted; click one to read its change notes.
-[*][b]Break up social fights:[/b] bystanders may step in to stop a social fight; Social skill helps, and a failed attempt can turn into a brawl. Rivals and Bloodlust pawns may join in instead.
-[*][b]Short names on the map[/b] (on by default): long names under pawns are cut to about one and a half cells wide, following the zoom, so they do not cover their neighbours. Hover over or select the pawn to see the full name.
-[*][b]Ghouls can wear apparel[/b] (Anomaly): ghouls keep their clothes when turned and can be ordered to wear apparel. They never change clothes on their own and still cannot use weapons.
-[*][b]Caravan: abandon all dead at once[/b] (on by default): a button on the caravan Items tab abandons every human corpse and tainted apparel after one confirmation. Animal corpses are kept.
-[*][b]Taskbar letter badge[/b] (on by default): a small badge on the game's taskbar button shows how many letters are waiting, coloured like the most urgent one. Critical alerts turn it red; a pause sign shows while paused. No pop-ups, sounds or flashing. Windows only.
-[*][b]Right-click to dismiss bundled letters[/b] (on by default): right-clicking the "N more..." letter dismisses all the letters inside it; letters still waiting for your choice stay.
-[*][b]Visitors take shelter:[/b] in cold, heat or with enemies around, trader caravans and visitors wait in a barn, dining room or storeroom instead of leaving early.
-[*][b]Confirm before closing the game window[/b] (on by default): closing the window during a game asks first, like Quit to OS in the menu; commitment mode saves, then quits.
-[*][b]Slaves use prisoner beds[/b] (Ideology): slaves can sleep and recover in prisoner beds, medical ones included, so they can share the prison wing instead of needing their own bedrooms and hospital. A prisoner you enslave keeps the bed in their cell.
-[*][b]Prisoners help out by personality:[/b] kind prisoners tend cellmates lying in bed (usually without medicine) and feed bedridden cellmates from food or a dispenser in the cell; hard-working, industrious or neurotic prisoners clean their cell when idle, unless they are also lazy. Only prisoners with these traits, only in their own cell.
-[*][b]Calmer prison breaks and slave rebellions:[/b] escaping prisoners have no keys and must break doors (or walls) to get out. Prisoners and slaves use the recreation buildings in their bed's room: it calms prisoners the way a recent break does and raises slaves' suppression. Prisoners play every couple of days; slaves during recreation hours, or whenever their suppression drops below 30%, so they stop working before they rebel. Instead of a whole cell or every slave nearby, each one joins with a chance that drops the calmer they are than the one who started it. Not meant to be combined with other prison overhaul mods.
-[*][b]Camera jumps avoid the open inspect tab[/b] (on by default): with a tab such as gear or health open, jumping to a colonist centres them right of the tab instead of under it. Optionally also slides the camera when a tab opens over the selected pawn.
-[*][b]Field tending and cheaper medicine:[/b] a downed pawn outside a bed is tended where they lie if they would bleed to death within 6 hours or no bed is free; fast bleeders get only the doctor's carried medicine or none. Without a wound that can get infected or a deadly disease, the cheapest allowed medicine is used. Optionally tends fast bleeders before capturing them.
-[*][b]Quicksave, save and quit, Continue:[/b] F5 saves without opening the menu, rotating through Quicksave-1, -2 and so on like autosaves (5 by default, set in the mod settings). The quit confirmation gets a "Save and quit" button, and a Continue button (or Enter) on the main menu loads your newest save.
-[*][b]Food policy for new prisoners and slaves:[/b] new prisoners and slaves (Ideology) get the food policy you pick for each, and go back to the default when recruited or freed.
-[*][b]Visitors leave colony food alone:[/b] traders, visitors and allies no longer eat from your stockpiles, home area or fields while they carry food. Once theirs runs out and they get hungry enough (adjustable), they may eat colony food your chosen food policy allows, so nobody starves next to your base.
-[*][b]Guards for dangerous hunts:[/b] when the animal could take revenge, nearby colonists with ranged weapons come along as guards, more for tougher animals and packs, and the hunter waits for them before the first shot. Optional strict mode gives the hunt up instead of shooting alone.
-[*][b]Hybrid children keep a matching xenotype[/b] (Biotech): a Hybrid child whose genes closely match one heritable xenotype gets that xenotype. Genes are never changed. Optional check for modified pawns.
-[*][b]Tell faction colors apart:[/b] on load, factions with nearly identical colors are nudged apart (adjustable, saved with the game).
-[*][b]Drag to reorder:[/b] right-drag to reorder the bottom bar, architect categories, buildings and command buttons.
-[*][b]Compact colonist bar:[/b] the colonist bar shrinks while the mouse is away and expands on hover. Options for what stays visible, taller portraits and hover magnify.
+[*][b]Remove fog of war:[/b] reveals the map except where revealing would trigger something.
+[*][b]Faction icons in caravan lists[/b] (on by default).
+[*][b]Caravan encounters stay on the current map[/b] (on by default).
+[*][b]Pin resources[/b] (on by default): left-click a resource to keep it shown while its category is collapsed.
+[*][b]Nutrient paste stock[/b] (on by default): "dispense until you have X" for paste dispensers.
+[*][b]Mod update notes[/b] (on by default, Steam): the main menu lists recently updated Workshop mods with their change notes.
+[*][b]Break up social fights:[/b] bystanders may step in; Social skill helps, a failed attempt can become a brawl.
+[*][b]Short names on the map[/b] (on by default): long pawn names are cut so they do not cover neighbours.
+[*][b]Ghouls can wear apparel[/b] (Anomaly): still no weapons.
+[*][b]Caravan: abandon all dead at once[/b] (on by default): one button for every human corpse and tainted apparel.
+[*][b]Taskbar letter badge[/b] (on by default, Windows): the taskbar button shows how many letters are waiting.
+[*][b]Right-click to dismiss bundled letters[/b] (on by default).
+[*][b]Visitors take shelter:[/b] caravans and visitors wait indoors in cold, heat or danger instead of leaving early.
+[*][b]Confirm before closing the game window[/b] (on by default).
+[*][b]Slaves use prisoner beds[/b] (Ideology): slaves sleep and recover in prisoner beds, so no separate slave rooms or hospital.
+[*][b]Prisoners help out by personality:[/b] kind prisoners tend and feed bedridden cellmates; hard-working or neurotic ones clean their cell.
+[*][b]Calmer prison breaks and slave rebellions:[/b] no keys for escapees; recreation calms prisoners and raises slaves' suppression; each one decides on their own whether to join. Not meant for use with other prison overhaul mods.
+[*][b]Camera jumps avoid the open inspect tab[/b] (on by default): the colonist is centred beside the tab, not under it.
+[*][b]Field tending and cheaper medicine:[/b] fast bleeders or patients with no free bed are tended where they lie; minor wounds get the cheapest allowed medicine.
+[*][b]Quicksave, save and quit, Continue:[/b] F5 quicksave, a "Save and quit" button and a main menu Continue button.
+[*][b]Food policy for new prisoners and slaves:[/b] they get the policy you pick.
+[*][b]Visitors leave colony food alone:[/b] until their own runs out and they get hungry enough.
+[*][b]Guards for dangerous hunts:[/b] armed colonists escort the hunter when the animal could fight back.
+[*][b]Hybrid children keep a matching xenotype[/b] (Biotech).
+[*][b]Tell faction colors apart:[/b] near-identical faction colors are nudged apart.
+[*][b]Drag to reorder:[/b] right-drag the bottom bar, architect categories, buildings and command buttons.
+[*][b]Compact colonist bar:[/b] shrinks while the mouse is away, expands on hover.
 [/list]
 
 [h2]Notes[/h2][list]
-[*]Safe to add to or remove from an existing save. Removing it only drops xenogerm queues; a xenogerm in progress continues as normal. If Break up social fights was on, the first load also logs one harmless error per leftover fight memory.
-[*]Load after Harmony.
-[*]English and Traditional Chinese translations included.
+[*]Safe to add to or remove from an existing save. Removing it only drops xenogerm queues; with Break up social fights on, the first load logs one harmless error per leftover fight memory.
+[*]Load after Harmony. English and Traditional Chinese included.
 [/list]
 [hr][/hr]
 This mod was developed with the help of AI coding tools (Claude Code). Full source code is included in the Source folder and on [url=https://github.com/ifchen0/VanillaTuneUp]GitHub[/url] for review.
