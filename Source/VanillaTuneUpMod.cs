@@ -137,7 +137,9 @@ namespace VanillaTuneUp
             new TuneUpModule("SlavePrisonerBeds", true, null)
             {
                 IsAvailable = () => ModsConfig.IdeologyActive,
-                UnavailableKey = "VTU_RequiresIdeology"
+                UnavailableKey = "VTU_RequiresIdeology",
+                // Languages are already loaded by the time patches are applied.
+                OnActivated = SlavePrisonerBeds_Labels.Apply
             },
             new TuneUpModule("PrisonerHelpers", true, null),
             new TuneUpModule("PrisonBreak", true, null),

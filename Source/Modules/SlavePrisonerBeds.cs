@@ -100,4 +100,46 @@ namespace VanillaTuneUp
             ___pawn.ownership.ClaimBedIfNonMedical(__state);
         }
     }
+
+    /// <summary>
+    /// The prisoner bed button and inspect line still say the beds are for prisoners only. Reword them to include
+    /// slaves in English and Traditional Chinese, only where the loaded text is still the official one, so other
+    /// translations and text mods are left alone.
+    /// </summary>
+    [HarmonyPatchCategory("SlavePrisonerBeds")]
+    [HarmonyPatch(typeof(LoadedLanguage), nameof(LoadedLanguage.LoadData))]
+    public static class SlavePrisonerBeds_Labels
+    {
+        private static readonly (string language, string key, string old, string text)[] Texts =
+        {
+            ("English", "CommandBedSetForPrisonersLabel", "For prisoners", "For prisoners and slaves"),
+            ("English", "CommandBedSetForPrisonersDesc", "Whether beds in this room should be used by prisoners.",
+                "Whether beds in this room should be used by prisoners and slaves."),
+            ("English", "ReservedForPrisoners", "reserved for prisoners", "reserved for prisoners and slaves"),
+            ("ChineseTraditional", "CommandBedSetForPrisonersLabel", "設為俘虜專用", "設為俘虜和奴隸用"),
+            ("ChineseTraditional", "CommandBedSetForPrisonersDesc", "將這個房間内的床設為俘虜專用。", "將這個房間內的床設為俘虜和奴隸使用。"),
+            ("ChineseTraditional", "ReservedForPrisoners", "預留給俘虜", "預留給俘虜和奴隸"),
+        };
+
+        /// <summary>Rewords the loaded languages now; languages loaded later go through the postfix.</summary>
+        public static void Apply()
+        {
+            Postfix(LanguageDatabase.activeLanguage);
+            if (LanguageDatabase.defaultLanguage != LanguageDatabase.activeLanguage)
+                Postfix(LanguageDatabase.defaultLanguage);
+        }
+
+        public static void Postfix(LoadedLanguage __instance)
+        {
+            string folder = __instance?.folderName;
+            if (folder == null)
+                return;
+            foreach ((string language, string key, string old, string text) in Texts)
+            {
+                if (folder.StartsWith(language) && __instance.keyedReplacements.TryGetValue(key, out LoadedLanguage.KeyedReplacement entry)
+                    && entry.value == old)
+                    entry.value = text;
+            }
+        }
+    }
 }
