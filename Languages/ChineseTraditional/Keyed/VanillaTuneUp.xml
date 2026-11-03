@@ -30,6 +30,8 @@
   <VTU_PrisonerBleeding_Desc>囚犯仍在流血或有手術排程時，獄卒會略過餵食和送餐，改去做治療或手術等其他工作。只有手術排程時，囚犯一旦極度飢餓仍會餵食。手動下令餵食仍然有效。</VTU_PrisonerBleeding_Desc>
   <VTU_PrisonerFoodDelivery>囚犯送餐跟得上</VTU_PrisonerFoodDelivery>
   <VTU_PrisonerFoodDelivery_Desc>獄卒送餐的時機和原版相同，但一趟就帶足牢房裡當下所有需要用餐的囚犯的份量，食物不會放在牢房裡壞掉。牢房裡已有的食物會計入，而且同一間牢房一次只會有一名獄卒送餐，不會重複送；如果牢房裡已有囚犯進入非常飢餓狀態，會允許多名獄卒同時送餐來追上進度，人數以補足缺口所需的趟數為上限。</VTU_PrisonerFoodDelivery_Desc>
+  <VTU_SlaveBedOwnership>被驅逐的奴隸會釋出床鋪</VTU_SlaveBedOwnership>
+  <VTU_SlaveBedOwnership_Desc>被驅逐的奴隸離開後仍佔著原本的奴隸床，其他奴隸會當成有人使用而跳過，只能手動重新指派。現在pawn不再是奴隸時就會釋出床鋪，舊存檔裡因此卡住的床也會在讀檔時釋出。</VTU_SlaveBedOwnership_Desc>
   <VTU_GenepackEject>彈出的基因包不會被放回去</VTU_GenepackEject>
   <VTU_GenepackEject_Desc>從基因庫彈出的基因包（「彈出所有」、單一基因包的彈出按鈕，或基因組合機選單中的右鍵彈出）會自動關閉「自動裝載」，搬運者不會再立刻把它搬回基因庫。想再存進去時，重新打開該基因包的自動裝載即可。因基因庫被拆除、移除安裝或摧毀而掉出的基因包仍維持自動裝載，與原版相同。</VTU_GenepackEject_Desc>
   <VTU_TranslationFixes>官方翻譯修正</VTU_TranslationFixes>

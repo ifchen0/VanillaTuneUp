@@ -74,6 +74,11 @@ namespace VanillaTuneUp
             new TuneUpModule("PrisonerFoodPolicy", false, "ifchen0.prisonpatch"),
             new TuneUpModule("PrisonerBleeding", false, "ifchen0.prisonpatch"),
             new TuneUpModule("PrisonerFoodDelivery", false, null),
+            new TuneUpModule("SlaveBedOwnership", false, null)
+            {
+                IsAvailable = () => ModsConfig.IdeologyActive,
+                UnavailableKey = "VTU_RequiresIdeology"
+            },
             new TuneUpModule("GenepackEject", false, null)
             {
                 IsAvailable = () => ModsConfig.BiotechActive,
