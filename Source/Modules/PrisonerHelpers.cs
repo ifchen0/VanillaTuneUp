@@ -17,22 +17,24 @@ namespace VanillaTuneUp
     public static class PrisonerHelpers
     {
         private static WorkGiver_CleanFilth cleaner;
+        private static TraitDef neurotic;
         private static readonly List<Thing> tmpFilth = new List<Thing>();
+        private const int CleanQueueLimit = 15;
 
-        private static bool CanHelp(Pawn pawn) =>
-            pawn.IsPrisonerOfColony && pawn.Spawned && !pawn.Downed && pawn.Awake() && !pawn.InMentalState
-            && !PrisonBreakUtility.IsPrisonBreaking(pawn) && pawn.story?.traits != null;
+        // Trait first (cheap, rules out most pawns), then the state checks.
+        private static bool CanHelp(Pawn pawn, System.Func<TraitSet, bool> hasTrait) =>
+            pawn.IsPrisonerOfColony && pawn.story?.traits != null && hasTrait(pawn.story.traits)
+            && pawn.Spawned && !pawn.Downed && pawn.Awake() && !pawn.InMentalState
+            && !PrisonBreakUtility.IsPrisonBreaking(pawn) && !HealthAIUtility.ShouldSeekMedicalRest(pawn);
 
-        private static bool IsKind(Pawn pawn) => pawn.story.traits.HasTrait(TraitDefOf.Kind);
+        private static bool IsKind(TraitSet traits) => traits.HasTrait(TraitDefOf.Kind);
 
-        private static bool IsTidy(Pawn pawn)
+        private static bool IsTidy(TraitSet traits)
         {
-            TraitSet traits = pawn.story.traits;
-            TraitDef industriousness = DefDatabase<TraitDef>.GetNamedSilentFail("Industriousness");
-            int industry = industriousness != null ? traits.DegreeOfTrait(industriousness) : 0;
+            int industry = traits.DegreeOfTrait(TraitDefOf.Industriousness);
             if (industry < 0)
                 return false;
-            TraitDef neurotic = DefDatabase<TraitDef>.GetNamedSilentFail("Neurotic");
+            neurotic ??= DefDatabase<TraitDef>.GetNamedSilentFail("Neurotic");
             return industry > 0 || (neurotic != null && traits.HasTrait(neurotic));
         }
 
@@ -50,12 +52,12 @@ namespace VanillaTuneUp
         /// <summary>A tend or feed job for a bedridden cellmate of a kind prisoner, or null.</summary>
         public static Job TryCareJob(Pawn pawn)
         {
-            if (!CanHelp(pawn) || !IsKind(pawn) || OwnNeedsFirst(pawn))
+            if (!CanHelp(pawn, IsKind) || OwnNeedsFirst(pawn) || !pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
                 return null;
             Room room = PrisonCell(pawn);
             if (room == null)
                 return null;
-            bool canTend = !pawn.WorkTypeIsDisabled(WorkTypeDefOf.Doctor) && pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation);
+            bool canTend = !pawn.WorkTypeIsDisabled(WorkTypeDefOf.Doctor);
             Pawn tendTarget = null;
             float worstBleed = -1f;
             Pawn feedTarget = null;
@@ -86,27 +88,20 @@ namespace VanillaTuneUp
                     ? JobMaker.MakeJob(JobDefOf.TendPatient, tendTarget, medicine)
                     : JobMaker.MakeJob(JobDefOf.TendPatient, tendTarget);
             }
-            return feedTarget != null ? FeedJob(pawn, feedTarget) : null;
+            return feedTarget != null ? FeedJob(pawn, feedTarget, room) : null;
         }
 
         // Same rule as the warden feeding work: bedridden and getting hungry.
-        private static bool NeedsFeeding(Pawn other)
-        {
-            Need_Food food = other.needs?.food;
-            return food != null && WardenFeedUtility.ShouldBeFed(other)
-                && food.CurLevelPercentage < food.PercentageThreshHungry + 0.02f;
-        }
+        private static bool NeedsFeeding(Pawn other) => WardenFeedUtility.ShouldBeFed(other) && FeedPatientUtility.IsHungry(other);
 
         // Built like WorkGiver_Warden_Feed; a prisoner only reaches food or a dispenser inside the cell.
-        private static Job FeedJob(Pawn pawn, Pawn patient)
+        private static Job FeedJob(Pawn pawn, Pawn patient, Room room)
         {
-            if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
-                return null;
             if (!FoodUtility.TryFindBestFoodSourceFor(pawn, patient, patient.needs.food.CurCategory == HungerCategory.Starving,
-                    out Thing food, out ThingDef foodDef, canRefillDispenser: false, canUseInventory: true,
+                    out Thing food, out ThingDef foodDef, canRefillDispenser: false, canUseInventory: false,
                     canUsePackAnimalInventory: false, allowForbidden: false, allowCorpse: false))
                 return null;
-            if (food.GetRoom() != pawn.GetRoom() && !(food is Building_NutrientPasteDispenser))
+            if (food.GetRoom() != room && !(food is Building_NutrientPasteDispenser))
                 return null;
             Job job = JobMaker.MakeJob(JobDefOf.FeedPatient, food, patient);
             job.count = FoodUtility.WillIngestStackCountOf(patient, foodDef, FoodUtility.GetNutrition(patient, food, foodDef));
@@ -116,7 +111,7 @@ namespace VanillaTuneUp
         /// <summary>A cleaning job for the filth in a tidy prisoner's own cell, or null.</summary>
         public static Job TryCleanJob(Pawn pawn)
         {
-            if (!CanHelp(pawn) || !IsTidy(pawn) || pawn.WorkTypeIsDisabled(WorkTypeDefOf.Cleaning))
+            if (!CanHelp(pawn, IsTidy) || pawn.WorkTypeIsDisabled(WorkTypeDefOf.Cleaning))
                 return null;
             Room room = PrisonCell(pawn);
             if (room == null)
@@ -129,15 +124,23 @@ namespace VanillaTuneUp
             {
                 foreach (Thing thing in room.ContainedAndAdjacentThings)
                 {
-                    if (thing is Filth && thing.GetRoom() == room && cleaner.HasJobOnThing(pawn, thing))
+                    if (thing is Filth && thing.GetRoom() == room)
                         tmpFilth.Add(thing);
                 }
-                if (tmpFilth.Count == 0)
-                    return null;
-                Thing nearest = GenClosest.ClosestThing_Global(pawn.Position, tmpFilth);
-                Job job = cleaner.JobOnThing(pawn, nearest);
-                // Vanilla also queues filth just past the doors, out of a prisoner's reach.
-                job?.targetQueueA?.RemoveAll(t => t.Thing == null || t.Thing.GetRoom() != room);
+                // Built here rather than by WorkGiver_CleanFilth.JobOnThing, which also queues filth just past the
+                // doors, out of a prisoner's reach. Nearest first, at most 15 like vanilla; HasJobOnThing only on those.
+                IntVec3 at = pawn.Position;
+                tmpFilth.SortBy(t => t.Position.DistanceToSquared(at));
+                Job job = null;
+                foreach (Thing filth in tmpFilth)
+                {
+                    if (!cleaner.HasJobOnThing(pawn, filth))
+                        continue;
+                    job ??= JobMaker.MakeJob(JobDefOf.Clean);
+                    job.AddQueuedTarget(TargetIndex.A, filth);
+                    if (job.GetTargetQueue(TargetIndex.A).Count >= CleanQueueLimit)
+                        break;
+                }
                 return job;
             }
             finally
