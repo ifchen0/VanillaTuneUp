@@ -6,8 +6,8 @@
   <VTU_Tweaks>調整</VTU_Tweaks>
   <VTU_RestartRequired>重新啟動遊戲後才會套用這項變更。</VTU_RestartRequired>
   <VTU_Failed>無法套用（詳見記錄），本次遊戲中此項目已關閉。</VTU_Failed>
-  <VTU_ProvidedByLegacy>（已略過：獨立版 mod「{0}」已提供此功能）</VTU_ProvidedByLegacy>
-  <VTU_RequiresBiotech>（需要 Biotech）</VTU_RequiresBiotech>
+  <VTU_ProvidedByLegacy>（已略過：獨立版mod「{0}」已提供此功能）</VTU_ProvidedByLegacy>
+  <VTU_RequiresBiotech>（需要Biotech）</VTU_RequiresBiotech>
   <VTU_RequiresSteam>（需要Steam版）</VTU_RequiresSteam>
   <VTU_RequiresAnomaly>（需要Anomaly）</VTU_RequiresAnomaly>
   <VTU_RequiresWindows>（僅限Windows）</VTU_RequiresWindows>
@@ -19,11 +19,11 @@
   <VTU_HistoryGraph>歷史圖表效能</VTU_HistoryGraph>
   <VTU_HistoryGraph_Desc>消除長期殖民地開啟歷史分頁時的卡頓。圖表外觀不變，高峰與低谷仍會顯示。</VTU_HistoryGraph_Desc>
   <VTU_RightClickMenu>右鍵選單卡頓</VTU_RightClickMenu>
-  <VTU_RightClickMenu_Desc>消除地圖上打開右鍵選單時與開著時的卡頓。開啟時只產生一次選項（原版三次），之後每 5 秒重新檢查一次（原版每 4 幀一次），點選時仍會即時檢查。</VTU_RightClickMenu_Desc>
+  <VTU_RightClickMenu_Desc>消除地圖上打開右鍵選單時與開著時的卡頓。開啟時只產生一次選項（原版三次），之後每5秒重新檢查一次（原版每4幀一次），點選時仍會即時檢查。</VTU_RightClickMenu_Desc>
   <VTU_TradeDeal>交易開啟卡頓</VTU_TradeDeal>
-  <VTU_TradeDeal_Desc>消除物品很多的殖民地開啟交易視窗時的長時間凍結。搭配 Auto Seller 時，它的每筆交易也不會再重建第二次交易清單。</VTU_TradeDeal_Desc>
+  <VTU_TradeDeal_Desc>消除物品很多的殖民地開啟交易視窗時的長時間凍結。搭配Auto Seller時，它的每筆交易也不會再重建第二次交易清單。</VTU_TradeDeal_Desc>
   <VTU_SiegeBuilder>圍攻中的機械體</VTU_SiegeBuilder>
-  <VTU_SiegeBuilder_Desc>修正圍攻隊伍中有機械體（其他 mod 加入）時的錯誤洗版：沒有技能的單位改為防守營地，不再被指派建造。</VTU_SiegeBuilder_Desc>
+  <VTU_SiegeBuilder_Desc>修正圍攻隊伍中有機械體（其他mod加入）時的錯誤洗版：沒有技能的單位改為防守營地，不再被指派建造。</VTU_SiegeBuilder_Desc>
   <VTU_PrisonerFoodPolicy>精神崩潰時的食物計畫</VTU_PrisonerFoodPolicy>
   <VTU_PrisonerFoodPolicy_Desc>獄卒不會再把受限制的食物送給正在精神崩潰的囚犯。精神崩潰的角色自己進食時，行為與原版相同。</VTU_PrisonerFoodPolicy_Desc>
   <VTU_PrisonerBleeding>先治療或手術囚犯再餵食</VTU_PrisonerBleeding>
@@ -35,9 +35,9 @@
   <VTU_GenepackEject>彈出的基因包不會被放回去</VTU_GenepackEject>
   <VTU_GenepackEject_Desc>從基因庫彈出的基因包（「彈出所有」、單一基因包的彈出按鈕，或基因組合機選單中的右鍵彈出）會自動關閉「自動裝載」，搬運者不會再立刻把它搬回基因庫。想再存進去時，重新打開該基因包的自動裝載即可。因基因庫被拆除、移除安裝或摧毀而掉出的基因包仍維持自動裝載，與原版相同。</VTU_GenepackEject_Desc>
   <VTU_TranslationFixes>官方翻譯修正</VTU_TranslationFixes>
-  <VTU_TranslationFixes_Desc>修正官方翻譯中無法用翻譯檔覆蓋的錯誤（目前為繁體中文）：機械軍團哨站任務文字顯示成「ERR:」加上 [標籤]，以及殘留英文的生成文字（朝聖者任務、審判指控、理念故事、藝術品描述），以及社交打架結束時多跳一則「X和X不再爭吵了」的重複訊息。</VTU_TranslationFixes_Desc>
+  <VTU_TranslationFixes_Desc>修正官方翻譯中無法用翻譯檔覆蓋的錯誤（目前為繁體中文）：機械軍團哨站任務文字顯示成「ERR:」加上[標籤]，以及殘留英文的生成文字（朝聖者任務、審判指控、理念故事、藝術品描述），以及社交打架結束時多跳一則「X和X不再爭吵了」的重複訊息。</VTU_TranslationFixes_Desc>
   <VTU_XenogermQueue>異種細胞佇列</VTU_XenogermQueue>
-  <VTU_XenogermQueue_Desc>為基因組裝機加入像工作台帳單的佇列：製造 X 次、製造直到有 X 個，或永遠重複。跳過的項目會保留進度。</VTU_XenogermQueue_Desc>
+  <VTU_XenogermQueue_Desc>為基因組裝機加入像工作台帳單的佇列：製造X次、製造直到有X個，或永遠重複。跳過的項目會保留進度。</VTU_XenogermQueue_Desc>
   <VTU_DragReorder>拖曳排序</VTU_DragReorder>
   <VTU_DragReorder_Desc>按住滑鼠右鍵拖曳，即可重新排列底部工作列、建築分類與分類內的建築。</VTU_DragReorder_Desc>
   <VTU_MuteBirthSounds>靜音分娩與出生音效</VTU_MuteBirthSounds>
@@ -47,21 +47,21 @@
   <VTU_HuntGuardStrict>嚴格模式：護衛不齊就放棄</VTU_HuntGuardStrict>
   <VTU_HuntGuardStrict_Desc>獵人不會在沒有護衛的情況下開槍，而是放棄這次狩獵：空閒的護衛人數不足、第一槍前有護衛離隊，或30秒後護衛還沒全部靠近時都會放棄。之後這名獵人在遊戲內1小時內不會再狩獵這隻動物。一旦開始射擊，之後護衛離開也會繼續狩獵。</VTU_HuntGuardStrict_Desc>
   <VTU_PrisonerDefaultFoodPolicy>新囚犯與奴隸的預設計畫</VTU_PrisonerDefaultFoodPolicy>
-  <VTU_PrisonerDefaultFoodPolicy_Desc>pawn 成為你的囚犯或奴隸時，自動套用下方選擇的食物計畫；新奴隸也會套用下方選擇的穿著計畫（例如Ideology內建的「奴隸」計畫，其中的項圈和束帶能減緩鎮壓值下降），不用每次都手動設定。不再是囚犯或奴隸時（被招募、釋放、奴役、解放），若仍是這個計畫，會改回預設計畫。囚犯不套用穿著計畫：原版囚犯本來就不會依穿著計畫換衣服。計畫以名稱比對，各個存檔請使用相同名稱。</VTU_PrisonerDefaultFoodPolicy_Desc>
+  <VTU_PrisonerDefaultFoodPolicy_Desc>pawn成為你的囚犯或奴隸時，自動套用下方選擇的食物計畫；新奴隸也會套用下方選擇的穿著計畫（例如Ideology內建的「奴隸」計畫，其中的項圈和束帶能減緩鎮壓值下降），不用每次都手動設定。不再是囚犯或奴隸時（被招募、釋放、奴役、解放），若仍是這個計畫，會改回預設計畫。囚犯不套用穿著計畫：原版囚犯本來就不會依穿著計畫換衣服。計畫以名稱比對，各個存檔請使用相同名稱。</VTU_PrisonerDefaultFoodPolicy_Desc>
   <VTU_PrisonerPolicyLabel>新囚犯套用的食物計畫</VTU_PrisonerPolicyLabel>
   <VTU_PrisonerPolicyNone>不變更（原版行為）</VTU_PrisonerPolicyNone>
   <VTU_PrisonerPolicyNoGame>讀取存檔後才能選擇。</VTU_PrisonerPolicyNoGame>
   <VTU_PrisonerPolicyMissing>這個存檔沒有名為「{0}」的食物計畫，新囚犯會維持預設計畫。</VTU_PrisonerPolicyMissing>
   <VTU_PrisonerPolicyApplyAll>套用到目前所有囚犯</VTU_PrisonerPolicyApplyAll>
-  <VTU_PrisonerPolicyApplied>已將 {0} 名囚犯的食物計畫改為「{1}」。</VTU_PrisonerPolicyApplied>
+  <VTU_PrisonerPolicyApplied>已將{0}名囚犯的食物計畫改為「{1}」。</VTU_PrisonerPolicyApplied>
   <VTU_SlavePolicyLabel>新奴隸套用的食物計畫</VTU_SlavePolicyLabel>
   <VTU_SlavePolicyMissing>這個存檔沒有名為「{0}」的食物計畫，新奴隸會維持預設計畫。</VTU_SlavePolicyMissing>
   <VTU_SlavePolicyApplyAll>套用到目前所有奴隸</VTU_SlavePolicyApplyAll>
-  <VTU_SlavePolicyApplied>已將 {0} 名奴隸的食物計畫改為「{1}」。</VTU_SlavePolicyApplied>
+  <VTU_SlavePolicyApplied>已將{0}名奴隸的食物計畫改為「{1}」。</VTU_SlavePolicyApplied>
   <VTU_SlaveApparelLabel>新奴隸套用的穿著計畫</VTU_SlaveApparelLabel>
   <VTU_SlaveApparelMissing>這個存檔沒有名為「{0}」的穿著計畫，新奴隸會維持預設計畫。</VTU_SlaveApparelMissing>
   <VTU_SlaveApparelApplyAll>套用到目前所有奴隸</VTU_SlaveApparelApplyAll>
-  <VTU_SlaveApparelApplied>已將 {0} 名奴隸的穿著計畫改為「{1}」。</VTU_SlaveApparelApplied>
+  <VTU_SlaveApparelApplied>已將{0}名奴隸的穿著計畫改為「{1}」。</VTU_SlaveApparelApplied>
   <VTU_PrisonBreak>緩和越獄與奴隸叛亂</VTU_PrisonBreak>
   <VTU_PrisonBreak_Desc>越獄中的囚犯沒有鑰匙：不能開門，只能破壞門（或牆）逃出去。囚犯和奴隸會使用自己床鋪所在房間裡的娛樂設施（電視、棋桌等）。娛樂會讓囚犯像原版剛越獄過一樣平靜下來（越獄機率約減半，10天內逐漸消退），所以囚犯大約每兩天玩一次；娛樂也會提高奴隸的鎮壓值（每次約10%），奴隸在娛樂時段或鎮壓值低於30%時會去玩，所以鎮壓不足的奴隸會先停工，而不是直接叛亂。越獄或叛亂不再是整間牢房或附近所有奴隸一起參加，而是每個人各自判定，比發起者越不想逃（有娛樂、剛越獄過、鎮壓值高）就越不容易跟著參加。</VTU_PrisonBreak_Desc>
   <VTU_PrisonCalmedDown>最近平靜下來（娛樂或剛越獄過）</VTU_PrisonCalmedDown>
@@ -72,32 +72,32 @@
   <VTU_VisitorFoodPolicyNone>任何食物</VTU_VisitorFoodPolicyNone>
   <VTU_VisitorFoodPolicyMissing>這個存檔沒有名為「{0}」的食物計畫，飢餓的訪客可以吃任何殖民地食物。</VTU_VisitorFoodPolicyMissing>
   <VTU_HybridXenotype>混種後代沿用相符的種族</VTU_HybridXenotype>
-  <VTU_HybridXenotype_Desc>被標為「混合」的後代，若種系基因與某個可遺傳種族的相符度超過 80%（依基因複雜度加權，不計膚色與髮色），就改為該種族；同分時隨機選一個。出生時與每次讀檔都會檢查；基因本身不變，除非開啟下方選項，否則帶有異種基因的 pawn 不處理。</VTU_HybridXenotype_Desc>
-  <VTU_HybridIncludeXenogenes>也檢查經過改造的 pawn</VTU_HybridIncludeXenogenes>
-  <VTU_HybridIncludeXenogenes_Desc>種系與異種基因一起算，跟所有種族（不分是否可遺傳）比對。也會處理帶有異種基因的混種，以及仍顯示預設無臉頭像的基準人（例如植入過異種基因的 pawn），植入異種基因後也會立即檢查。有另選頭像的自訂種族與變異體不處理。</VTU_HybridIncludeXenogenes_Desc>
+  <VTU_HybridXenotype_Desc>被標為「混合」的後代，若種系基因與某個可遺傳種族的相符度超過80%（依基因複雜度加權，不計膚色與髮色），就改為該種族；同分時隨機選一個。出生時與每次讀檔都會檢查；基因本身不變，除非開啟下方選項，否則帶有異種基因的pawn不處理。</VTU_HybridXenotype_Desc>
+  <VTU_HybridIncludeXenogenes>也檢查經過改造的pawn</VTU_HybridIncludeXenogenes>
+  <VTU_HybridIncludeXenogenes_Desc>種系與異種基因一起算，跟所有種族（不分是否可遺傳）比對。也會處理帶有異種基因的混種，以及仍顯示預設無臉頭像的基準人（例如植入過異種基因的pawn），植入異種基因後也會立即檢查。有另選頭像的自訂種族與變異體不處理。</VTU_HybridIncludeXenogenes_Desc>
   <VTU_FactionColors>區分相近的陣營顏色</VTU_FactionColors>
   <VTU_FactionColors_Desc>讀檔時，若世界地圖上有據點的陣營中，有兩個顏色看起來幾乎一樣，就把這些相近的顏色互相推開；每個陣營只移動到分辨得出為止，並盡量保持原本的色系。玩家陣營與帝國維持原色；沒有過於相近的顏色就不做任何變更。新顏色會跟著存檔保存。</VTU_FactionColors_Desc>
   <VTU_FactionColorsMinDistance>最小顏色差異：{0}</VTU_FactionColorsMinDistance>
-  <VTU_FactionColorsMinDistance_Desc>兩個陣營顏色至少要差多少（OKLab 距離 x 100）。數值越高，會被調整的陣營越多。下次讀檔時生效。</VTU_FactionColorsMinDistance_Desc>
+  <VTU_FactionColorsMinDistance_Desc>兩個陣營顏色至少要差多少（OKLab距離x 100）。數值越高，會被調整的陣營越多。下次讀檔時生效。</VTU_FactionColorsMinDistance_Desc>
   <VTU_CompactColonistBar>精簡殖民者肖像列</VTU_CompactColonistBar>
   <VTU_CompactColonistBar_Desc>滑鼠不在肖像列上時，肖像高度縮成三分之二、排與排之間也會靠攏；滑鼠移到肖像列上就展開回原本大小。收合時只顯示頭部。</VTU_CompactColonistBar_Desc>
   <VTU_RemoveFogOfWar>移除戰爭迷霧</VTU_RemoveFogOfWar>
-  <VTU_RemoveFogOfWar_Desc>地圖產生或讀檔時揭開整張地圖。揭開會觸發事件的迷霧區塊（古代危險等沉睡的敵人、任務或揭露訊號、實體圖鑑或隱藏物品的發現）維持迷霧，照 vanilla 進行；地圖其餘部分照常揭開。岩石、礦脈與崩落的岩石維持隱藏，直到開採到才揭開；迷宮這類口袋地圖一律不揭開。</VTU_RemoveFogOfWar_Desc>
+  <VTU_RemoveFogOfWar_Desc>地圖產生或讀檔時揭開整張地圖。揭開會觸發事件的迷霧區塊（古代危險等沉睡的敵人、任務或揭露訊號、實體圖鑑或隱藏物品的發現）維持迷霧，照vanilla進行；地圖其餘部分照常揭開。岩石、礦脈與崩落的岩石維持隱藏，直到開採到才揭開；迷宮這類口袋地圖一律不揭開。</VTU_RemoveFogOfWar_Desc>
   <VTU_CaravanFactionIcon>旅隊清單顯示陣營圖示</VTU_CaravanFactionIcon>
   <VTU_CaravanFactionIcon_Desc>組建旅隊、重組旅隊與運輸艙裝載清單中，不屬於你陣營的角色（例如客人、囚犯）會顯示所屬陣營的圖示。滑鼠移上去顯示陣營名稱，點擊開啟陣營資訊卡。</VTU_CaravanFactionIcon_Desc>
   <VTU_CaravanEncounterNoJump>旅隊遭遇不切換到世界地圖</VTU_CaravanEncounterNoJump>
-  <VTU_CaravanEncounterNoJump_Desc>旅隊遇到事件時（例如遇到其他旅隊、被敵對旅隊勒索，或 mod 事件如 Real Ruins 發現遺跡），對話框直接開啟，不會把畫面從殖民地地圖切到世界地圖。選擇進入遭遇地圖時仍會切過去。</VTU_CaravanEncounterNoJump_Desc>
+  <VTU_CaravanEncounterNoJump_Desc>旅隊遇到事件時（例如遇到其他旅隊、被敵對旅隊勒索，或mod事件如Real Ruins發現遺跡），對話框直接開啟，不會把畫面從殖民地地圖切到世界地圖。選擇進入遭遇地圖時仍會切過去。</VTU_CaravanEncounterNoJump_Desc>
   <VTU_PinnedResources>資源清單釘選</VTU_PinnedResources>
-  <VTU_PinnedResources_Desc>在左上角依分類顯示的資源清單中，左鍵點擊資源即可釘選。釘選的資源在分類摺疊時仍會顯示，數量為 0 也照樣顯示。點兩下取消釘選。釘選對所有存檔通用。</VTU_PinnedResources_Desc>
-  <VTU_PinnedResources_Pin>點擊釘選：分類摺疊時仍顯示，數量為 0 也顯示。</VTU_PinnedResources_Pin>
+  <VTU_PinnedResources_Desc>在左上角依分類顯示的資源清單中，左鍵點擊資源即可釘選。釘選的資源在分類摺疊時仍會顯示，數量為0也照樣顯示。點兩下取消釘選。釘選對所有存檔通用。</VTU_PinnedResources_Desc>
+  <VTU_PinnedResources_Pin>點擊釘選：分類摺疊時仍顯示，數量為0也顯示。</VTU_PinnedResources_Pin>
   <VTU_PinnedResources_Unpin>點兩下取消釘選。</VTU_PinnedResources_Unpin>
   <VTU_NutrientPasteStock>營養膏庫存</VTU_NutrientPasteStock>
-  <VTU_NutrientPasteStock_Desc>營養膏合成機多一個「取得直到有 X 份」的目標，用法跟料理 bill 一樣。同一張地圖的合成機共用這個數字。廚師取出營養膏後放在合成機旁交給搬運工，跟 bill 設成「丟在地上」一樣。除了倉庫裡的，地上的營養膏也會算進目標，搬運工來之前不會越堆越多。</VTU_NutrientPasteStock_Desc>
+  <VTU_NutrientPasteStock_Desc>營養膏合成機多一個「取得直到有X份」的目標，用法跟料理bill一樣。同一張地圖的合成機共用這個數字。廚師取出營養膏後放在合成機旁交給搬運工，跟bill設成「丟在地上」一樣。除了倉庫裡的，地上的營養膏也會算進目標，搬運工來之前不會越堆越多。</VTU_NutrientPasteStock_Desc>
   <VTU_PS_GizmoLabel>營養膏庫存：{0}</VTU_PS_GizmoLabel>
   <VTU_PS_GizmoOff>營養膏庫存：關閉</VTU_PS_GizmoOff>
   <VTU_PS_GizmoDesc>廚師會取出營養膏放在合成機旁，直到有這個數量。這張地圖的所有合成機共用這個數字。</VTU_PS_GizmoDesc>
   <VTU_PS_DialogTitle>取得營養膏直到有</VTU_PS_DialogTitle>
-  <VTU_PS_DialogNote>計算倉庫裡、搬運中與地上的營養膏（目前 {0}）。設為 0 即關閉。</VTU_PS_DialogNote>
+  <VTU_PS_DialogNote>計算倉庫裡、搬運中與地上的營養膏（目前{0}）。設為0即關閉。</VTU_PS_DialogNote>
   <VTU_PS_Inspect>營養膏庫存：{0} / {1}</VTU_PS_Inspect>
   <VTU_ModUpdateNotes>模組更新說明</VTU_ModUpdateNotes>
   <VTU_ModUpdateNotes_Desc>主選單左上角的方框（翻譯人員名單）改為列出已啟用的Steam工作坊模組，最近更新的排在最前面。上次查看後有更新的模組會標亮，點選即可看工作坊上的更新說明。沒點開的更新經過3次遊戲啟動後就不再標亮。適用所有模組；第一次啟用時全部視為已讀。</VTU_ModUpdateNotes_Desc>
@@ -118,7 +118,7 @@
   <VTU_BF_JoinedIn>{PAWN1_labelShort}趁機加入，一起圍毆{PAWN2_labelShort}！</VTU_BF_JoinedIn>
   <VTU_BF_DraggedIn>{PAWN1_labelShort}把氣出在來勸架的{PAWN2_labelShort}身上，兩人打了起來！</VTU_BF_DraggedIn>
   <VTU_ShortMapNames>地圖上的短名字</VTU_ShortMapNames>
-  <VTU_ShortMapNames_Desc>地圖上 pawn 底下的名字超過約一格半寬（跟著地圖縮放）就截斷，長名字不會蓋住旁邊的人。滑鼠移到 pawn 或名字上，或選取 pawn 時，顯示全名。</VTU_ShortMapNames_Desc>
+  <VTU_ShortMapNames_Desc>地圖上pawn底下的名字超過約一格半寬（跟著地圖縮放）就截斷，長名字不會蓋住旁邊的人。滑鼠移到pawn或名字上，或選取pawn時，顯示全名。</VTU_ShortMapNames_Desc>
   <VTU_GhoulApparel>食屍鬼可以穿衣服</VTU_GhoulApparel>
   <VTU_GhoulApparel_Desc>食屍鬼轉化時保留身上的衣服，也可以命令它穿上衣服和裝甲（選取食屍鬼後右鍵點衣物）。食屍鬼不會自己換衣服，也依然不能使用武器。</VTU_GhoulApparel_Desc>
   <VTU_CaravanAbandonDead>旅隊一次拋棄所有死者</VTU_CaravanAbandonDead>
@@ -175,21 +175,21 @@
   <VTU_XQ_Resume>繼續佇列</VTU_XQ_Resume>
   <VTU_XQ_PausedHint>佇列已暫停，恢復前不會開始新的異種細胞。</VTU_XQ_PausedHint>
   <VTU_XQ_Empty>佇列是空的。請在重組視窗中按「加入佇列」。</VTU_XQ_Empty>
-  <VTU_XQ_ModeCount>製造 X 次</VTU_XQ_ModeCount>
-  <VTU_XQ_ModeUntilHave>製造直到有 X 個</VTU_XQ_ModeUntilHave>
+  <VTU_XQ_ModeCount>製造X次</VTU_XQ_ModeCount>
+  <VTU_XQ_ModeUntilHave>製造直到有X個</VTU_XQ_ModeUntilHave>
   <VTU_XQ_ModeForever>永遠重複</VTU_XQ_ModeForever>
-  <VTU_XQ_TimesLeft>剩 {0} 次</VTU_XQ_TimesLeft>
+  <VTU_XQ_TimesLeft>剩{0}次</VTU_XQ_TimesLeft>
   <VTU_XQ_StatusMissing>基因包遺失</VTU_XQ_StatusMissing>
   <VTU_XQ_StatusRunning>製作中（{0}）</VTU_XQ_StatusRunning>
   <VTU_XQ_StatusSatisfied>已達目標數量</VTU_XQ_StatusSatisfied>
-  <VTU_XQ_StatusHeld>已達目標數量，暫停於 {0}</VTU_XQ_StatusHeld>
+  <VTU_XQ_StatusHeld>已達目標數量，暫停於{0}</VTU_XQ_StatusHeld>
   <VTU_XQ_HeldTargetReached>已達佇列目標數量</VTU_XQ_HeldTargetReached>
   <VTU_XQ_StatusSaved>已跳過，進度保留</VTU_XQ_StatusSaved>
   <VTU_XQ_Skip>跳過</VTU_XQ_Skip>
   <VTU_XQ_SkipDesc>先擱置這個異種細胞，開始佇列中的下一筆。進度會保留，下次輪到時繼續。已放入的古神膠囊會掉在組裝機旁。</VTU_XQ_SkipDesc>
   <VTU_XQ_SkipNoNext>目前沒有其他可以開始的佇列項目。</VTU_XQ_SkipNoNext>
   <VTU_XQ_DeleteRunningDesc>從佇列移除。正在製作的異種細胞不會被取消。</VTU_XQ_DeleteRunningDesc>
-  <VTU_XQ_MissingGenepacks>異種細胞佇列：略過 {0}，部分基因包已不在連接的基因庫中。</VTU_XQ_MissingGenepacks>
+  <VTU_XQ_MissingGenepacks>異種細胞佇列：略過{0}，部分基因包已不在連接的基因庫中。</VTU_XQ_MissingGenepacks>
   <VTU_XQ_QueuePaused>目前的異種細胞已被取消，異種細胞佇列已暫停。</VTU_XQ_QueuePaused>
 
   <!-- Drag reorder -->
@@ -212,7 +212,7 @@
   <VTU_CB_PortraitZoom>肖像縮放：{0}</VTU_CB_PortraitZoom>
   <VTU_CB_PortraitOffset>肖像垂直偏移：{0}</VTU_CB_PortraitOffset>
   <VTU_CB_PortraitReset>重設肖像尺寸</VTU_CB_PortraitReset>
-  <VTU_CB_PortraitsByCustomPortraits>[NL] Custom Portraits 啟用時，肖像尺寸由它控制。</VTU_CB_PortraitsByCustomPortraits>
+  <VTU_CB_PortraitsByCustomPortraits>[NL] Custom Portraits啟用時，肖像尺寸由它控制。</VTU_CB_PortraitsByCustomPortraits>
   <VTU_CB_RaceZoom>各種族額外縮放（肖像列上出現的種族）：</VTU_CB_RaceZoom>
   <VTU_CB_RaceZoomEntry>{0}：×{1}</VTU_CB_RaceZoomEntry>
 </LanguageData>
