@@ -11,6 +11,7 @@
   <VTU_RequiresSteam>（需要Steam版）</VTU_RequiresSteam>
   <VTU_RequiresAnomaly>（需要Anomaly）</VTU_RequiresAnomaly>
   <VTU_RequiresWindows>（僅限Windows）</VTU_RequiresWindows>
+  <VTU_RequiresIdeology>（需要Ideology）</VTU_RequiresIdeology>
   <VTU_Experimental>（實驗性）</VTU_Experimental>
 
   <VTU_FactionLeader>補回遺失的派系領袖</VTU_FactionLeader>
@@ -43,14 +44,22 @@
   <VTU_HuntGuard_Desc>獵人要狩獵的動物，只要受傷反擊率（以該獵人在射擊距離計算）大於0，就會派最近的有遠程武器、敵意反應設為攻擊的空閒殖民者擔任護衛：跟著獵人，並射擊任何攻擊獵人的對象。護衛人數沒有上限，動物血量越多、附近會一起反擊的同伴越多，派的人越多（每3點血量倍率派1位：灰熊2.5、巨型地懶3.6、獨角獸8）。獵人會在射擊位置等所有護衛靠近，最多等30秒（開啟下方嚴格模式則改為放棄狩獵）。只會挑不餓、不累、沒受傷，且手上工作可以中斷的殖民者；獵物倒下後護衛就回去工作。手動下令的狩獵不受影響。</VTU_HuntGuard_Desc>
   <VTU_HuntGuardStrict>嚴格模式：護衛不齊就放棄</VTU_HuntGuardStrict>
   <VTU_HuntGuardStrict_Desc>獵人不會在沒有護衛的情況下開槍，而是放棄這次狩獵：空閒的護衛人數不足、第一槍前有護衛離隊，或30秒後護衛還沒全部靠近時都會放棄。之後這名獵人在遊戲內1小時內不會再狩獵這隻動物。一旦開始射擊，之後護衛離開也會繼續狩獵。</VTU_HuntGuardStrict_Desc>
-  <VTU_PrisonerDefaultFoodPolicy>新囚犯的食物政策</VTU_PrisonerDefaultFoodPolicy>
-  <VTU_PrisonerDefaultFoodPolicy_Desc>pawn 成為你的囚犯時，自動套用下方選擇的食物政策，不用每抓一個囚犯就手動設定一次。被招募或釋放時，若仍是這個政策，會改回預設政策。政策以名稱比對，各個存檔請使用相同名稱。</VTU_PrisonerDefaultFoodPolicy_Desc>
+  <VTU_PrisonerDefaultFoodPolicy>新囚犯與奴隸的食物政策</VTU_PrisonerDefaultFoodPolicy>
+  <VTU_PrisonerDefaultFoodPolicy_Desc>pawn 成為你的囚犯或奴隸時，自動套用下方選擇的食物政策，不用每次都手動設定。不再是囚犯或奴隸時（被招募、釋放、奴役、解放），若仍是這個政策，會改回預設政策。政策以名稱比對，各個存檔請使用相同名稱。</VTU_PrisonerDefaultFoodPolicy_Desc>
   <VTU_PrisonerPolicyLabel>新囚犯套用的政策</VTU_PrisonerPolicyLabel>
   <VTU_PrisonerPolicyNone>不變更（原版行為）</VTU_PrisonerPolicyNone>
   <VTU_PrisonerPolicyNoGame>讀取存檔後才能選擇食物政策。</VTU_PrisonerPolicyNoGame>
   <VTU_PrisonerPolicyMissing>這個存檔沒有名為「{0}」的食物政策，新囚犯會維持預設政策。</VTU_PrisonerPolicyMissing>
   <VTU_PrisonerPolicyApplyAll>套用到目前所有囚犯</VTU_PrisonerPolicyApplyAll>
   <VTU_PrisonerPolicyApplied>已將 {0} 名囚犯的食物政策改為「{1}」。</VTU_PrisonerPolicyApplied>
+  <VTU_SlavePolicyLabel>新奴隸套用的政策</VTU_SlavePolicyLabel>
+  <VTU_SlavePolicyMissing>這個存檔沒有名為「{0}」的食物政策，新奴隸會維持預設政策。</VTU_SlavePolicyMissing>
+  <VTU_SlavePolicyApplyAll>套用到目前所有奴隸</VTU_SlavePolicyApplyAll>
+  <VTU_SlavePolicyApplied>已將 {0} 名奴隸的食物政策改為「{1}」。</VTU_SlavePolicyApplied>
+  <VTU_PrisonBreak>緩和越獄與奴隸叛亂</VTU_PrisonBreak>
+  <VTU_PrisonBreak_Desc>越獄中的囚犯沒有鑰匙：不能開門，只能把門破壞掉。囚犯和奴隸會使用自己床鋪所在房間裡的娛樂設施（電視、棋桌等），奴隸只在娛樂時段使用；最近一天內真的用過的人，越獄或叛亂的頻率會依下方倍率降低。越獄或叛亂不再是整間牢房或附近所有奴隸一起參加，而是每個人各自判定，比發起者越不想逃（有娛樂、剛越獄過、鎮壓值高）就越不容易跟著參加。</VTU_PrisonBreak_Desc>
+  <VTU_PrisonRecreationFactor>娛樂後的越獄與叛亂間隔：x{0}</VTU_PrisonRecreationFactor>
+  <VTU_PrisonRecreationMtb>最近有娛樂</VTU_PrisonRecreationMtb>
   <VTU_VisitorFood>訪客不吃殖民地的食物</VTU_VisitorFood>
   <VTU_VisitorFood_Desc>商隊、訪客和友軍援兵（包括馱獸）身上還有食物時，不會去吃儲存區或居住區裡的食物，也不會吃種植區和花盆裡的作物。自己的食物吃完、餓到下方設定的程度後，才能吃殖民地的食物，而且只限所選食物政策允許的項目（動物不受政策限制）。地圖上其他地方的野生食物和草地仍然可以吃，所以不會有人餓死在基地旁。</VTU_VisitorFood_Desc>
   <VTU_VisitorFoodHungerLabel>從這個飢餓程度起可吃殖民地食物</VTU_VisitorFoodHungerLabel>
@@ -131,6 +140,8 @@
   <VTU_VisitorShelter_ReasonEnemies>地圖上有敵人</VTU_VisitorShelter_ReasonEnemies>
   <VTU_ConfirmCloseWindow>關閉遊戲視窗前確認</VTU_ConfirmCloseWindow>
   <VTU_ConfirmCloseWindow_Desc>遊戲進行中按下視窗的關閉按鈕（或Alt+F4）會直接關閉。開啟後改走和遊戲選單「退出遊戲」相同的流程：有尚未保存的進度時會先跳出確認視窗；永久死亡模式則會先存檔再退出。在主選單時仍會直接關閉。</VTU_ConfirmCloseWindow_Desc>
+  <VTU_SlavePrisonerBeds>奴隸使用囚犯床</VTU_SlavePrisonerBeds>
+  <VTU_SlavePrisonerBeds_Desc>奴隸可以睡囚犯床，也能在囚犯醫療床上養傷，直接跟囚犯共用監獄區，不必另外蓋奴隸房間和醫院。被奴役的囚犯會保留原本牢房裡的床。</VTU_SlavePrisonerBeds_Desc>
   <VTU_InspectTabCamera>鏡頭跳轉避開開啟中的資訊分頁</VTU_InspectTabCamera>
   <VTU_InspectTabCamera_Desc>鏡頭跳到殖民者時（上一個/下一個殖民者快捷鍵、雙擊殖民者列的頭像、信件）會把對象放在畫面正中央，但左下角資訊欄開著分頁（紀錄、裝備、社交、角色、需求、健康）時，左半邊會被分頁擋住。開啟後，分頁開著時會改把對象放在分頁右側未被遮住區域的正中央，只調整水平位置。</VTU_InspectTabCamera_Desc>
   <VTU_InspectTabCameraOnOpen>開啟分頁擋住選取的角色時也移動鏡頭</VTU_InspectTabCameraOnOpen>

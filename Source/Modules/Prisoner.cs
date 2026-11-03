@@ -250,35 +250,59 @@ namespace VanillaTuneUp
     }
 
     /// <summary>
-    /// Vanilla gives every new prisoner the default food policy, so a prisoner-only policy has to be picked by hand
-    /// for each capture. Give the policy named in the settings to a pawn when it becomes a prisoner of the colony, and
-    /// put it back on the default policy when it stops being one (recruited, released) while still on that policy.
-    /// Policies are saved per game, so the setting stores the policy name and matches it in the loaded save.
+    /// Vanilla gives every new prisoner and slave the default food policy, so a prisoner-only or slave-only policy has
+    /// to be picked by hand each time. Give the policy named in the settings to a pawn when it becomes a prisoner or
+    /// slave of the colony, and put it back on the default policy when it stops being one (recruited, released,
+    /// enslaved, emancipated) while still on that policy. Policies are saved per game, so the settings store policy
+    /// names and match them in the loaded save.
     /// </summary>
     [HarmonyPatchCategory("PrisonerDefaultFoodPolicy")]
     [HarmonyPatch(typeof(Pawn_GuestTracker), nameof(Pawn_GuestTracker.SetGuestStatus))]
     public static class PrisonerDefaultFoodPolicy
     {
-        public static void Prefix(Pawn_GuestTracker __instance, out bool __state)
+        public enum Role { None, Prisoner, Slave }
+
+        private static Role RoleOf(Pawn pawn)
         {
-            __state = __instance.IsPrisoner && __instance.HostFaction == Faction.OfPlayer;
+            if (pawn.IsPrisonerOfColony)
+                return Role.Prisoner;
+            return pawn.IsSlaveOfColony ? Role.Slave : Role.None;
         }
 
-        public static void Postfix(Pawn_GuestTracker __instance, Pawn ___pawn, bool __state)
+        private static FoodPolicy PolicyFor(Role role) => role switch
+        {
+            Role.Prisoner => Configured(),
+            Role.Slave => ConfiguredForSlaves(),
+            _ => null
+        };
+
+        public static void Prefix(Pawn ___pawn, out Role __state)
+        {
+            __state = ___pawn == null ? Role.None : RoleOf(___pawn);
+        }
+
+        public static void Postfix(Pawn ___pawn, Role __state)
         {
             Pawn_FoodRestrictionTracker tracker = ___pawn?.foodRestriction;
-            FoodPolicy policy = Configured();
-            if (tracker == null || policy == null)
+            if (tracker == null)
                 return;
-            bool prisoner = __instance.IsPrisoner && __instance.HostFaction == Faction.OfPlayer;
-            if (prisoner && !__state)
-                tracker.CurrentFoodPolicy = policy;
-            else if (!prisoner && __state && tracker.CurrentFoodPolicy == policy)
+            Role role = RoleOf(___pawn);
+            if (role == __state)
+                return;
+            // Enslaving a prisoner leaves the prisoner policy and takes the slave one in the same call.
+            FoodPolicy old = PolicyFor(__state);
+            if (old != null && tracker.CurrentFoodPolicy == old)
                 tracker.CurrentFoodPolicy = Current.Game.foodRestrictionDatabase.DefaultFoodRestriction();
+            FoodPolicy policy = PolicyFor(role);
+            if (policy != null)
+                tracker.CurrentFoodPolicy = policy;
         }
 
-        /// <summary>The policy named in the settings in the current game, or null when unset or missing.</summary>
+        /// <summary>The prisoner policy named in the settings in the current game, or null when unset or missing.</summary>
         public static FoodPolicy Configured() => FindPolicy(VanillaTuneUpMod.Settings.prisonerFoodPolicy);
+
+        /// <summary>The slave policy named in the settings in the current game, or null when unset or missing.</summary>
+        public static FoodPolicy ConfiguredForSlaves() => FindPolicy(VanillaTuneUpMod.Settings.slaveFoodPolicy);
 
         /// <summary>The food policy with this name in the current game, or null when unset or missing.</summary>
         public static FoodPolicy FindPolicy(string label)
@@ -331,20 +355,31 @@ namespace VanillaTuneUp
             TuneUpSettings settings = VanillaTuneUpMod.Settings;
             DrawPolicyPicker(listing, "VTU_PrisonerPolicyLabel", "VTU_PrisonerPolicyNone", "VTU_PrisonerPolicyMissing",
                 settings.prisonerFoodPolicy, label => settings.prisonerFoodPolicy = label);
-            FoodPolicy configured = Configured();
-            if (configured != null && listing.ButtonText("VTU_PrisonerPolicyApplyAll".Translate()))
+            DrawApplyButton(listing, Configured(), "VTU_PrisonerPolicyApplyAll", "VTU_PrisonerPolicyApplied",
+                PawnsFinder.AllMapsCaravansAndTravellingTransporters_Alive_PrisonersOfColony);
+            if (!ModsConfig.IdeologyActive)
+                return;
+            listing.Gap(6f);
+            DrawPolicyPicker(listing, "VTU_SlavePolicyLabel", "VTU_PrisonerPolicyNone", "VTU_SlavePolicyMissing",
+                settings.slaveFoodPolicy, label => settings.slaveFoodPolicy = label);
+            DrawApplyButton(listing, ConfiguredForSlaves(), "VTU_SlavePolicyApplyAll", "VTU_SlavePolicyApplied",
+                PawnsFinder.AllMapsCaravansAndTravellingTransporters_Alive_SlavesOfColony);
+        }
+
+        private static void DrawApplyButton(Listing_Standard listing, FoodPolicy configured, string buttonKey,
+            string messageKey, List<Pawn> pawns)
+        {
+            if (configured == null || !listing.ButtonText(buttonKey.Translate()))
+                return;
+            int count = 0;
+            foreach (Pawn pawn in pawns)
             {
-                int count = 0;
-                foreach (Pawn prisoner in PawnsFinder.AllMapsCaravansAndTravellingTransporters_Alive_PrisonersOfColony)
-                {
-                    if (prisoner.foodRestriction == null)
-                        continue;
-                    prisoner.foodRestriction.CurrentFoodPolicy = configured;
-                    count++;
-                }
-                Messages.Message("VTU_PrisonerPolicyApplied".Translate(count, configured.label),
-                    MessageTypeDefOf.TaskCompletion, historical: false);
+                if (pawn.foodRestriction == null)
+                    continue;
+                pawn.foodRestriction.CurrentFoodPolicy = configured;
+                count++;
             }
+            Messages.Message(messageKey.Translate(count, configured.label), MessageTypeDefOf.TaskCompletion, historical: false);
         }
     }
 }
