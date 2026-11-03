@@ -141,6 +141,11 @@ namespace VanillaTuneUp
             },
             new TuneUpModule("PrisonerHelpers", true, null),
             new TuneUpModule("PrisonBreak", true, null),
+            new TuneUpModule("HideSlavesFromBar", true, null)
+            {
+                IsAvailable = () => ModsConfig.IdeologyActive,
+                UnavailableKey = "VTU_RequiresIdeology"
+            },
             // Modules with extra settings go last, the longest at the end, so plain toggles stay near the top.
             new TuneUpModule("InspectTabCamera", true, null)
             {
