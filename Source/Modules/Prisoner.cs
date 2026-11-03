@@ -329,7 +329,7 @@ namespace VanillaTuneUp
             return Current.Game?.foodRestrictionDatabase?.AllFoodRestrictions.Find(p => p.label == label);
         }
 
-        private static ApparelPolicy FindApparelPolicy(string label)
+        public static ApparelPolicy FindApparelPolicy(string label)
         {
             if (label.NullOrEmpty())
                 return null;
@@ -342,7 +342,7 @@ namespace VanillaTuneUp
             DrawPicker(listing, labelKey, noneKey, missingKey, selected, select,
                 Current.Game?.foodRestrictionDatabase?.AllFoodRestrictions.Select(p => p.label).ToList());
 
-        private static void DrawApparelPicker(Listing_Standard listing, string labelKey, string noneKey, string missingKey,
+        public static void DrawApparelPicker(Listing_Standard listing, string labelKey, string noneKey, string missingKey,
             string selected, Action<string> select) =>
             DrawPicker(listing, labelKey, noneKey, missingKey, selected, select,
                 Current.Game?.outfitDatabase?.AllOutfits.Select(p => p.label).ToList());
@@ -415,7 +415,7 @@ namespace VanillaTuneUp
             return true;
         }
 
-        private static bool SetApparel(Pawn pawn, ApparelPolicy policy)
+        public static bool SetApparel(Pawn pawn, ApparelPolicy policy)
         {
             if (pawn.outfits == null)
                 return false;
@@ -424,7 +424,7 @@ namespace VanillaTuneUp
         }
 
         // apply sets the policy on one pawn and says whether it could.
-        private static void DrawApplyButton(Listing_Standard listing, string policyLabel, string buttonKey,
+        public static void DrawApplyButton(Listing_Standard listing, string policyLabel, string buttonKey,
             string messageKey, List<Pawn> pawns, Func<Pawn, bool> apply)
         {
             if (policyLabel == null || !listing.ButtonText(buttonKey.Translate()))

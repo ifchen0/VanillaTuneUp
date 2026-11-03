@@ -163,6 +163,12 @@ namespace VanillaTuneUp
             {
                 DrawSettings = Quicksave.DrawSettings
             },
+            new TuneUpModule("RefugeeApparel", true, null)
+            {
+                IsAvailable = () => ModsConfig.RoyaltyActive,
+                UnavailableKey = "VTU_RequiresRoyalty",
+                DrawSettings = RefugeeApparel.DrawSettings
+            },
             new TuneUpModule("PrisonerDefaultFoodPolicy", true, null)
             {
                 DrawSettings = PrisonerDefaultFoodPolicy.DrawSettings
@@ -215,6 +221,8 @@ namespace VanillaTuneUp
         public string slaveFoodPolicy = "";
         // Apparel policy name given to new slaves; empty leaves vanilla behavior.
         public string slaveApparelPolicy = "";
+        // Apparel policy name given to arriving hospitality refugees; empty leaves the default policy.
+        public string refugeeApparelPolicy = "";
         // Visitors may eat colony food once this hungry with none of their own; empty policy = any food.
         public HungerCategory visitorFoodHunger = HungerCategory.UrgentlyHungry;
         public string visitorFoodPolicy = "";
@@ -307,6 +315,7 @@ namespace VanillaTuneUp
             Scribe_Values.Look(ref prisonerFoodPolicy, "prisonerFoodPolicy", "");
             Scribe_Values.Look(ref slaveFoodPolicy, "slaveFoodPolicy", "");
             Scribe_Values.Look(ref slaveApparelPolicy, "slaveApparelPolicy", "");
+            Scribe_Values.Look(ref refugeeApparelPolicy, "refugeeApparelPolicy", "");
             Scribe_Values.Look(ref visitorFoodHunger, "visitorFoodHunger", HungerCategory.UrgentlyHungry);
             Scribe_Values.Look(ref visitorFoodPolicy, "visitorFoodPolicy", "");
             Scribe_Values.Look(ref factionColorMinDistance, "factionColorMinDistance", FactionColors.DefaultMinDistance);
@@ -334,6 +343,7 @@ namespace VanillaTuneUp
                 prisonerFoodPolicy ??= "";
                 slaveFoodPolicy ??= "";
                 slaveApparelPolicy ??= "";
+                refugeeApparelPolicy ??= "";
                 visitorFoodPolicy ??= "";
                 compactBarRaceZoom ??= new Dictionary<string, float>();
                 pinnedResources ??= new List<string>();
