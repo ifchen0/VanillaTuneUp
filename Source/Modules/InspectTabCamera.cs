@@ -124,6 +124,9 @@ namespace VanillaTuneUp
                     return;
                 float width = TabWidth(tab);
                 Vector2 screen = pawn.DrawPos.MapToUIPosition();
+                // A pawn off screen is not covered by the tab; leave the camera alone.
+                if (screen.x < 0f || screen.y > UI.screenHeight)
+                    return;
                 // Covered = left of the tab's right edge (plus about one cell) and below its top edge.
                 float tabTop = ((MainTabWindow_Inspect)MainButtonDefOf.Inspect.TabWindow).PaneTopY - 30f - TabSize(tab).y;
                 if (screen.x > width + Find.CameraDriver.CellSizePixels || screen.y < tabTop)
