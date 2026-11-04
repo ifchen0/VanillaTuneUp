@@ -13,8 +13,8 @@ namespace VanillaTuneUp
     /// - Escaping prisoners have no keys: they cannot open doors and have to break through them.
     /// - Prisoners and slaves use recreation buildings in the room of their own bed (vanilla gives them no
     ///   recreation need, so they never do), and it moves the vanilla values the break and rebellion intervals
-    ///   already read: for a prisoner the "days since last prison break" (as if it had broken out about 5 days ago,
-    ///   about x2 at first and back to x1 by day 10, never pulling a real recent break back), for a slave suppression
+    ///   already read: for a prisoner the "days since last prison break" (as if it had broken out 5 days ago,
+    ///   x1.5 at first and back to x1 by day 10, never pulling a real recent break back), for a slave suppression
     ///   (about +10% per full session). The prisoner tab tooltip gains the line vanilla leaves out for that factor.
     /// - Vanilla pulls every prisoner of a joining cell into a break, and every slave on the map or nearby into a
     ///   rebellion. Each one now joins with chance (initiator's interval / own interval), so pawns less inclined to
@@ -22,8 +22,9 @@ namespace VanillaTuneUp
     /// </summary>
     public static class PrisonBreak
     {
-        // Where vanilla's days-since-prison-break curve (0 d x20, 5 d x1.5, 10 d x1) gives x2.
-        public const float CalmedDays = 4.86f;
+        // Vanilla's days-since-prison-break curve is 0 d x20, 5 d x1.5, 10 d x1. Day 5 is the start of the gentle part:
+        // any earlier point sits on the steep part and loses a quarter of its effect within hours of the session.
+        public const float CalmedDays = 5f;
         // Outside recreation hours a prisoner plays again once its break record is this old (about x1.3 left),
         // so roughly every 2 days, and a slave only once suppression is below vanilla's 30% mark.
         public const float PrisonerRetryDays = 7f;
