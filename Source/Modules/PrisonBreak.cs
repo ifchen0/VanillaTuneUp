@@ -504,8 +504,10 @@ namespace VanillaTuneUp
 namespace VanillaTuneUp
 {
     /// <summary>
-    /// Long break intervals in the prisoner tab show as "10 years or more": right after a break the multiplied
-    /// factors give thousands of days that keep jumping as wounds heal and the cooldown wears off. Display only.
+    /// Prisoner tab break interval, display only: long intervals show as "10 years or more" (right after a break the
+    /// multiplied factors give thousands of days that keep jumping as wounds heal and the cooldown wears off), and
+    /// the tooltip keeps a fixed id. Vanilla's id is the text's hash, so every change of the listed factors closed
+    /// the tooltip and reopened it after the hover delay; with a fixed id it stays open and updates in place.
     /// </summary>
     [HarmonyPatchCategory("PrisonBreak")]
     [HarmonyPatch(typeof(ITab_Pawn_Visitor), "DoPrisonerTab")]
@@ -517,27 +519,42 @@ namespace VanillaTuneUp
             typeof(TranslatorFormattedStringExtensions), nameof(TranslatorFormattedStringExtensions.Translate),
             new[] { typeof(string), typeof(NamedArgument) });
 
+        private static readonly System.Reflection.MethodInfo TipFromString =
+            AccessTools.Method(typeof(TipSignal), "op_Implicit", new[] { typeof(string) });
+        private static readonly int TipId = "VTU_PrisonBreakIntervalTip".GetHashCode();
+
         public static TaggedString IntervalText(string key, NamedArgument days) =>
             days.arg is int value && value >= LongIntervalDays ? "VTU_PrisonBreakLongInterval".Translate() : key.Translate(days);
+
+        public static TipSignal StableTip(string text) => new TipSignal(text ?? "", TipId);
 
         public static System.Collections.Generic.IEnumerable<CodeInstruction> Transpiler(
             System.Collections.Generic.IEnumerable<CodeInstruction> instructions)
         {
-            bool afterKey = false, patched = false;
+            bool afterKey = false, patched = false, afterTip = false, tipPatched = false;
             foreach (CodeInstruction code in instructions)
             {
                 if (code.opcode == System.Reflection.Emit.OpCodes.Ldstr && code.operand as string == "PeriodDays")
                     afterKey = true;
+                else if (code.opcode == System.Reflection.Emit.OpCodes.Ldstr && code.operand as string == "PrisonBreakMTBDaysDescription")
+                    afterTip = true;
                 else if (afterKey && !patched && code.Calls(TranslateNamed))
                 {
                     code.opcode = System.Reflection.Emit.OpCodes.Call;
                     code.operand = AccessTools.Method(typeof(PrisonBreak_LongIntervalText), nameof(IntervalText));
                     patched = true;
                 }
+                else if (afterTip && !tipPatched && code.Calls(TipFromString))
+                {
+                    code.operand = AccessTools.Method(typeof(PrisonBreak_LongIntervalText), nameof(StableTip));
+                    tipPatched = true;
+                }
                 yield return code;
             }
             if (!patched)
                 Log.Warning("[Vanilla Tune-Up] PrisonBreak: break interval text not found in ITab_Pawn_Visitor.DoPrisonerTab; long intervals show in days.");
+            if (!tipPatched)
+                Log.Warning("[Vanilla Tune-Up] PrisonBreak: break interval tooltip not found in ITab_Pawn_Visitor.DoPrisonerTab; it may flicker while its factors change.");
         }
     }
 }
