@@ -73,7 +73,8 @@
   <VTU_RefugeeApparelMissing>這個存檔沒有名為「{0}」的穿著計畫，難民會維持預設計畫。</VTU_RefugeeApparelMissing>
   <VTU_RefugeeApparelApplyAll>套用到目前所有難民</VTU_RefugeeApparelApplyAll>
   <VTU_RefugeeApparelApplied>已將{0}名難民的穿著計畫改為「{1}」。</VTU_RefugeeApparelApplied>
-  <VTU_PrisonCalmedDown>近期平靜</VTU_PrisonCalmedDown>
+  <VTU_PrisonCalmedDown>越獄冷卻</VTU_PrisonCalmedDown>
+  <VTU_PrisonBreakLongInterval>10年以上</VTU_PrisonBreakLongInterval>
   <VTU_PrisonMood>心情</VTU_PrisonMood>
   <VTU_PrisonPain>疼痛</VTU_PrisonPain>
   <VTU_PrisonTraits>特性</VTU_PrisonTraits>

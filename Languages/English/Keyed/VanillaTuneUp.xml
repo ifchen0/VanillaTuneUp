@@ -73,7 +73,8 @@
   <VTU_RefugeeApparelMissing>This save has no apparel policy named "{0}"; refugees keep the default policy.</VTU_RefugeeApparelMissing>
   <VTU_RefugeeApparelApplyAll>Apply to current refugees</VTU_RefugeeApparelApplyAll>
   <VTU_RefugeeApparelApplied>{0} refugees now use the apparel policy "{1}".</VTU_RefugeeApparelApplied>
-  <VTU_PrisonCalmedDown>Recently calm</VTU_PrisonCalmedDown>
+  <VTU_PrisonCalmedDown>Break cooldown</VTU_PrisonCalmedDown>
+  <VTU_PrisonBreakLongInterval>10 years or more</VTU_PrisonBreakLongInterval>
   <VTU_PrisonMood>Mood</VTU_PrisonMood>
   <VTU_PrisonPain>Pain</VTU_PrisonPain>
   <VTU_PrisonTraits>Traits</VTU_PrisonTraits>

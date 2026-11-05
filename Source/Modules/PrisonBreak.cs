@@ -500,3 +500,44 @@ namespace VanillaTuneUp
         }
     }
 }
+
+namespace VanillaTuneUp
+{
+    /// <summary>
+    /// Long break intervals in the prisoner tab show as "10 years or more": right after a break the multiplied
+    /// factors give thousands of days that keep jumping as wounds heal and the cooldown wears off. Display only.
+    /// </summary>
+    [HarmonyPatchCategory("PrisonBreak")]
+    [HarmonyPatch(typeof(ITab_Pawn_Visitor), "DoPrisonerTab")]
+    public static class PrisonBreak_LongIntervalText
+    {
+        public const int LongIntervalDays = 600;    // 10 years
+
+        private static readonly System.Reflection.MethodInfo TranslateNamed = AccessTools.Method(
+            typeof(TranslatorFormattedStringExtensions), nameof(TranslatorFormattedStringExtensions.Translate),
+            new[] { typeof(string), typeof(NamedArgument) });
+
+        public static TaggedString IntervalText(string key, NamedArgument days) =>
+            days.arg is int value && value >= LongIntervalDays ? "VTU_PrisonBreakLongInterval".Translate() : key.Translate(days);
+
+        public static System.Collections.Generic.IEnumerable<CodeInstruction> Transpiler(
+            System.Collections.Generic.IEnumerable<CodeInstruction> instructions)
+        {
+            bool afterKey = false, patched = false;
+            foreach (CodeInstruction code in instructions)
+            {
+                if (code.opcode == System.Reflection.Emit.OpCodes.Ldstr && code.operand as string == "PeriodDays")
+                    afterKey = true;
+                else if (afterKey && !patched && code.Calls(TranslateNamed))
+                {
+                    code.opcode = System.Reflection.Emit.OpCodes.Call;
+                    code.operand = AccessTools.Method(typeof(PrisonBreak_LongIntervalText), nameof(IntervalText));
+                    patched = true;
+                }
+                yield return code;
+            }
+            if (!patched)
+                Log.Warning("[Vanilla Tune-Up] PrisonBreak: break interval text not found in ITab_Pawn_Visitor.DoPrisonerTab; long intervals show in days.");
+        }
+    }
+}
