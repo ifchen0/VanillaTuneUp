@@ -9,10 +9,12 @@ namespace VanillaTuneUp
 {
     /// <summary>
     /// Prisoners with the right trait help out in their own cell, using vanilla jobs:
-    /// - Kind prisoners feed bedridden cellmates from food or a dispenser in the cell. Checked at the medical rest node
-    ///   of the prisoner think tree, ahead of their own food, sleep and recreation. Colonists ignore a hostile
-    ///   prisoner's reservations (vanilla only has prisoners respect colonists'), so wardens and feeding mechs skip a
-    ///   cellmate a kind prisoner is already feeding, unless ordered to.
+    /// - Kind prisoners tend cellmates lying in bed that need tending, always without medicine (so nothing is carried
+    ///   and dropped), and feed bedridden cellmates from food or a dispenser in the cell. Checked at the medical rest
+    ///   node of the prisoner think tree, ahead of their own food, sleep and recreation. Doctors still tend as usual
+    ///   and usually finish first; the prisoner's tend mostly matters when no doctor gets there.
+    /// - Colonists ignore a hostile prisoner's reservations (vanilla only has prisoners respect colonists'), so
+    ///   wardens and feeding mechs skip a cellmate a kind prisoner is already feeding, unless ordered to.
     /// - Hard-working, industrious or neurotic prisoners clean their cell when idle, unless they are also lazy.
     /// Every check starts with the trait, so prisoners without one cost nothing.
     /// </summary>
@@ -67,7 +69,7 @@ namespace VanillaTuneUp
             (pawn.needs?.food != null && pawn.needs.food.CurCategory >= HungerCategory.UrgentlyHungry)
             || (pawn.needs?.rest != null && pawn.needs.rest.CurCategory >= RestCategory.VeryTired);
 
-        /// <summary>A feed job for a bedridden cellmate of a kind prisoner, or null.</summary>
+        /// <summary>A tend (worst bleeder first) or feed job for a bedridden cellmate of a kind prisoner, or null.</summary>
         public static Job TryCareJob(Pawn pawn)
         {
             if (!CanHelp(pawn, IsKind) || OwnNeedsFirst(pawn) || !pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
@@ -75,20 +77,43 @@ namespace VanillaTuneUp
             Room room = PrisonCell(pawn);
             if (room == null)
                 return null;
+            bool canTend = !pawn.WorkTypeIsDisabled(WorkTypeDefOf.Doctor);
+            Pawn tendTarget = null;
+            float worstBleed = -1f;
+            Pawn feedTarget = null;
             foreach (Pawn other in pawn.Map.mapPawns.PrisonersOfColonySpawned)
             {
-                if (other == pawn || !other.InBed() || other.GetRoom() != room || !NeedsFeeding(other)
-                    || !pawn.CanReserveAndReach(other, PathEndMode.Touch, Danger.Deadly))
+                if (other == pawn || !other.InBed() || other.GetRoom() != room)
                     continue;
-                Job job = FeedJob(pawn, other, room);
-                if (job == null)
-                    return null;
-                Feeding feeding = feedingByPatient.GetValue(other, _ => new Feeding());
+                bool tend = canTend && other.health.HasHediffsNeedingTend() && WorkGiver_Tend.GoodLayingStatusForTend(other, pawn);
+                bool feed = !tend && feedTarget == null && NeedsFeeding(other);
+                if ((!tend && !feed) || !pawn.CanReserveAndReach(other, PathEndMode.Touch, Danger.Deadly))
+                    continue;
+                if (feed)
+                {
+                    feedTarget = other;
+                    continue;
+                }
+                float bleed = other.health.hediffSet.BleedRateTotal;
+                if (bleed > worstBleed)
+                {
+                    worstBleed = bleed;
+                    tendTarget = other;
+                }
+            }
+            // No medicine target: the tend driver then uses none, the way a doctor tends under "no medicine".
+            if (tendTarget != null)
+                return JobMaker.MakeJob(JobDefOf.TendPatient, tendTarget);
+            if (feedTarget == null)
+                return null;
+            Job job = FeedJob(pawn, feedTarget, room);
+            if (job != null)
+            {
+                Feeding feeding = feedingByPatient.GetValue(feedTarget, _ => new Feeding());
                 feeding.Helper = pawn;
                 feeding.Job = job;
-                return job;
             }
-            return null;
+            return job;
         }
 
         // Same rule as the warden feeding work: bedridden and getting hungry.
