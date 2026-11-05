@@ -161,7 +161,7 @@
   <VTU_SlavePrisonerBeds>奴隸使用囚犯床</VTU_SlavePrisonerBeds>
   <VTU_SlavePrisonerBeds_Desc>奴隸可以睡囚犯床，也能在囚犯醫療床上養傷，直接跟囚犯共用監獄區，不必另外蓋奴隸房間和醫院。被奴役的囚犯會保留原本牢房裡的床。</VTU_SlavePrisonerBeds_Desc>
   <VTU_PrisonerHelpers>囚犯依個性幫忙</VTU_PrisonerHelpers>
-  <VTU_PrisonerHelpers_Desc>善良的囚犯會幫躺在床上的獄友包紮（通常沒有藥品，品質偏低），也會用牢房裡的食物或營養膏機餵食臥床的獄友。工作努力、工作達人或神經質的囚犯沒事做時會打掃自己的牢房，但遊手好閒或好逸惡勞的人不會。只有具備這些特性的囚犯會這麼做，而且只在自己的牢房裡。</VTU_PrisonerHelpers_Desc>
+  <VTU_PrisonerHelpers_Desc>善良的囚犯會幫躺在床上的獄友包紮（通常沒有藥品，品質偏低），也會用牢房裡的食物或營養膏機餵食臥床的獄友。工作努力、工作達人或神經質的囚犯沒事做時會打掃自己的牢房，但遊手好閒或好逸惡勞的人不會。只有具備這些特性的囚犯會這麼做，而且只在自己的牢房裡。善良的囚犯正在包紮或餵食的獄友，醫生和典獄長不會再去搶著做，除非玩家指定。</VTU_PrisonerHelpers_Desc>
   <VTU_InspectTabCamera>鏡頭跳轉避開開啟中的資訊分頁</VTU_InspectTabCamera>
   <VTU_InspectTabCamera_Desc>鏡頭跳到殖民者時（上一個/下一個殖民者快捷鍵、雙擊殖民者列的頭像、信件）會把對象放在畫面正中央，但左下角資訊欄開著分頁（紀錄、裝備、社交、角色、需求、健康）時，左半邊會被分頁擋住。開啟後，分頁開著時會改把對象放在分頁右側未被遮住區域的正中央，只調整水平位置。</VTU_InspectTabCamera_Desc>
   <VTU_InspectTabCameraOnOpen>開啟分頁擋住選取的角色時也移動鏡頭</VTU_InspectTabCameraOnOpen>

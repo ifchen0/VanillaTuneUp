@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 using RimWorld;
 using Verse;
@@ -13,6 +15,9 @@ namespace VanillaTuneUp
     ///   the prisoner think tree, ahead of food, sleep and recreation, since it is the urgent part.
     /// - Hard-working, industrious or neurotic prisoners clean their cell when idle, unless they are also lazy.
     /// Every check starts with the trait, so prisoners without one cost nothing.
+    /// Colonists ignore a prisoner's reservations (vanilla only has prisoners respect colonists'), so doctors and
+    /// wardens skip a patient a kind prisoner is already tending or feeding (unless ordered), and what the prisoner
+    /// drops when such a job ends is not forbidden (vanilla forbids drops by pawns of a hostile faction).
     /// </summary>
     public static class PrisonerHelpers
     {
@@ -20,6 +25,43 @@ namespace VanillaTuneUp
         private static TraitDef neurotic;
         private static readonly List<Thing> tmpFilth = new List<Thing>();
         private const int CleanQueueLimit = 15;
+
+        // The last care job given to each kind prisoner and to each patient. Job objects are pooled and reused,
+        // so a record only counts while the helper is still on that job object with the same def and patient.
+        private sealed class Care
+        {
+            public Pawn Helper;
+            public Pawn Patient;
+            public Job Job;
+            public JobDef Def;
+
+            public bool Active =>
+                Helper.Spawned && Helper.CurJob == Job && Job.def == Def
+                && (Job.targetA.Thing == Patient || Job.targetB.Thing == Patient);
+        }
+
+        private static readonly ConditionalWeakTable<Pawn, Care> careByPatient = new ConditionalWeakTable<Pawn, Care>();
+        private static readonly ConditionalWeakTable<Pawn, Care> careByHelper = new ConditionalWeakTable<Pawn, Care>();
+
+        private static Job TrackCare(Job job, Pawn helper, Pawn patient)
+        {
+            if (job == null)
+                return null;
+            var care = new Care { Helper = helper, Patient = patient, Job = job, Def = job.def };
+            careByPatient.Remove(patient);
+            careByPatient.Add(patient, care);
+            careByHelper.Remove(helper);
+            careByHelper.Add(helper, care);
+            return job;
+        }
+
+        /// <summary>Whether this pawn is a kind prisoner on a tend or feed job it was given by this module.</summary>
+        public static bool OnCareJob(Pawn helper) =>
+            helper != null && careByHelper.TryGetValue(helper, out Care care) && care.Active;
+
+        /// <summary>Whether a kind prisoner is tending or feeding this patient right now.</summary>
+        public static bool CaredForByPrisoner(Pawn patient) =>
+            careByPatient.TryGetValue(patient, out Care care) && care.Active;
 
         // Trait first (cheap, rules out most pawns), then the state checks.
         private static bool CanHelp(Pawn pawn, System.Func<TraitSet, bool> hasTrait) =>
@@ -84,11 +126,11 @@ namespace VanillaTuneUp
             if (tendTarget != null)
             {
                 Thing medicine = HealthAIUtility.FindBestMedicine(pawn, tendTarget);
-                return medicine != null
+                return TrackCare(medicine != null
                     ? JobMaker.MakeJob(JobDefOf.TendPatient, tendTarget, medicine)
-                    : JobMaker.MakeJob(JobDefOf.TendPatient, tendTarget);
+                    : JobMaker.MakeJob(JobDefOf.TendPatient, tendTarget), pawn, tendTarget);
             }
-            return feedTarget != null ? FeedJob(pawn, feedTarget, room) : null;
+            return feedTarget != null ? TrackCare(FeedJob(pawn, feedTarget, room), pawn, feedTarget) : null;
         }
 
         // Same rule as the warden feeding work: bedridden and getting hungry.
@@ -174,6 +216,82 @@ namespace VanillaTuneUp
                 return true;
             __result = job;
             return false;
+        }
+    }
+
+    /// <summary>Doctors leave a patient to the kind prisoner already tending it, unless ordered to tend.</summary>
+    [HarmonyPatchCategory("PrisonerHelpers")]
+    [HarmonyPatch]
+    public static class PrisonerHelpers_LeaveTendToPrisoner
+    {
+        public static IEnumerable<MethodBase> TargetMethods()
+        {
+            // WorkGiver_TendOther and TendOtherUrgent call this base check first.
+            yield return AccessTools.Method(typeof(WorkGiver_Tend), nameof(WorkGiver_Tend.HasJobOnThing));
+            yield return AccessTools.Method(typeof(WorkGiver_FeedPatient), nameof(WorkGiver_FeedPatient.HasJobOnThing));
+        }
+
+        public static void Postfix(Thing t, bool forced, ref bool __result)
+        {
+            if (__result && !forced && t is Pawn patient && PrisonerHelpers.CaredForByPrisoner(patient))
+                __result = false;
+        }
+    }
+
+    /// <summary>Wardens leave a prisoner to the kind cellmate already feeding it, unless ordered to feed.</summary>
+    [HarmonyPatchCategory("PrisonerHelpers")]
+    [HarmonyPatch(typeof(WorkGiver_Warden_Feed), nameof(WorkGiver_Warden_Feed.JobOnThing))]
+    public static class PrisonerHelpers_LeaveFeedToPrisoner
+    {
+        public static void Postfix(Thing t, bool forced, ref Job __result)
+        {
+            if (__result != null && !forced && t is Pawn patient && PrisonerHelpers.CaredForByPrisoner(patient))
+                __result = null;
+        }
+    }
+
+    /// <summary>
+    /// Medicine or food a kind prisoner drops when its tend or feed job ends stays allowed. Vanilla drops the carried
+    /// thing after clearing curJob, so the ending job is noted while CleanupCurrentJob runs.
+    /// </summary>
+    [HarmonyPatchCategory("PrisonerHelpers")]
+    [HarmonyPatch(typeof(Pawn_JobTracker), "CleanupCurrentJob")]
+    public static class PrisonerHelpers_EndingCareJob
+    {
+        public static Pawn Helper;
+
+        private static readonly AccessTools.FieldRef<Pawn_JobTracker, Pawn> jobPawn =
+            AccessTools.FieldRefAccess<Pawn_JobTracker, Pawn>("pawn");
+
+        public static void Prefix(Pawn_JobTracker __instance, out Pawn __state)
+        {
+            __state = Helper;
+            Pawn pawn = jobPawn(__instance);
+            if (pawn != null && pawn.IsPrisonerOfColony && PrisonerHelpers.OnCareJob(pawn))
+                Helper = pawn;
+        }
+
+        public static void Finalizer(Pawn __state) => Helper = __state;
+    }
+
+    [HarmonyPatchCategory("PrisonerHelpers")]
+    [HarmonyPatch]
+    public static class PrisonerHelpers_KeepDropAllowed
+    {
+        public static IEnumerable<MethodBase> TargetMethods()
+        {
+            foreach (MethodInfo method in AccessTools.GetDeclaredMethods(typeof(Pawn_CarryTracker)))
+            {
+                if (method.Name == nameof(Pawn_CarryTracker.TryDropCarriedThing))
+                    yield return method;
+            }
+        }
+
+        public static void Postfix(Pawn_CarryTracker __instance, bool __result, ref Thing resultingThing)
+        {
+            if (__result && resultingThing != null && PrisonerHelpers_EndingCareJob.Helper != null
+                && __instance.pawn == PrisonerHelpers_EndingCareJob.Helper && resultingThing.IsForbidden(Faction.OfPlayer))
+                resultingThing.SetForbidden(false, warnOnFail: false);
         }
     }
 }
