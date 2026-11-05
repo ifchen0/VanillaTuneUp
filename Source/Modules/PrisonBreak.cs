@@ -17,8 +17,9 @@ namespace VanillaTuneUp
     ///   x1.5 at first and back to x1 by day 10, never pulling a real recent break back), for a slave suppression
     ///   (about +10% per full session). The prisoner tab tooltip gains the line vanilla leaves out for that factor.
     /// - Vanilla pulls every prisoner of a joining cell into a break, and every slave on the map or nearby into a
-    ///   rebellion. Each one now joins with chance (initiator's interval / own interval), so pawns less inclined to
-    ///   break out than the one who started it (recreation, a recent break, high suppression) often stay put.
+    ///   rebellion. Each one now joins with chance (initiator's interval / own interval) x mood (prisoners) x traits,
+    ///   so pawns less inclined to break out than the one who started it (recreation, a recent break, high
+    ///   suppression, a good mood, Kind / Wimp / Nervous) often stay put.
     /// </summary>
     public static class PrisonBreak
     {
@@ -222,9 +223,57 @@ namespace VanillaTuneUp
             try { mtb = mtbOf(pawn); }
             finally { computing = false; }
             // No interval to compare (not in a cell, starter unknown): vanilla, join.
-            joined = initiatorMtb <= 0f || mtb <= 0f || Rand.Chance(initiatorMtb / mtb);
+            joined = initiatorMtb <= 0f || mtb <= 0f || Rand.Chance(initiatorMtb / mtb * Inclination(pawn));
             joins[pawn] = joined;
             return joined;
+        }
+
+        // Cellmates share vanilla's prisoner interval factors (doors, last break), so the interval ratio alone lets
+        // almost everyone join. Mood and traits make the difference. Mood counts for prisoners only: vanilla's slave
+        // rebellion interval already includes it.
+        private static readonly SimpleCurve MoodFactor = new SimpleCurve
+        {
+            new CurvePoint(0.2f, 1f),
+            new CurvePoint(0.8f, 0.2f)
+        };
+
+        private static List<(TraitDef def, int degree, float factor)> traitFactors;
+
+        private static List<(TraitDef def, int degree, float factor)> TraitFactors()
+        {
+            if (traitFactors == null)
+            {
+                TraitDef nerves = DefDatabase<TraitDef>.GetNamedSilentFail("Nerves");
+                traitFactors = new List<(TraitDef, int, float)>
+                {
+                    (TraitDefOf.Wimp, 0, 0.5f),
+                    (nerves, -1, 0.7f),     // Nervous
+                    (TraitDefOf.Kind, 0, 0.7f),
+                    (TraitDefOf.Bloodlust, 0, 1.5f),
+                    (TraitDefOf.Brawler, 0, 1.3f),
+                    (nerves, -2, 1.3f),     // Volatile
+                };
+                traitFactors.RemoveAll(t => t.def == null);
+            }
+            return traitFactors;
+        }
+
+        /// <summary>Factor on a pawn's join chance from its mood (prisoners only) and traits.</summary>
+        public static float Inclination(Pawn pawn)
+        {
+            float factor = 1f;
+            if (pawn.IsPrisoner && pawn.needs?.mood != null)
+                factor *= MoodFactor.Evaluate(pawn.needs.mood.CurLevelPercentage);
+            TraitSet traits = pawn.story?.traits;
+            if (traits != null)
+            {
+                foreach ((TraitDef def, int degree, float traitFactor) in TraitFactors())
+                {
+                    if (traits.HasTrait(def, degree))
+                        factor *= traitFactor;
+                }
+            }
+            return factor;
         }
 
         public static float PrisonBreakMtb(Pawn pawn) => PrisonBreakUtility.InitiatePrisonBreakMtbDays(pawn, null, ignoreAsleep: true);
