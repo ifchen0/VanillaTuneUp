@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using HarmonyLib;
 using RimWorld;
 using Verse;
@@ -13,8 +12,6 @@ namespace VanillaTuneUp
     ///   and dropped), and feed bedridden cellmates from food or a dispenser in the cell. Checked at the medical rest
     ///   node of the prisoner think tree, ahead of their own food, sleep and recreation. Doctors still tend as usual
     ///   and usually finish first; the prisoner's tend mostly matters when no doctor gets there.
-    /// - Colonists ignore a hostile prisoner's reservations (vanilla only has prisoners respect colonists'), so
-    ///   wardens and feeding mechs skip a cellmate a kind prisoner is already feeding, unless ordered to.
     /// - Hard-working, industrious or neurotic prisoners clean their cell when idle, unless they are also lazy.
     /// Every check starts with the trait, so prisoners without one cost nothing.
     /// </summary>
@@ -24,22 +21,6 @@ namespace VanillaTuneUp
         private static TraitDef neurotic;
         private static readonly List<Thing> tmpFilth = new List<Thing>();
         private const int CleanQueueLimit = 15;
-
-        // The feed job last given for each patient. Job objects are pooled and reused, so it only counts while the
-        // helper is still on that job object, feeding that patient.
-        private sealed class Feeding
-        {
-            public Pawn Helper;
-            public Job Job;
-        }
-
-        private static readonly ConditionalWeakTable<Pawn, Feeding> feedingByPatient = new ConditionalWeakTable<Pawn, Feeding>();
-
-        /// <summary>Whether a kind prisoner is feeding this patient right now.</summary>
-        public static bool FedByPrisoner(Pawn patient) =>
-            feedingByPatient.TryGetValue(patient, out Feeding feeding) && feeding.Helper.Spawned
-            && feeding.Helper.CurJob == feeding.Job && feeding.Job.def == JobDefOf.FeedPatient
-            && feeding.Job.targetB.Thing == patient;
 
         // Trait first (cheap, rules out most pawns), then the state checks.
         private static bool CanHelp(Pawn pawn, System.Func<TraitSet, bool> hasTrait) =>
@@ -104,16 +85,7 @@ namespace VanillaTuneUp
             // No medicine target: the tend driver then uses none, the way a doctor tends under "no medicine".
             if (tendTarget != null)
                 return JobMaker.MakeJob(JobDefOf.TendPatient, tendTarget);
-            if (feedTarget == null)
-                return null;
-            Job job = FeedJob(pawn, feedTarget, room);
-            if (job != null)
-            {
-                Feeding feeding = feedingByPatient.GetValue(feedTarget, _ => new Feeding());
-                feeding.Helper = pawn;
-                feeding.Job = job;
-            }
-            return job;
+            return feedTarget != null ? FeedJob(pawn, feedTarget, room) : null;
         }
 
         // Same rule as the warden feeding work: bedridden and getting hungry.
@@ -199,29 +171,6 @@ namespace VanillaTuneUp
                 return true;
             __result = job;
             return false;
-        }
-    }
-
-    /// <summary>Wardens and feeding mechs leave a cellmate to the kind prisoner already feeding it, unless ordered.</summary>
-    [HarmonyPatchCategory("PrisonerHelpers")]
-    [HarmonyPatch(typeof(WorkGiver_FeedPatient), nameof(WorkGiver_FeedPatient.HasJobOnThing))]
-    public static class PrisonerHelpers_LeaveFeedToPrisoner_Patient
-    {
-        public static void Postfix(Thing t, bool forced, ref bool __result)
-        {
-            if (__result && !forced && t is Pawn patient && PrisonerHelpers.FedByPrisoner(patient))
-                __result = false;
-        }
-    }
-
-    [HarmonyPatchCategory("PrisonerHelpers")]
-    [HarmonyPatch(typeof(WorkGiver_Warden_Feed), nameof(WorkGiver_Warden_Feed.JobOnThing))]
-    public static class PrisonerHelpers_LeaveFeedToPrisoner
-    {
-        public static void Postfix(Thing t, bool forced, ref Job __result)
-        {
-            if (__result != null && !forced && t is Pawn patient && PrisonerHelpers.FedByPrisoner(patient))
-                __result = null;
         }
     }
 }
