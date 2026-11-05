@@ -5,6 +5,7 @@ using RimWorld;
 using UnityEngine;
 using Verse;
 using Verse.AI;
+using Verse.AI.Group;
 
 namespace VanillaTuneUp
 {
@@ -22,6 +23,8 @@ namespace VanillaTuneUp
     ///   recent break, high suppression, a good mood, pain, Kind / Wimp / Nervous) often stay put.
     /// - The same mood, pain and trait factors divide each pawn's own break and rebellion interval, so a content,
     ///   hurting or timid pawn also starts one less often (Bloodlust, Brawler and Volatile more often).
+    /// - Wardens arrest a prisoner walking off the map on its own (not part of a break), and an undrafted colonist
+    ///   can be ordered to arrest a prisoner that got out of its cell (vanilla needs a drafted colonist for both).
     /// </summary>
     public static class PrisonBreak
     {
@@ -342,6 +345,75 @@ namespace VanillaTuneUp
         {
             if (__result && p.IsPrisonerOfColony && PrisonBreakUtility.IsPrisonBreaking(p))
                 __result = false;
+        }
+    }
+
+    // ---------- Recapture ----------
+
+    /// <summary>
+    /// Wardens arrest a prisoner walking off the map on its own (woke up outside after field tending, found an open
+    /// door): vanilla counts such a prisoner as not secure, so no warden work touches it until someone downs it.
+    /// Prisoners in a break (any lord) are left to drafted colonists, since they fight back. The arrest job is
+    /// vanilla's, resistance roll (berserk on failure) included.
+    /// </summary>
+    [HarmonyPatchCategory("PrisonBreak")]
+    [HarmonyPatch(typeof(WorkGiver_Warden_TakeToBed), nameof(WorkGiver_Warden_TakeToBed.JobOnThing))]
+    public static class PrisonBreak_RecaptureEscapee
+    {
+        public static bool EscapingAlone(Pawn prisoner) =>
+            prisoner.IsPrisonerOfColony && prisoner.Spawned && !prisoner.Downed && !prisoner.guest.Released
+            && !prisoner.InAggroMentalState && prisoner.CurJob != null && prisoner.CurJob.exitMapOnArrival
+            && prisoner.GetLord() == null;
+
+        public static void Postfix(Pawn pawn, Thing t, bool forced, ref Job __result)
+        {
+            if (__result != null || !(t is Pawn prisoner) || !EscapingAlone(prisoner)
+                || prisoner.IsForbidden(pawn) || !prisoner.CanBeArrestedBy(pawn)
+                || !pawn.CanReserveAndReach(prisoner, PathEndMode.OnCell, pawn.NormalMaxDanger(), 1, -1, null, forced))
+                return;
+            Building_Bed bed = RestUtility.FindBedFor(prisoner, pawn, checkSocialProperness: false, ignoreOtherReservations: false, GuestStatus.Prisoner);
+            if (bed == null)
+            {
+                JobFailReason.Is("NoPrisonerBedShort".Translate());
+                return;
+            }
+            Job job = JobMaker.MakeJob(JobDefOf.Arrest, prisoner, bed);
+            job.count = 1;
+            __result = job;
+        }
+    }
+
+    /// <summary>
+    /// The right-click arrest option for an undrafted colonist also covers the colony's own prisoners (vanilla
+    /// offers it undrafted for wild men only). Prisoners still inside a prison cell are excluded by vanilla's
+    /// CanBeArrestedBy, so this only reaches ones that got out.
+    /// </summary>
+    [HarmonyPatchCategory("PrisonBreak")]
+    [HarmonyPatch(typeof(FloatMenuOptionProvider_Arrest), "GetSingleOptionFor", typeof(Pawn), typeof(FloatMenuContext))]
+    public static class PrisonBreak_ArrestUndrafted
+    {
+        public static bool DraftedOrOwnPrisoner(Pawn arrester, Pawn clicked) =>
+            arrester.Drafted || clicked.IsPrisonerOfColony;
+
+        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            System.Reflection.MethodInfo drafted = AccessTools.PropertyGetter(typeof(Pawn), nameof(Pawn.Drafted));
+            bool patched = false;
+            foreach (CodeInstruction code in instructions)
+            {
+                if (!patched && code.Calls(drafted))
+                {
+                    // Stack holds the arrester; clickedPawn is argument 1 (the closure copy leaves it untouched).
+                    yield return new CodeInstruction(System.Reflection.Emit.OpCodes.Ldarg_1).WithLabels(code.ExtractLabels());
+                    yield return new CodeInstruction(System.Reflection.Emit.OpCodes.Call,
+                        AccessTools.Method(typeof(PrisonBreak_ArrestUndrafted), nameof(DraftedOrOwnPrisoner)));
+                    patched = true;
+                    continue;
+                }
+                yield return code;
+            }
+            if (!patched)
+                Log.Warning("[Vanilla Tune-Up] PrisonBreak: drafted check not found in the arrest menu option; escaped prisoners still need a drafted colonist to arrest them.");
         }
     }
 
