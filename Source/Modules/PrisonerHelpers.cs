@@ -9,7 +9,8 @@ namespace VanillaTuneUp
     /// <summary>
     /// Prisoners with the right trait help out in their own cell, using vanilla jobs:
     /// - Kind prisoners tend cellmates lying in bed that need tending, always without medicine (so nothing is carried
-    ///   and dropped), and feed bedridden cellmates from food or a dispenser in the cell. Checked at the medical rest
+    ///   and dropped), and feed bedridden cellmates once they are urgently hungry (wardens come earlier, so this
+    ///   mostly covers the ones left waiting) from food or a dispenser in the cell. Checked at the medical rest
     ///   node of the prisoner think tree, ahead of their own food, sleep and recreation. Doctors still tend as usual
     ///   and usually finish first; the prisoner's tend mostly matters when no doctor gets there.
     /// - Hard-working, industrious or neurotic prisoners clean their cell when idle, unless they are also lazy.
@@ -88,8 +89,10 @@ namespace VanillaTuneUp
             return feedTarget != null ? FeedJob(pawn, feedTarget, room) : null;
         }
 
-        // Same rule as the warden feeding work: bedridden and getting hungry.
-        private static bool NeedsFeeding(Pawn other) => WardenFeedUtility.ShouldBeFed(other) && FeedPatientUtility.IsHungry(other);
+        // Bedridden like the warden feeding rule, but only once urgently hungry: wardens come at "hungry", so they
+        // usually feed first and the prisoner covers the ones left waiting, which keeps double meals rare.
+        private static bool NeedsFeeding(Pawn other) =>
+            WardenFeedUtility.ShouldBeFed(other) && other.needs.food.CurCategory >= HungerCategory.UrgentlyHungry;
 
         // Built like WorkGiver_Warden_Feed; a prisoner only reaches food or a dispenser inside the cell.
         private static Job FeedJob(Pawn pawn, Pawn patient, Room room)

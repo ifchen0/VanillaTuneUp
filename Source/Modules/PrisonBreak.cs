@@ -25,6 +25,7 @@ namespace VanillaTuneUp
     ///   hurting or timid pawn also starts one less often (Bloodlust, Brawler and Volatile more often).
     /// - Wardens arrest a prisoner walking off the map on its own (not part of a break), and an undrafted colonist
     ///   can be ordered to arrest a prisoner that got out of its cell (vanilla needs a drafted colonist for both).
+    /// - Player turrets shoot prisoners in a prison break, inside the cell too (vanilla turrets skip all prisoners).
     /// </summary>
     public static class PrisonBreak
     {
@@ -414,6 +415,33 @@ namespace VanillaTuneUp
             }
             if (!patched)
                 Log.Warning("[Vanilla Tune-Up] PrisonBreak: drafted check not found in the arrest menu option; escaped prisoners still need a drafted colonist to arrest them.");
+        }
+    }
+
+    // Vanilla player turrets skip every prisoner, even one in a prison break that is already hostile and fighting.
+    [HarmonyPatchCategory("PrisonBreak")]
+    [HarmonyPatch(typeof(Building_TurretGun), "IsValidTarget")]
+    public static class PrisonBreak_TurretTargetsBreakers
+    {
+        public static bool PeacefulPrisoner(Pawn pawn) => pawn.IsPrisoner && !PrisonBreakUtility.IsPrisonBreaking(pawn);
+
+        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            System.Reflection.MethodInfo isPrisoner = AccessTools.PropertyGetter(typeof(Pawn), nameof(Pawn.IsPrisoner));
+            bool patched = false;
+            foreach (CodeInstruction code in instructions)
+            {
+                if (!patched && code.Calls(isPrisoner))
+                {
+                    yield return new CodeInstruction(System.Reflection.Emit.OpCodes.Call,
+                        AccessTools.Method(typeof(PrisonBreak_TurretTargetsBreakers), nameof(PeacefulPrisoner))).MoveLabelsFrom(code);
+                    patched = true;
+                    continue;
+                }
+                yield return code;
+            }
+            if (!patched)
+                Log.Warning("[Vanilla Tune-Up] PrisonBreak: prisoner check not found in the turret target filter; turrets still ignore prisoners in a break.");
         }
     }
 
