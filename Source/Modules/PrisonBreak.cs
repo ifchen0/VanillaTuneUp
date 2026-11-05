@@ -17,9 +17,11 @@ namespace VanillaTuneUp
     ///   x1.5 at first and back to x1 by day 10, never pulling a real recent break back), for a slave suppression
     ///   (about +10% per full session). The prisoner tab tooltip gains the line vanilla leaves out for that factor.
     /// - Vanilla pulls every prisoner of a joining cell into a break, and every slave on the map or nearby into a
-    ///   rebellion. Each one now joins with chance (initiator's interval / own interval) x mood (prisoners) x pain x
-    ///   traits, so pawns less inclined to break out than the one who started it (recreation, a recent break, high
-    ///   suppression, a good mood, pain, Kind / Wimp / Nervous) often stay put.
+    ///   rebellion. Each one now joins with chance (initiator's vanilla interval / own vanilla interval) x mood
+    ///   (prisoners) x pain x traits, so pawns less inclined to break out than the one who started it (recreation, a
+    ///   recent break, high suppression, a good mood, pain, Kind / Wimp / Nervous) often stay put.
+    /// - The same mood, pain and trait factors divide each pawn's own break and rebellion interval, so a content,
+    ///   hurting or timid pawn also starts one less often (Bloodlust, Brawler and Volatile more often).
     /// </summary>
     public static class PrisonBreak
     {
@@ -228,18 +230,21 @@ namespace VanillaTuneUp
             return joined;
         }
 
-        // Cellmates share vanilla's prisoner interval factors (doors, last break), so the interval ratio alone lets
-        // almost everyone join. Mood, pain and traits make the difference. Mood counts for prisoners only: vanilla's
-        // slave rebellion interval already includes it. Prisoners are rarely happy, so the curve bites from the
-        // middle down. Pain is in neither vanilla interval (movement is, so it is not counted again here).
-        private static readonly SimpleCurve MoodFactor = new SimpleCurve
+        // ---------- Personal inclination ----------
+
+        // Mood, pain and traits scale both rolls: how often a pawn starts a break (its interval is divided by this)
+        // and whether it joins one. The join roll compares vanilla intervals without them, so each roll counts them
+        // once. Mood counts for prisoners only: vanilla's slave rebellion interval already includes it. Prisoners
+        // are rarely happy, so the curve bites from the middle down. Pain is in neither vanilla interval (movement is,
+        // so it is not counted again here).
+        private static readonly SimpleCurve MoodCurve = new SimpleCurve
         {
             new CurvePoint(0f, 1f),
             new CurvePoint(0.5f, 0.3f),
             new CurvePoint(0.8f, 0.1f)
         };
 
-        private static readonly SimpleCurve PainFactor = new SimpleCurve
+        private static readonly SimpleCurve PainCurve = new SimpleCurve
         {
             new CurvePoint(0f, 1f),
             new CurvePoint(0.4f, 0.4f)
@@ -266,26 +271,65 @@ namespace VanillaTuneUp
             return traitFactors;
         }
 
-        /// <summary>Factor on a pawn's join chance from its mood (prisoners only), pain and traits.</summary>
-        public static float Inclination(Pawn pawn)
+        public static float MoodFactor(Pawn pawn) =>
+            pawn.IsPrisoner && pawn.needs?.mood != null ? MoodCurve.Evaluate(pawn.needs.mood.CurLevelPercentage) : 1f;
+
+        public static float PainFactor(Pawn pawn) => PainCurve.Evaluate(pawn.health.hediffSet.PainTotal);
+
+        /// <summary>Product of the listed traits' factors; labels gets their names when given.</summary>
+        public static float TraitFactor(Pawn pawn, List<string> labels = null)
         {
-            float factor = PainFactor.Evaluate(pawn.health.hediffSet.PainTotal);
-            if (pawn.IsPrisoner && pawn.needs?.mood != null)
-                factor *= MoodFactor.Evaluate(pawn.needs.mood.CurLevelPercentage);
+            float factor = 1f;
             TraitSet traits = pawn.story?.traits;
-            if (traits != null)
+            if (traits == null)
+                return factor;
+            foreach ((TraitDef def, int degree, float traitFactor) in TraitFactors())
             {
-                foreach ((TraitDef def, int degree, float traitFactor) in TraitFactors())
-                {
-                    if (traits.HasTrait(def, degree))
-                        factor *= traitFactor;
-                }
+                Trait trait = traits.GetTrait(def, degree);
+                if (trait == null)
+                    continue;
+                factor *= traitFactor;
+                labels?.Add(trait.LabelCap);
             }
             return factor;
         }
 
-        public static float PrisonBreakMtb(Pawn pawn) => PrisonBreakUtility.InitiatePrisonBreakMtbDays(pawn, null, ignoreAsleep: true);
-        public static float RebellionMtb(Pawn pawn) => SlaveRebellionUtility.InitiateSlaveRebellionMtbDays(pawn);
+        /// <summary>Factor on a pawn's break chances from its mood (prisoners only), pain and traits.</summary>
+        public static float Inclination(Pawn pawn) => MoodFactor(pawn) * PainFactor(pawn) * TraitFactor(pawn);
+
+        /// <summary>Set while the vanilla intervals are wanted, without the inclination.</summary>
+        public static bool VanillaInterval;
+
+        private static float WithoutInclination(System.Func<float> interval)
+        {
+            bool was = VanillaInterval;
+            VanillaInterval = true;
+            try { return interval(); }
+            finally { VanillaInterval = was; }
+        }
+
+        public static float PrisonBreakMtb(Pawn pawn) =>
+            WithoutInclination(() => PrisonBreakUtility.InitiatePrisonBreakMtbDays(pawn, null, ignoreAsleep: true));
+        public static float RebellionMtb(Pawn pawn) =>
+            WithoutInclination(() => SlaveRebellionUtility.InitiateSlaveRebellionMtbDays(pawn));
+
+        /// <summary>Appends the inclination factors that differ from 1 as interval factors, each "prefix label: x%".</summary>
+        public static void AppendInclination(StringBuilder sb, Pawn pawn, string prefix, string valuePrefix = "")
+        {
+            void Line(string label, float factor)
+            {
+                if (Mathf.Approximately(factor, 1f))
+                    return;
+                sb.AppendLineIfNotEmpty();
+                sb.Append(prefix + label + ": " + valuePrefix + (1f / factor).ToStringPercent());
+            }
+            Line("VTU_PrisonMood".Translate(), MoodFactor(pawn));
+            Line("VTU_PrisonPain".Translate(), PainFactor(pawn));
+            var labels = new List<string>();
+            float traits = TraitFactor(pawn, labels);
+            if (labels.Count > 0)
+                Line("VTU_PrisonTraits".Translate() + " (" + string.Join(", ", labels) + ")", traits);
+        }
     }
 
     // ---------- No keys ----------
@@ -355,22 +399,60 @@ namespace VanillaTuneUp
     }
 
     /// <summary>
-    /// Vanilla applies the days-since-prison-break factor without listing it in the prisoner tab tooltip; recreation
-    /// now drives it too, so show it. Display only, the interval is unchanged.
+    /// Divides the prisoner's break interval by its inclination (mood, pain, traits) and lists those factors in the
+    /// prisoner tab tooltip, together with the days-since-prison-break factor vanilla applies without listing it
+    /// (recreation now drives it too).
     /// </summary>
     [HarmonyPatchCategory("PrisonBreak")]
     [HarmonyPatch(typeof(PrisonBreakUtility), nameof(PrisonBreakUtility.InitiatePrisonBreakMtbDays))]
-    public static class PrisonBreak_CalmTooltip
+    public static class PrisonBreak_PrisonerInterval
     {
-        public static void Postfix(Pawn pawn, StringBuilder sb, float __result)
+        public static void Postfix(Pawn pawn, StringBuilder sb, ref float __result)
         {
-            if (sb == null || __result <= 0f)
+            if (__result <= 0f || PrisonBreak.VanillaInterval)
                 return;
-            float factor = PrisonBreak.CalmFactor(pawn);
-            if (Mathf.Approximately(factor, 1f))
+            if (sb != null)
+            {
+                float calm = PrisonBreak.CalmFactor(pawn);
+                if (!Mathf.Approximately(calm, 1f))
+                {
+                    sb.AppendLineIfNotEmpty();
+                    sb.Append("  - " + "VTU_PrisonCalmedDown".Translate() + ": " + calm.ToStringPercent());
+                }
+                PrisonBreak.AppendInclination(sb, pawn, "  - ");
+            }
+            __result /= PrisonBreak.Inclination(pawn);
+        }
+    }
+
+    /// <summary>The slave's rebellion interval divided by its pain and traits (vanilla already counts its mood).</summary>
+    [HarmonyPatchCategory("PrisonBreak")]
+    [HarmonyPatch(typeof(SlaveRebellionUtility), nameof(SlaveRebellionUtility.InitiateSlaveRebellionMtbDays))]
+    public static class PrisonBreak_SlaveInterval
+    {
+        public static void Postfix(Pawn pawn, ref float __result)
+        {
+            if (__result > 0f && !PrisonBreak.VanillaInterval)
+                __result /= PrisonBreak.Inclination(pawn);
+        }
+    }
+
+    /// <summary>Lists the slave's pain and trait factors above the final interval in the suppression tooltip.</summary>
+    [HarmonyPatchCategory("PrisonBreak")]
+    [HarmonyPatch(typeof(SlaveRebellionUtility), nameof(SlaveRebellionUtility.GetSlaveRebellionMtbCalculationExplanation))]
+    public static class PrisonBreak_SlaveTooltip
+    {
+        public static void Postfix(Pawn pawn, ref string __result)
+        {
+            int last = __result.LastIndexOf('\n');
+            if (last < 0)
                 return;
-            sb.AppendLineIfNotEmpty();
-            sb.Append("  - " + "VTU_PrisonCalmedDown".Translate() + ": " + factor.ToStringPercent());
+            var sb = new StringBuilder();
+            PrisonBreak.AppendInclination(sb, pawn, "", "x");
+            if (sb.Length == 0)
+                return;
+            // Vanilla writes these lines as "label: x150%".
+            __result = __result.Substring(0, last + 1) + sb + "\n" + __result.Substring(last + 1);
         }
     }
 

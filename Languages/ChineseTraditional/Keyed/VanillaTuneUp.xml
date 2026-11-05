@@ -64,7 +64,7 @@
   <VTU_SlaveApparelApplyAll>套用到目前所有奴隸</VTU_SlaveApparelApplyAll>
   <VTU_SlaveApparelApplied>已將{0}名奴隸的穿著計畫改為「{1}」。</VTU_SlaveApparelApplied>
   <VTU_PrisonBreak>緩和越獄與奴隸叛亂</VTU_PrisonBreak>
-  <VTU_PrisonBreak_Desc>越獄中的囚犯沒有鑰匙：不能開門，只能破壞門（或牆）逃出去。囚犯和奴隸會使用自己床鋪所在房間裡的娛樂設施（電視、棋桌等）。娛樂會讓囚犯像原版剛越獄過一樣平靜下來（越獄機率約少三分之一，5天內逐漸消退），所以囚犯大約每兩天玩一次；娛樂也會提高奴隸的鎮壓值（每次約10%），奴隸在娛樂時段或鎮壓值低於30%時會去玩，所以鎮壓不足的奴隸會先停工，而不是直接叛亂。越獄或叛亂不再是整間牢房或附近所有奴隸一起參加，而是每個人各自判定，比發起者越不想逃（有娛樂、剛越獄過、鎮壓值高）就越不容易跟著參加；囚犯心情越好、身上越痛也越不容易參加（疼痛也適用奴隸），特性也有影響：懦弱、生性緊張、善良較少參加，嗜血狂怒、格鬥狂、一觸即潰較常參加。</VTU_PrisonBreak_Desc>
+  <VTU_PrisonBreak_Desc>越獄中的囚犯沒有鑰匙：不能開門，只能破壞門（或牆）逃出去。囚犯和奴隸會使用自己床鋪所在房間裡的娛樂設施（電視、棋桌等）。娛樂會讓囚犯像原版剛越獄過一樣平靜下來（越獄機率約少三分之一，5天內逐漸消退），所以囚犯大約每兩天玩一次；娛樂也會提高奴隸的鎮壓值（每次約10%），奴隸在娛樂時段或鎮壓值低於30%時會去玩，所以鎮壓不足的奴隸會先停工，而不是直接叛亂。越獄或叛亂不再是整間牢房或附近所有奴隸一起參加，而是每個人各自判定，比發起者越不想逃（有娛樂、剛越獄過、鎮壓值高）就越不容易跟著參加；囚犯心情越好、身上越痛也越不容易參加（疼痛也適用奴隸），特性也有影響：懦弱、生性緊張、善良較少參加，嗜血狂怒、格鬥狂、一觸即潰較常參加。同樣的心情、疼痛和特性也會影響每個人自己發起越獄或叛亂的頻率，俘虜分頁的提示會列出來。</VTU_PrisonBreak_Desc>
   <VTU_HideSlavesFromBar>殖民者肖像列不顯示奴隸</VTU_HideSlavesFromBar>
   <VTU_HideSlavesFromBar_Desc>奴隸不再出現在殖民者肖像列上，地圖上和旅隊裡都一樣。鎮壓值過低、奴隸叛亂等警示仍會顯示，點擊也能跳到該奴隸。</VTU_HideSlavesFromBar_Desc>
   <VTU_RefugeeApparel>難民會自己換衣服</VTU_RefugeeApparel>
@@ -74,6 +74,9 @@
   <VTU_RefugeeApparelApplyAll>套用到目前所有難民</VTU_RefugeeApparelApplyAll>
   <VTU_RefugeeApparelApplied>已將{0}名難民的穿著計畫改為「{1}」。</VTU_RefugeeApparelApplied>
   <VTU_PrisonCalmedDown>近期平靜</VTU_PrisonCalmedDown>
+  <VTU_PrisonMood>心情</VTU_PrisonMood>
+  <VTU_PrisonPain>疼痛</VTU_PrisonPain>
+  <VTU_PrisonTraits>特性</VTU_PrisonTraits>
   <VTU_VisitorFood>訪客不吃殖民地的食物</VTU_VisitorFood>
   <VTU_VisitorFood_Desc>商隊、訪客和友軍援兵（包括馱獸）身上還有食物時，不會去吃儲存區或居住區裡的食物，也不會吃種植區和花盆裡的作物。自己的食物吃完、餓到下方設定的程度後，才能吃殖民地的食物，而且只限所選食物計畫允許的項目（動物不受計畫限制）。地圖上其他地方的野生食物和草地仍然可以吃，所以不會有人餓死在基地旁。</VTU_VisitorFood_Desc>
   <VTU_VisitorFoodHungerLabel>從這個飢餓程度起可吃殖民地食物</VTU_VisitorFoodHungerLabel>
