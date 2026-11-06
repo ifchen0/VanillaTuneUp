@@ -16,12 +16,15 @@ namespace VanillaTuneUp
     /// Trader caravans and visitor groups leave early as soon as any member, pack animals included, gets mild
     /// hypothermia or heatstroke: they wait at a spot just outside the colony and their Defend duty never seeks a safe
     /// temperature. Every few in-game minutes while waiting or still walking in, if the temperature at that spot is
-    /// near the safe limit of the most sensitive member or anything hostile to the group is active on the map, the
+    /// near the safe limit of the most sensitive member or enemies of some strength are active on the map, the
     /// waiting spot (or the destination of the walk in) moves into a room: a barn when the group has animals,
     /// otherwise a dining room, with a storeroom as the fallback for both.
+    /// Rain at an unroofed spot moves the group inside as well, for atmosphere (and the soaking wet mood): quietly,
+    /// without interrupting anyone.
     /// The room must be comfortably inside the safe range, reachable by every member and not already taken by another
-    /// sheltering group (first come, first served). The group goes back to its original spot once the threat is gone
-    /// and the temperature there is well inside the range again. Without a usable room, vanilla behaviour stays.
+    /// sheltering group (first come, first served). The group goes back to its original spot once the threat and the
+    /// rain are gone and the temperature there is well inside the range again. Without a usable room, vanilla
+    /// behaviour stays.
     /// </summary>
     [HarmonyPatchCategory("VisitorShelter")]
     [HarmonyPatch(typeof(LordToil), nameof(LordToil.LordToilTick))]
@@ -34,6 +37,9 @@ namespace VanillaTuneUp
         // Shelter a little before the safe range is left; go back out only when well inside it, to avoid flip-flopping.
         private const float EnterMargin = 2f;
         private const float LeaveMargin = 6f;
+        // Combined combat power of active enemies that counts as a threat: vanilla's upper bound for a low story
+        // danger, so a single hunted animal turning on its hunter does not send everyone inside.
+        private const float ThreatPower = 150f;
         private const string ArrivedMemo = "TravelArrived";
 
         private static readonly AccessTools.FieldRef<LordJob_TradeWithColony, IntVec3> TradeChillSpot =
@@ -148,17 +154,18 @@ namespace VanillaTuneUp
                 return;
 
             float outside = home.GetTemperature(map);
-            bool threat = GenHostility.AnyHostileActiveThreatTo(map, lord.faction);
+            bool threat = Threatened(map, lord.faction);
+            bool wet = Wet(map, home);
             IntVec3 current = SpotOf(toil);
             if (current == home)
             {
-                if (!threat && Within(outside, safe, EnterMargin))
+                if (!threat && !wet && Within(outside, safe, EnterMargin))
                     return;
                 Shelter(toil, safe, hasAnimals, threat, outside, home);
                 return;
             }
 
-            if (!threat && Within(outside, safe, LeaveMargin))
+            if (!threat && !wet && Within(outside, safe, LeaveMargin))
             {
                 Move(toil, home, interrupt: false);
                 return;
@@ -172,6 +179,30 @@ namespace VanillaTuneUp
             Shelter(toil, safe, hasAnimals, threat, outside, home);
         }
 
+        /// <summary>
+        /// Whether active enemies of the group add up to a real threat. Anything that is not a pawn (a turret, say)
+        /// counts as one at once.
+        /// </summary>
+        private static bool Threatened(Map map, Faction faction)
+        {
+            float power = 0f;
+            foreach (IAttackTarget target in map.attackTargetsCache.TargetsHostileToFaction(faction))
+            {
+                if (!GenHostility.IsActiveThreatTo(target, faction))
+                    continue;
+                if (!(target.Thing is Pawn pawn))
+                    return true;
+                power += pawn.kindDef.combatPower;
+                if (power >= ThreatPower)
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>Whether a pawn standing at the cell gets soaking wet, as vanilla decides it.</summary>
+        private static bool Wet(Map map, IntVec3 cell) =>
+            map.weatherManager.CurWeatherLerped.weatherThought == ThoughtDefOf.SoakingWet && !cell.Roofed(map);
+
         private static void Shelter(LordToil toil, FloatRange safe, bool hasAnimals, bool threat, float outside, IntVec3 home)
         {
             Lord lord = toil.lord;
@@ -182,6 +213,9 @@ namespace VanillaTuneUp
                     Move(toil, home, interrupt: false);
                 return;
             }
+            // Danger (enemies, cold, heat) moves the group at once and is announced; rain only changes where they
+            // wait, so nobody is woken or interrupted and no message is sent.
+            bool urgent = threat || !Within(outside, safe, EnterMargin);
             if (!TryFindShelter(lord, safe, hasAnimals, out IntVec3 cell, out Room room))
             {
                 next.Value = Find.TickManager.TicksGame + RetryInterval;
@@ -189,7 +223,9 @@ namespace VanillaTuneUp
                     Move(toil, home, interrupt: false);
                 return;
             }
-            Move(toil, cell, interrupt: true);
+            Move(toil, cell, interrupt: urgent);
+            if (!urgent)
+                return;
             Pawn trader = TraderCaravanUtility.FindTrader(lord);
             Pawn look = trader ?? lord.ownedPawns.FirstOrDefault(p => p.Spawned);
             string group = (trader != null ? "VTU_VisitorShelter_Traders" : "VTU_VisitorShelter_Visitors").Translate(lord.faction.Name);
