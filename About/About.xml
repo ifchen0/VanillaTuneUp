@@ -18,6 +18,7 @@ Fixes:
 - Prisoner food delivery keeps up: when prisoners get hungry, one trip brings food for everyone in the cell who needs it.
 - Banished slaves free their bed (Ideology): a banished slave no longer keeps their slave bed after leaving.
 - Ejected genepacks stay out: genepacks you eject from a gene bank get auto-load turned off, so haulers do not put them back (Biotech).
+- Hungry pets find food across the map: an urgently hungry colony animal that finds no food within its short search range searches the whole map, instead of starving far from the food stock in a large base.
 - Aligned corner icons: the search and codex buttons in the bottom-right corner no longer push the icons after them off the grid (always on, no setting).
 - Official translation fixes: fixes quest text shown as ERR and generated text left in English that a translation file cannot override, and a duplicate message after social fights (currently Traditional Chinese).
 

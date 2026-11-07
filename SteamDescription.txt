@@ -15,6 +15,7 @@ Small fixes and optional tweaks for vanilla RimWorld, collected in one mod.
 [*][b]Prisoner food and tending:[/b] wardens respect food policy during mental breaks, tend bleeding prisoners before feeding, and feed a whole cell in one trip.
 [*][b]Banished slaves free their bed[/b] (Ideology): instead of keeping it after they leave.
 [*][b]Ejected genepacks stay out[/b] (Biotech): haulers no longer carry them straight back into the gene bank.
+[*][b]Hungry pets find food across the map:[/b] no more pets starving far from the kibble in a large base.
 [*][b]Aligned corner icons:[/b] the bottom-right search and codex buttons no longer push other icons off the grid.
 [*][b]Official translation fixes:[/b] quest text shown as [i]ERR:[/i] and untranslatable generated text (currently Traditional Chinese).
 [/list]

@@ -84,6 +84,7 @@ namespace VanillaTuneUp
                 IsAvailable = () => ModsConfig.BiotechActive,
                 UnavailableKey = "VTU_RequiresBiotech"
             },
+            new TuneUpModule("PetFoodSearch", false, null),
             // Unaligned Icon Fix moves the same buttons its own way; leave them to it when it is active.
             new TuneUpModule("PlaySettingsIconGap", false, "Ilarion.UnalignedIconFix") { IsHidden = true },
             new TuneUpModule("TranslationFixes", false, null)
