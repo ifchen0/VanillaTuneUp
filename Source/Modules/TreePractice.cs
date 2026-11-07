@@ -80,23 +80,37 @@ namespace VanillaTuneUp
             ranged = false;
             if (pawn.skills == null || pawn.WorkTagIsDisabled(WorkTags.Violent))
                 return 0f;
-            float shoot = SafeGun(pawn) != null ? PassionFactor(pawn, SkillDefOf.Shooting) : 0f;
+            // Brawlers dislike guns, so they only practice with their fists or blade.
+            bool brawler = pawn.story?.traits?.HasTrait(TraitDefOf.Brawler) ?? false;
+            float shoot = SafeGun(pawn) != null && !brawler ? PassionFactor(pawn, SkillDefOf.Shooting) : 0f;
             float melee = PassionFactor(pawn, SkillDefOf.Melee);
             ranged = shoot > 0f && shoot >= melee;
             return ranged ? shoot : melee;
         }
 
-        // Wild trees only: no special trees (anima, Gauranlen and the like all carry comps), nothing in the
-        // home area or a growing zone.
-        private static bool IsWildTree(Thing t, Pawn pawn)
+        /// <summary>Psychopaths and bloodlust pawns also practice on corpses and do not mind what stray shots hit.</summary>
+        public static bool Callous(Pawn pawn)
         {
-            if (!(t is Plant plant) || !plant.def.plant.IsTree || !plant.def.comps.NullOrEmpty())
-                return false;
-            Map map = plant.Map;
-            IntVec3 c = plant.Position;
-            return !map.areaManager.Home[c] && !(map.zoneManager.ZoneAt(c) is Zone_Growing) && !c.Fogged(map)
-                && !c.IsForbidden(pawn) && !plant.IsBurning();
+            TraitSet traits = pawn.story?.traits;
+            return traits != null && (traits.HasTrait(TraitDefOf.Psychopath) || traits.HasTrait(TraitDefOf.Bloodlust));
         }
+
+        // Out in the wild: nothing in the home area or a growing zone.
+        private static bool Outside(Thing t, Pawn pawn)
+        {
+            Map map = t.Map;
+            IntVec3 c = t.Position;
+            return !map.areaManager.Home[c] && !(map.zoneManager.ZoneAt(c) is Zone_Growing) && !c.Fogged(map)
+                && !c.IsForbidden(pawn) && !t.IsBurning();
+        }
+
+        // Wild trees only: no special trees (anima, Gauranlen and the like all carry comps).
+        private static bool IsWildTree(Thing t, Pawn pawn) =>
+            t is Plant plant && plant.def.plant.IsTree && plant.def.comps.NullOrEmpty() && Outside(t, pawn);
+
+        // Enemies' and animals' corpses, never the colony's own people.
+        private static bool IsStrangerCorpse(Thing t, Pawn pawn) =>
+            t is Corpse corpse && corpse.InnerPawn != null && corpse.InnerPawn.Faction != Faction.OfPlayer && Outside(t, pawn);
 
         // Stray shots never hit pawns (canHitNonTargetPawns off), but they can still hit buildings and items,
         // such as an ancient cryptosleep casket that opens when damaged. Natural rock and chunks are fine.
@@ -142,16 +156,17 @@ namespace VanillaTuneUp
             return false;
         }
 
-        private static Thing FindTarget(Pawn pawn, bool ranged, bool dead)
+        private static Thing FindTarget(Pawn pawn, bool ranged, ThingRequestGroup group, System.Func<Thing, bool> fits)
         {
             Map map = pawn.Map;
+            bool checkArea = ranged && !Callous(pawn);
             int clearChecks = 0;
-            return GenClosest.ClosestThingReachable(pawn.Position, map, ThingRequest.ForGroup(ThingRequestGroup.Plant),
+            return GenClosest.ClosestThingReachable(pawn.Position, map, ThingRequest.ForGroup(group),
                 PathEndMode.Touch, TraverseParms.For(pawn, Danger.None), MaxSearchDistance, t =>
                 {
-                    if (t is DeadPlant != dead || !IsWildTree(t, pawn))
+                    if (!fits(t))
                         return false;
-                    if (!ranged)
+                    if (!checkArea)
                         return true;
                     return clearChecks++ < MaxClearChecks && AreaClear(t.Position, map);
                 });
@@ -177,8 +192,11 @@ namespace VanillaTuneUp
             if (PracticeFactor(pawn, out bool ranged) <= 0f || !JoyUtility.EnjoyableOutsideNow(pawn))
                 return null;
             Verb gun = ranged ? SafeGun(pawn) : null;
-            // Dead trees (stumps, burned trees) first; living ones only when no colony ideoligion wants trees kept.
-            Thing tree = FindTarget(pawn, ranged, dead: true) ?? (TreesDesired() ? null : FindTarget(pawn, ranged, dead: false));
+            // Dead trees (stumps, burned trees) first, then corpses for the callous; living trees only when no colony
+            // ideoligion wants trees kept.
+            Thing tree = FindTarget(pawn, ranged, ThingRequestGroup.Plant, t => t is DeadPlant && IsWildTree(t, pawn))
+                ?? (Callous(pawn) ? FindTarget(pawn, ranged, ThingRequestGroup.Corpse, t => IsStrangerCorpse(t, pawn)) : null)
+                ?? (TreesDesired() ? null : FindTarget(pawn, ranged, ThingRequestGroup.Plant, t => !(t is DeadPlant) && IsWildTree(t, pawn)));
             if (tree == null)
                 return null;
             if (!ranged)
