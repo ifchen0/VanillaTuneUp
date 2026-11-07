@@ -87,10 +87,11 @@ namespace VanillaTuneUp
             ranged = false;
             if (pawn.skills == null || pawn.WorkTagIsDisabled(WorkTags.Violent))
                 return 0f;
-            // Brawlers dislike guns, so they only practice with their fists or blade.
+            // Brawlers dislike guns, so they only practice with a melee weapon.
             bool brawler = pawn.story?.traits?.HasTrait(TraitDefOf.Brawler) ?? false;
             float shoot = SafeGun(pawn) != null && !brawler ? PassionFactor(pawn, SkillDefOf.Shooting) : 0f;
-            float melee = PassionFactor(pawn, SkillDefOf.Melee);
+            // Melee practice needs a melee weapon in hand: no rifle butts, fists or natural weapons.
+            float melee = pawn.equipment?.Primary?.def.IsMeleeWeapon == true ? PassionFactor(pawn, SkillDefOf.Melee) : 0f;
             ranged = shoot > 0f && shoot >= melee;
             return ranged ? shoot : melee;
         }
