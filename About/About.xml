@@ -30,7 +30,7 @@ Tweaks:
 - Pin resources (on by default): left-click a resource in the categorized resource list to keep it shown while its category is collapsed, even at 0.
 - Nutrient paste stock (on by default): a "dispense until you have X" target for nutrient paste dispensers, shared by the whole map.
 - Mod update notes (on by default, Steam version): the main menu's top-left box lists your active Workshop mods by update time, newly updated ones highlighted, with their change notes.
-- Break up social fights: anyone who sees a social fight nearby may step in to stop it.
+- Break up social fights: anyone who sees a social fight nearby may step in to stop it; a bad mood makes insults and fights more likely.
 - Short names on the map (on by default): long names under pawns are cut short; hover or select the pawn to see the full name.
 - Ghouls can wear apparel: ghouls keep their clothes when turned and can be ordered to wear clothes and armor, still no weapons (Anomaly).
 - Caravan: abandon all dead at once (on by default): one button on the caravan Items tab abandons every human corpse and tainted apparel; animal corpses are kept.

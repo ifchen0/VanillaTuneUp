@@ -104,7 +104,8 @@ namespace VanillaTuneUp
                 else
                 {
                     reason ??= MediatorRejectReason(p);
-                    if (reason == null && !Rand.Chance(StepInChancePerScan))
+                    // A bad mood makes stepping in less likely, a good one more.
+                    if (reason == null && !Rand.Chance(StepInChancePerScan / Irritability(p)))
                         reason = "roll failed";
                     if (reason == null && dist >= bestDist)
                         reason = "someone closer";
@@ -239,7 +240,25 @@ namespace VanillaTuneUp
                 chance *= 1.25f;
             if (mediator.story.traits.HasTrait(TraitDefOf.Abrasive))
                 chance *= 0.6f;
+            // Fighters in a bad mood are harder to calm down.
+            chance /= (Irritability(fighter) + Irritability(other)) / 2f;
             return Mathf.Clamp(chance, 0.05f, 0.95f);
+        }
+
+        // Mood 20% or lower: x1.5, 50%: x1, 90% or higher: x0.7. Bounded so it shades the odds without
+        // feeding a downward spiral on its own.
+        private static readonly SimpleCurve IrritabilityCurve = new SimpleCurve
+        {
+            new CurvePoint(0.2f, 1.5f),
+            new CurvePoint(0.5f, 1f),
+            new CurvePoint(0.9f, 0.7f)
+        };
+
+        /// <summary>How quick-tempered a pawn is right now, from their mood; 1 for pawns without a mood.</summary>
+        public static float Irritability(Pawn pawn)
+        {
+            Need_Mood mood = pawn?.needs?.mood;
+            return mood == null ? 1f : IrritabilityCurve.Evaluate(mood.CurLevelPercentage);
         }
 
         public static void Resolve(Pawn mediator, Pawn fighter, MentalState_SocialFighting fight)
@@ -318,6 +337,35 @@ namespace VanillaTuneUp
                 BreakUpFights.TrySendMediator(__instance);
             else
                 BreakUpFights.TryTurnBack(__instance);
+        }
+    }
+
+    /// <summary>
+    /// A pawn in a bad mood is quicker to start a fight, one in a good mood slower. Covers vanilla fights after
+    /// an insult as well as joining, turning back and dragging a mediator in, which all use this chance.
+    /// </summary>
+    [HarmonyPatch(typeof(Pawn_InteractionsTracker), nameof(Pawn_InteractionsTracker.SocialFightChance))]
+    [HarmonyPatchCategory("BreakUpFights")]
+    public static class Patch_InteractionsTracker_SocialFightChance
+    {
+        public static void Postfix(Pawn ___pawn, ref float __result)
+        {
+            if (__result > 0f)
+                __result = Mathf.Clamp01(__result * BreakUpFights.Irritability(___pawn));
+        }
+    }
+
+    /// <summary>
+    /// Insults and slights come more often from a pawn in a bad mood, less from one in a good mood.
+    /// Kind pawns stay at zero.
+    /// </summary>
+    [HarmonyPatch(typeof(NegativeInteractionUtility), nameof(NegativeInteractionUtility.NegativeInteractionChanceFactor))]
+    [HarmonyPatchCategory("BreakUpFights")]
+    public static class Patch_NegativeInteractionChanceFactor
+    {
+        public static void Postfix(Pawn initiator, ref float __result)
+        {
+            __result *= BreakUpFights.Irritability(initiator);
         }
     }
 
