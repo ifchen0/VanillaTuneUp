@@ -24,10 +24,20 @@ namespace VanillaTuneUp
         public const float MinShootRange = 3f;
         public const float MaxShootRange = 6f;
         private const float MaxSearchDistance = 40f;
-        // Wild misses land up to about 10 cells from the target for the worst shots.
-        private const float ClearRadius = 10f;
+        // Vanilla wild misses land within 2 cells of the target at practice range for any ordinary shooter (aim chance
+        // 22% or more), plus rounding to a cell and a building's edge. Only a crippled shooter misses wider; stray shots
+        // never hit pawns, and the odd stray hitting something along the line of fire out here does not matter.
+        public const float ClearRadius = 4f;
         // Full clearance checks per job search; the cheap checks come first.
         private const int MaxClearChecks = 15;
+
+        private static TuneUpModule module;
+
+        /// <summary>
+        /// Whether the module is switched on now. The defs are always loaded (XML caches such as Gagarin's ignore mod
+        /// settings), so the recreation itself checks the setting.
+        /// </summary>
+        public static bool Enabled => VanillaTuneUpMod.Settings.IsEnabled(module ??= Modules.Get("TreePractice"));
 
         /// <summary>
         /// The primary weapon's verb when it is a plain gun: no explosives, fire, single-use launchers or
@@ -183,7 +193,8 @@ namespace VanillaTuneUp
     {
         public override float GetChance(Pawn pawn) => def.baseChance * TreePractice.PracticeFactor(pawn, out _);
 
-        public override bool CanBeGivenTo(Pawn pawn) => base.CanBeGivenTo(pawn) && TreePractice.PracticeFactor(pawn, out _) > 0f;
+        public override bool CanBeGivenTo(Pawn pawn) =>
+            TreePractice.Enabled && base.CanBeGivenTo(pawn) && TreePractice.PracticeFactor(pawn, out _) > 0f;
 
         public override Job TryGiveJob(Pawn pawn) => TreePractice.TryMakeJob(pawn);
     }

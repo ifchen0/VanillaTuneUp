@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Patch>
-  <!-- The job is added even while the module is off, so a pawn saved mid-job still loads. -->
+  <!-- Both defs are added even while the module is off: a pawn saved mid-job still loads, and XML caches such as
+       Gagarin's (Missile Girl) do not rebuild when a mod setting changes. The recreation checks the setting itself. -->
   <Operation Class="VanillaTuneUp.PatchOperationTuneUp">
     <module>TreePractice</module>
     <evenWhenOff>true</evenWhenOff>
@@ -16,17 +17,7 @@
             <joyKind>Gaming_Dexterity</joyKind>
             <allowOpportunisticPrefix>true</allowOpportunisticPrefix>
           </JobDef>
-        </value>
-      </li>
-    </operations>
-  </Operation>
-  <!-- Picked like any other recreation, only while the module is on; same kind as horseshoes and hoopstone. -->
-  <Operation Class="VanillaTuneUp.PatchOperationTuneUp">
-    <module>TreePractice</module>
-    <operations>
-      <li Class="PatchOperationAdd">
-        <xpath>Defs</xpath>
-        <value>
+          <!-- Picked like any other recreation; same kind as horseshoes and hoopstone. -->
           <JoyGiverDef>
             <defName>VTU_TreePractice</defName>
             <giverClass>VanillaTuneUp.JoyGiver_TreePractice</giverClass>
