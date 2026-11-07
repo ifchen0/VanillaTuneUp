@@ -148,6 +148,7 @@ namespace VanillaTuneUp
                 IsAvailable = () => ModsConfig.IdeologyActive,
                 UnavailableKey = "VTU_RequiresIdeology"
             },
+            new TuneUpModule("TreePractice", true, null),
             // Modules with extra settings go last, the longest at the end, so plain toggles stay near the top.
             new TuneUpModule("InspectTabCamera", true, null)
             {

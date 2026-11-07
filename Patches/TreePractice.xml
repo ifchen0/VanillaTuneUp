@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!-- The job is added even while the module is off, so a pawn saved mid-job still loads. -->
+  <Operation Class="VanillaTuneUp.PatchOperationTuneUp">
+    <module>TreePractice</module>
+    <evenWhenOff>true</evenWhenOff>
+    <operations>
+      <li Class="PatchOperationAdd">
+        <xpath>Defs</xpath>
+        <value>
+          <JobDef>
+            <defName>VTU_TreePractice</defName>
+            <driverClass>VanillaTuneUp.JobDriver_TreePractice</driverClass>
+            <reportString>practicing on TargetA.</reportString>
+            <joyDuration>4000</joyDuration>
+            <joyKind>Gaming_Dexterity</joyKind>
+            <allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+          </JobDef>
+        </value>
+      </li>
+    </operations>
+  </Operation>
+  <!-- Picked like any other recreation, only while the module is on; same kind as horseshoes and hoopstone. -->
+  <Operation Class="VanillaTuneUp.PatchOperationTuneUp">
+    <module>TreePractice</module>
+    <operations>
+      <li Class="PatchOperationAdd">
+        <xpath>Defs</xpath>
+        <value>
+          <JoyGiverDef>
+            <defName>VTU_TreePractice</defName>
+            <giverClass>VanillaTuneUp.JoyGiver_TreePractice</giverClass>
+            <baseChance>2</baseChance>
+            <jobDef>VTU_TreePractice</jobDef>
+            <joyKind>Gaming_Dexterity</joyKind>
+            <requiredCapacities>
+              <li>Manipulation</li>
+              <li>Moving</li>
+              <li>Sight</li>
+            </requiredCapacities>
+          </JoyGiverDef>
+        </value>
+      </li>
+    </operations>
+  </Operation>
+</Patch>
