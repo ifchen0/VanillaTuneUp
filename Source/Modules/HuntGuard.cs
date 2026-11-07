@@ -31,12 +31,16 @@ namespace VanillaTuneUp
         private const float PackRadius = 24f;
         // Strict mode: a hunter that gave a hunt up leaves that animal alone this long (one in-game hour).
         private const int GiveUpCooldownTicks = 2500;
+        // After the victim is down, an enraged packmate this close to the hunter keeps the guards around.
+        private const float PackThreatRadius = 30f;
 
         private sealed class Escort
         {
             public Pawn Hunter;
             public readonly List<Pawn> Guards = new List<Pawn>();
             public Pawn Victim;
+            // Packmates that could join the victim's revenge, taken when the hunt starts.
+            public readonly List<Pawn> Pack = new List<Pawn>();
             public int Needed;
             public int WaitStartTick = -1;
             // Set once the guard has arrived or the wait timed out, so the hunter never waits twice.
@@ -83,7 +87,8 @@ namespace VanillaTuneUp
             float chance = PawnUtility.GetManhunterOnDamageChance(victim, hunter, range * JobDriver_Hunt.MaxRangeFactor);
             if (chance <= 0f)
                 return true;
-            int needed = GuardsNeeded(victim);
+            var pack = new List<Pawn>();
+            int needed = GuardsNeeded(victim, pack);
             List<Pawn> guards = FindGuards(hunter, needed);
             if (Strict && guards.Count < needed)
             {
@@ -94,6 +99,7 @@ namespace VanillaTuneUp
                 return true;
             var escort = new Escort { Hunter = hunter, Victim = victim, Needed = needed };
             escort.Guards.AddRange(guards);
+            escort.Pack.AddRange(pack);
             ByHunter[hunter] = escort;
             foreach (Pawn guard in guards)
             {
@@ -156,7 +162,8 @@ namespace VanillaTuneUp
         }
 
         // Worst case: the victim's revenge pulls in every packmate vanilla would, which needs big threats allowed.
-        private static int GuardsNeeded(Pawn victim)
+        // Fills pack with those packmates.
+        private static int GuardsNeeded(Pawn victim, List<Pawn> pack)
         {
             float threat = Health(victim);
             if (victim.Spawned && Find.Storyteller.difficulty.allowBigThreats)
@@ -170,7 +177,10 @@ namespace VanillaTuneUp
                     if (p.def != victim.def && (crossAggro == null || !crossAggro.Contains(p.def)))
                         continue;
                     if (p.Position.InHorDistOf(victim.Position, PackRadius) && p.GetDistrict() == district)
+                    {
                         threat += Health(p);
+                        pack.Add(p);
+                    }
                 }
             }
             // No upper limit: a whole herd calls out as many guards as it takes, like a hunting party.
@@ -256,10 +266,26 @@ namespace VanillaTuneUp
         {
             Pawn hunter = escort.Hunter;
             Pawn victim = escort.Victim;
-            // Once the victim is down or dead the hunter only slaughters and hauls, so the danger is over.
-            if (!hunter.Spawned || hunter.Downed || victim.Dead || victim.Downed)
+            if (!hunter.Spawned || hunter.Downed)
                 return false;
-            return StillEngaged(hunter, victim);
+            // Once the victim is down or dead the hunter only slaughters and hauls; the danger is over unless
+            // packmates that joined the revenge are still after the hunter.
+            if (victim.Dead || victim.Downed)
+                return PackEnraged(escort);
+            return StillEngaged(hunter, victim) || PackEnraged(escort);
+        }
+
+        // Only the few packmates listed at the start are checked, so this costs next to nothing.
+        private static bool PackEnraged(Escort escort)
+        {
+            Pawn hunter = escort.Hunter;
+            foreach (Pawn p in escort.Pack)
+            {
+                if (p.Spawned && !p.Dead && !p.Downed && p.Map == hunter.Map && p.InAggroMentalState
+                    && p.Position.InHorDistOf(hunter.Position, PackThreatRadius))
+                    return true;
+            }
+            return false;
         }
 
         // When the victim turns on the hunter, the hunter drops the hunt job to fight back or flee; that is exactly
