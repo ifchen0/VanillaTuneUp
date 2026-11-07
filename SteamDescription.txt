@@ -40,7 +40,7 @@ Small fixes and optional tweaks for vanilla RimWorld, collected in one mod.
 [*][b]Prisoners help out by personality:[/b] kind prisoners tend (without medicine) and feed bedridden cellmates; hard-working or neurotic ones clean their cell.
 [*][b]Calmer prison breaks and slave rebellions:[/b] no keys for escapees; recreation calms prisoners and raises slaves' suppression; mood, pain and traits decide how often each one starts one and whether they join; wardens arrest lone escapees, undrafted colonists can arrest prisoners out of their cell; turrets shoot prisoners in a break. Not meant for use with other prison overhaul mods.
 [*][b]Hide slaves from the colonist bar[/b] (Ideology).
-[*][b]Practice on trees for recreation:[/b] Shooting or Melee passion = shoot at or hit stumps, dead or living trees away from home; stray shots never hit anyone. Psychopaths and bloodlust pawns also use enemy and animal corpses.
+[*][b]Practice on trees for recreation:[/b] Shooting or Melee passion = shoot at or hit trees away from home, without damaging them; stray shots never hit anyone. Psychopaths and bloodlust pawns also use enemy and animal corpses.
 [*][b]Camera jumps avoid the open inspect tab[/b] (on by default): the colonist is centred beside the tab, not under it.
 [*][b]Field tending and cheaper medicine:[/b] fast bleeders or patients with no free bed are tended where they lie; minor wounds get the cheapest allowed medicine.
 [*][b]Quicksave, save and quit, Continue:[/b] F5 quicksave, a "Save and quit" button and a main menu Continue button.

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using HarmonyLib;
 using RimWorld;
 using RimWorld.Utility;
 using Verse;
@@ -15,9 +16,10 @@ namespace VanillaTuneUp
     }
 
     /// <summary>
-    /// Pawns with a passion for Shooting or Melee may pass their recreation time practicing on a stump or dead tree,
-    /// or a living tree when none is near, outside the home area: shooting at it from a few cells away, or hitting it.
-    /// Mostly useful on maps away from the colony, where nothing else but meditative recreation is available.
+    /// Pawns with a passion for Shooting or Melee may pass their recreation time practicing on a tree outside the home
+    /// area: shooting at it from a few cells away, or hitting it. Practice does no damage to its target, so strong late
+    /// game weapons do not end it at the first hit. Mostly useful on maps away from the colony, where nothing else but
+    /// meditative recreation is available.
     /// </summary>
     public static class TreePractice
     {
@@ -34,10 +36,15 @@ namespace VanillaTuneUp
         private static TuneUpModule module;
 
         /// <summary>
-        /// Whether the module is switched on now. The defs are always loaded (XML caches such as Gagarin's ignore mod
-        /// settings), so the recreation itself checks the setting.
+        /// Whether the module was switched on at startup, as its no-damage patch was. The defs are always loaded (XML
+        /// caches such as Gagarin's ignore mod settings), so the recreation itself checks this.
         /// </summary>
-        public static bool Enabled => VanillaTuneUpMod.Settings.IsEnabled(module ??= Modules.Get("TreePractice"));
+        public static bool Enabled => (module ??= Modules.Get("TreePractice")).IsActive;
+
+        /// <summary>Whether the damage is a practice hit on the attacker's practice target.</summary>
+        public static bool IsPracticeHit(Thing target, DamageInfo dinfo) =>
+            dinfo.Instigator is Pawn pawn && pawn.CurJobDef == TreePracticeDefOf.VTU_TreePractice
+            && pawn.CurJob.targetA.Thing == target;
 
         /// <summary>
         /// The primary weapon's verb when it is a plain gun: no explosives, fire, single-use launchers or
@@ -172,31 +179,14 @@ namespace VanillaTuneUp
                 });
         }
 
-        // Killing a living tree counts toward the "trees destroyed" mood of the Trees: desired precept
-        // (stumps do not), so such colonies leave living trees alone.
-        private static bool TreesDesired()
-        {
-            PreceptDef desired = DefDatabase<PreceptDef>.GetNamedSilentFail("Trees_Desired");
-            if (desired == null || !ModsConfig.IdeologyActive)
-                return false;
-            foreach (Ideo ideo in Faction.OfPlayer.ideos.AllIdeos)
-            {
-                if (ideo.HasPrecept(desired))
-                    return true;
-            }
-            return false;
-        }
-
         public static Job TryMakeJob(Pawn pawn)
         {
             if (PracticeFactor(pawn, out bool ranged) <= 0f || !JoyUtility.EnjoyableOutsideNow(pawn))
                 return null;
             Verb gun = ranged ? SafeGun(pawn) : null;
-            // Dead trees (stumps, burned trees) first, then corpses for the callous; living trees only when no colony
-            // ideoligion wants trees kept.
-            Thing tree = FindTarget(pawn, ranged, ThingRequestGroup.Plant, t => t is DeadPlant && IsWildTree(t, pawn))
-                ?? (Callous(pawn) ? FindTarget(pawn, ranged, ThingRequestGroup.Corpse, t => IsStrangerCorpse(t, pawn)) : null)
-                ?? (TreesDesired() ? null : FindTarget(pawn, ranged, ThingRequestGroup.Plant, t => !(t is DeadPlant) && IsWildTree(t, pawn)));
+            // The nearest tree, living or dead (practice does no damage); the callous look for a corpse first.
+            Thing tree = (Callous(pawn) ? FindTarget(pawn, ranged, ThingRequestGroup.Corpse, t => IsStrangerCorpse(t, pawn)) : null)
+                ?? FindTarget(pawn, ranged, ThingRequestGroup.Plant, t => IsWildTree(t, pawn));
             if (tree == null)
                 return null;
             if (!ranged)
@@ -204,6 +194,23 @@ namespace VanillaTuneUp
             if (!TryFindShootCell(pawn, tree, gun, out IntVec3 cell))
                 return null;
             return JobMaker.MakeJob(TreePracticeDefOf.VTU_TreePractice, tree, cell);
+        }
+    }
+
+    /// <summary>
+    /// Practice hits, bullets and melee alike, leave the target untouched; skill and recreation come from the attack
+    /// itself. A last bullet still in the air when practice ends may land as a normal hit.
+    /// </summary>
+    [HarmonyPatchCategory("TreePractice")]
+    [HarmonyPatch(typeof(Thing), nameof(Thing.TakeDamage))]
+    public static class Patch_Thing_TakeDamage_TreePractice
+    {
+        public static bool Prefix(Thing __instance, DamageInfo dinfo, ref DamageWorker.DamageResult __result)
+        {
+            if (!TreePractice.IsPracticeHit(__instance, dinfo))
+                return true;
+            __result = new DamageWorker.DamageResult();
+            return false;
         }
     }
 
