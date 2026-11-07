@@ -20,7 +20,8 @@ namespace VanillaTuneUp
     /// waiting spot (or the destination of the walk in) moves into a room: a barn when the group has animals,
     /// otherwise a dining room, with a storeroom as the fallback for both.
     /// Rain at an unroofed spot moves the group inside as well, for atmosphere (and the soaking wet mood): quietly,
-    /// without interrupting anyone.
+    /// without interrupting anyone. Night does the same, so the group sleeps indoors, but only in a barn or storeroom:
+    /// a dining room floor full of sleepers looks odd.
     /// The room must be comfortably inside the safe range, reachable by every member and not already taken by another
     /// sheltering group (first come, first served). The group goes back to its original spot once the threat and the
     /// rain are gone and the temperature there is well inside the range again. Without a usable room, vanilla
@@ -41,6 +42,9 @@ namespace VanillaTuneUp
         // danger, so a single hunted animal turning on its hunter does not send everyone inside.
         private const float ThreatPower = 150f;
         private const string ArrivedMemo = "TravelArrived";
+        // Night hours at the map, matching the default colonist sleep schedule.
+        private const int NightStart = 22;
+        private const int NightEnd = 6;
 
         private static readonly AccessTools.FieldRef<LordJob_TradeWithColony, IntVec3> TradeChillSpot =
             AccessTools.FieldRefAccess<LordJob_TradeWithColony, IntVec3>("chillSpot");
@@ -156,27 +160,38 @@ namespace VanillaTuneUp
             float outside = home.GetTemperature(map);
             bool threat = Threatened(map, lord.faction);
             bool wet = Wet(map, home);
+            bool night = Night(map);
             IntVec3 current = SpotOf(toil);
             if (current == home)
             {
-                if (!threat && !wet && Within(outside, safe, EnterMargin))
+                if (!threat && !wet && !night && Within(outside, safe, EnterMargin))
                     return;
-                Shelter(toil, safe, hasAnimals, threat, outside, home);
+                Shelter(toil, safe, hasAnimals, threat, outside, home, threat || wet || !Within(outside, safe, EnterMargin));
                 return;
             }
 
-            if (!threat && !wet && Within(outside, safe, LeaveMargin))
+            if (!threat && !wet && !night && Within(outside, safe, LeaveMargin))
             {
                 Move(toil, home, interrupt: false);
                 return;
             }
-            // Still unsafe outside: stay while the room is safe or at least better than outside (a heater may just be
-            // catching up), otherwise look for another room, and go back to vanilla behaviour without one.
+            // Still a reason to be inside: stay while the room is safe or at least better than outside (a heater may
+            // just be catching up), otherwise look for another room, and go back to vanilla behaviour without one.
+            // A dining room is left once night is the only reason, so nobody sleeps on its floor.
+            bool diningRoom = threat || wet || !Within(outside, safe, LeaveMargin);
             Room room = current.GetRoom(map);
             float roomDistance = room == null || room.PsychologicallyOutdoors ? float.MaxValue : Distance(room.Temperature, safe);
-            if (roomDistance == 0f || roomDistance < Distance(outside, safe))
+            if ((diningRoom || room?.Role != DiningRoom) && (roomDistance == 0f || roomDistance < Distance(outside, safe)))
                 return;
-            Shelter(toil, safe, hasAnimals, threat, outside, home);
+            Shelter(toil, safe, hasAnimals, threat, outside, home, diningRoom);
+        }
+
+        private static RoomRoleDef DiningRoom => DefDatabase<RoomRoleDef>.GetNamedSilentFail("DiningRoom");
+
+        private static bool Night(Map map)
+        {
+            int hour = GenLocalDate.HourOfDay(map);
+            return hour >= NightStart || hour < NightEnd;
         }
 
         /// <summary>
@@ -203,7 +218,8 @@ namespace VanillaTuneUp
         private static bool Wet(Map map, IntVec3 cell) =>
             map.weatherManager.CurWeatherLerped.weatherThought == ThoughtDefOf.SoakingWet && !cell.Roofed(map);
 
-        private static void Shelter(LordToil toil, FloatRange safe, bool hasAnimals, bool threat, float outside, IntVec3 home)
+        private static void Shelter(LordToil toil, FloatRange safe, bool hasAnimals, bool threat, float outside, IntVec3 home,
+            bool diningRoom)
         {
             Lord lord = toil.lord;
             StrongBox<int> next = NextSearch.GetOrCreateValue(lord);
@@ -213,10 +229,10 @@ namespace VanillaTuneUp
                     Move(toil, home, interrupt: false);
                 return;
             }
-            // Danger (enemies, cold, heat) moves the group at once and is announced; rain only changes where they
-            // wait, so nobody is woken or interrupted and no message is sent.
+            // Danger (enemies, cold, heat) moves the group at once and is announced; rain and night only change where
+            // they wait, so nobody is woken or interrupted and no message is sent.
             bool urgent = threat || !Within(outside, safe, EnterMargin);
-            if (!TryFindShelter(lord, safe, hasAnimals, out IntVec3 cell, out Room room))
+            if (!TryFindShelter(lord, safe, hasAnimals, diningRoom, out IntVec3 cell, out Room room))
             {
                 next.Value = Find.TickManager.TicksGame + RetryInterval;
                 if (SpotOf(toil) != home)
@@ -268,7 +284,8 @@ namespace VanillaTuneUp
             }
         }
 
-        private static bool TryFindShelter(Lord lord, FloatRange safe, bool hasAnimals, out IntVec3 cell, out Room shelter)
+        private static bool TryFindShelter(Lord lord, FloatRange safe, bool hasAnimals, bool diningRoom, out IntVec3 cell,
+            out Room shelter)
         {
             Map map = lord.Map;
             // First come, first served: a room another group already shelters in is not shared.
@@ -279,7 +296,8 @@ namespace VanillaTuneUp
                 if (room != null)
                     taken.Add(room);
             }
-            string[] roles = hasAnimals ? new[] { "Barn", "Storeroom" } : new[] { "DiningRoom", "Storeroom" };
+            string[] roles = hasAnimals ? new[] { "Barn", "Storeroom" }
+                : diningRoom ? new[] { "DiningRoom", "Storeroom" } : new[] { "Storeroom" };
             foreach (string roleName in roles)
             {
                 RoomRoleDef role = DefDatabase<RoomRoleDef>.GetNamedSilentFail(roleName);

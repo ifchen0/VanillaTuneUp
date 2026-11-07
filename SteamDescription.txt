@@ -34,7 +34,7 @@ Small fixes and optional tweaks for vanilla RimWorld, collected in one mod.
 [*][b]Caravan: abandon all dead at once[/b] (on by default): one button for every human corpse and tainted apparel.
 [*][b]Taskbar letter badge[/b] (on by default, Windows): the taskbar button shows how many letters are waiting.
 [*][b]Right-click to dismiss bundled letters[/b] (on by default).
-[*][b]Visitors take shelter:[/b] caravans and visitors wait indoors in cold, heat, rain or danger instead of leaving early.
+[*][b]Visitors take shelter:[/b] caravans and visitors wait indoors in cold, heat, rain or danger instead of leaving early, and sleep indoors at night.
 [*][b]Confirm before closing the game window[/b] (on by default).
 [*][b]Slaves use prisoner beds[/b] (Ideology): slaves sleep and recover in prisoner beds, so no separate slave rooms or hospital.
 [*][b]Prisoners help out by personality:[/b] kind prisoners tend (without medicine) and feed bedridden cellmates; hard-working or neurotic ones clean their cell.
