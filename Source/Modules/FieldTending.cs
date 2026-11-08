@@ -15,6 +15,8 @@ namespace VanillaTuneUp
     /// Field tending and cheaper medicine:
     /// - A downed humanlike lying outside a bed can be tended where they lie when they would bleed to death within
     ///   6 hours, or when no bed is free for them (vanilla tends humanlikes only in bed, so they waited untended).
+    /// - With no bed free, an undrafted patient on their feet or asleep on the ground is tended where they are too,
+    ///   when bleeding or deadly ill.
     /// - Tending a fast bleeder where they lie uses only medicine the doctor carries, or none, instead of walking
     ///   to a stockpile first.
     /// - Patients with no untended wound that can get infected and no disease that can kill get the cheapest
@@ -57,8 +59,38 @@ namespace VanillaTuneUp
             return check.HasBed;
         }
 
-        public static bool CanTendInPlace(Pawn patient, Pawn doctor) =>
-            patient != doctor && LyingOutsideBed(patient) && (BleedingFast(patient) || !HasBed(patient, doctor));
+        public static bool CanTendInPlace(Pawn patient, Pawn doctor)
+        {
+            if (patient == doctor || !patient.Spawned || !patient.RaceProps.Humanlike || patient.InBed())
+                return false;
+            if (patient.Downed)
+                return BleedingFast(patient) || !HasBed(patient, doctor);
+            return UpAndUrgent(patient) && !HasBed(patient, doctor);
+        }
+
+        /// <summary>
+        /// A patient on their feet or asleep on the ground, not drafted and not in a mental state, who is bleeding or
+        /// has a deadly disease to tend now. Vanilla only tends them once they lie in a bed, so one who keeps bleeding
+        /// with no bed to go to (or who fell asleep on the ground) waited until they collapsed. Cheap checks first:
+        /// work scans ask this for every pawn with any hediff, for every doctor.
+        /// </summary>
+        private static bool UpAndUrgent(Pawn patient)
+        {
+            if (patient.Drafted || patient.InMentalState)
+                return false;
+            if (patient.Faction != Faction.OfPlayer && patient.HostFaction != Faction.OfPlayer)
+                return false;
+            if (patient.health.hediffSet.BleedRateTotal > 0f)
+                return true;
+            List<Hediff> hediffs = patient.health.hediffSet.hediffs;
+            for (int i = 0; i < hediffs.Count; i++)
+            {
+                Hediff h = hediffs[i];
+                if (!(h is Hediff_Injury) && CanKill(h.def) && h.TendableNow())
+                    return true;
+            }
+            return false;
+        }
 
         /// <summary>
         /// No untended wound that can get infected and no deadly disease still running. For diseases the tend timer
@@ -126,6 +158,22 @@ namespace VanillaTuneUp
         {
             if (!__result && FieldTending.CanTendInPlace(patient, doctor))
                 __result = true;
+        }
+    }
+
+    /// <summary>
+    /// A patient who is not lying down would walk off mid-tend: vanilla holds the patient in place (WaitWith) only for
+    /// a drafted tend order, and that flag changes nothing else in the tend job, so it is set for them too.
+    /// </summary>
+    [HarmonyPatchCategory("FieldTending")]
+    [HarmonyPatch(typeof(WorkGiver_Tend), nameof(WorkGiver_Tend.JobOnThing))]
+    public static class Patch_WorkGiver_Tend_JobOnThing
+    {
+        public static void Postfix(Pawn pawn, Thing t, Job __result)
+        {
+            if (__result != null && t is Pawn patient && patient != pawn && !patient.Downed && !patient.InBed()
+                && patient.GetPosture() == PawnPosture.Standing)
+                __result.draftedTend = true;
         }
     }
 
