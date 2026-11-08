@@ -25,6 +25,7 @@ namespace VanillaTuneUp
     ///   hurting or timid pawn also starts one less often (Bloodlust, Brawler and Volatile more often).
     /// - Wardens arrest a prisoner walking off the map on its own (not part of a break), and an undrafted colonist
     ///   can be ordered to arrest a prisoner that got out of its cell (vanilla needs a drafted colonist for both).
+    ///   Wardens also imprison a slave set to "Imprison" during a non-aggressive mental break (vanilla waits it out).
     /// - Player turrets shoot prisoners in a prison break, inside the cell too (vanilla turrets skip all prisoners).
     /// </summary>
     public static class PrisonBreak
@@ -379,6 +380,39 @@ namespace VanillaTuneUp
                 return;
             }
             Job job = JobMaker.MakeJob(JobDefOf.Arrest, prisoner, bed);
+            job.count = 1;
+            __result = job;
+        }
+    }
+
+    /// <summary>
+    /// Wardens carry out the "Imprison" slave interaction on a slave in a non-aggressive mental break (wandering,
+    /// binging and so on): vanilla counts any mental state as not secure, so the order, and the right-click
+    /// prioritize option built from it, wait until the break ends unless a drafted colonist arrests the slave.
+    /// Aggressive breaks and slaves under a lord (rebellion) stay with drafted colonists, since they fight back.
+    /// </summary>
+    [HarmonyPatchCategory("PrisonBreak")]
+    [HarmonyPatch(typeof(WorkGiver_Warden_ImprisonSlave), nameof(WorkGiver_Warden_ImprisonSlave.JobOnThing))]
+    public static class PrisonBreak_ImprisonBreakingSlave
+    {
+        public static bool Applies(Pawn slave) =>
+            slave.IsSlaveOfColony && slave.Spawned && !slave.Downed && !slave.guest.Released
+            && slave.guest.slaveInteractionMode == SlaveInteractionModeDefOf.Imprison
+            && slave.InMentalState && !slave.InAggroMentalState && slave.GetLord() == null;
+
+        public static void Postfix(Pawn pawn, Thing t, bool forced, ref Job __result)
+        {
+            if (__result != null || !(t is Pawn slave) || !Applies(slave)
+                || slave.IsForbidden(pawn) || RimWorld.Planet.CaravanFormingUtility.IsFormingCaravan(slave)
+                || !pawn.CanReserveAndReach(slave, PathEndMode.OnCell, pawn.NormalMaxDanger(), 1, -1, null, forced))
+                return;
+            Building_Bed bed = RestUtility.FindBedFor(slave, pawn, checkSocialProperness: false, ignoreOtherReservations: false, GuestStatus.Prisoner);
+            if (bed == null)
+            {
+                JobFailReason.Is("NoPrisonerBedShort".Translate());
+                return;
+            }
+            Job job = JobMaker.MakeJob(JobDefOf.Arrest, slave, bed);
             job.count = 1;
             __result = job;
         }
