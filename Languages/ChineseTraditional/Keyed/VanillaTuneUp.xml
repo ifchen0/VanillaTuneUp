@@ -75,6 +75,8 @@
   <VTU_MusicToggle_Desc>在右下角那排切換圖示（地圖和世界地圖畫面）加一個音符按鈕，可以關閉或打開背景音樂。只會讓遊戲的音樂播放器靜音：選項裡的音樂音量不會改變，重新啟動遊戲後音樂會恢復。滑鼠停在按鈕上滾動滾輪，可以每次5%調整選項裡的音樂音量（最低5%，要完全安靜請用按鈕）；靜音時滾輪照常縮放鏡頭。音樂音量為0時按鈕會隱藏，因為本來就沒有聲音。可在選項 > 鍵盤（遊戲分類）設定快捷鍵，預設沒有綁定。其他模組自行播放的音樂不受影響。</VTU_MusicToggle_Desc>
   <VTU_MusicToggleTip>背景音樂開／關。不會改變選項裡的音樂音量。</VTU_MusicToggleTip>
   <VTU_MusicToggleVolume>滑鼠滾輪：音樂音量{0}</VTU_MusicToggleVolume>
+  <VTU_CycleOtherPawns>囚犯、訪客、動物、機械體也能用快速鍵輪流選取</VTU_CycleOtherPawns>
+  <VTU_CycleOtherPawns_Desc>選取敵人、囚犯、訪客、殖民地動物、殖民地機械體或野生動物時，上一個／下一個殖民者快速鍵（預設 , 和 .）改成在目前地圖上同一類之間輪流切換，不會跳回殖民者。倒地的敵人也算敵人，迷霧中的不會選到。開啟「殖民者肖像列不顯示奴隸」時，奴隸也有自己的輪流順序。選取殖民者或沒選東西時，快速鍵照原本運作。</VTU_CycleOtherPawns_Desc>
   <VTU_RefugeeApparel>難民會自己換衣服</VTU_RefugeeApparel>
   <VTU_RefugeeApparel_Desc>收容難民任務的難民可以在指派分頁設定穿著計畫，並像殖民者一樣自己換掉破舊的衣服；也可以指定新到難民套用的穿著計畫。他們來時穿的衣服要等破損後才會換下，任務結束時身上穿的衣服會跟著離開。衛兵、皇室客人等其他任務寄宿者仍維持原本的穿著。</VTU_RefugeeApparel_Desc>
   <VTU_RefugeeApparelLabel>新到難民套用的穿著計畫</VTU_RefugeeApparelLabel>
