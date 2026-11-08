@@ -2,4 +2,5 @@
 <LanguageData>
   <VTU_Quicksave.label>快速存檔</VTU_Quicksave.label>
   <VTU_Continue.label>繼續遊戲（讀取最新存檔）</VTU_Continue.label>
+  <VTU_ToggleMusic.label>切換背景音樂</VTU_ToggleMusic.label>
 </LanguageData>

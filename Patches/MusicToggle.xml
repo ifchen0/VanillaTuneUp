@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <Operation Class="VanillaTuneUp.PatchOperationTuneUp">
+    <module>MusicToggle</module>
+    <operations>
+      <li Class="PatchOperationAdd">
+        <xpath>Defs</xpath>
+        <value>
+          <KeyBindingDef>
+            <defName>VTU_ToggleMusic</defName>
+            <label>toggle background music</label>
+            <category>Game</category>
+          </KeyBindingDef>
+        </value>
+      </li>
+    </operations>
+  </Operation>
+</Patch>
