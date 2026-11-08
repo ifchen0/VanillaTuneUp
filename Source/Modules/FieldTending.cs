@@ -156,7 +156,10 @@ namespace VanillaTuneUp
     {
         public static void Postfix(Pawn patient, Pawn doctor, ref bool __result)
         {
-            if (!__result && FieldTending.CanTendInPlace(patient, doctor))
+            // A burning patient keeps getting new burns, so a tend never runs out of wounds: put the fire out first.
+            if (patient != doctor && patient.IsBurning())
+                __result = false;
+            else if (!__result && FieldTending.CanTendInPlace(patient, doctor))
                 __result = true;
         }
     }
@@ -221,7 +224,7 @@ namespace VanillaTuneUp
                 return;
             Pawn doctor = jobPawn(__instance);
             if (!(newJob.targetA.Thing is Pawn target) || doctor == null || !doctor.IsColonistPlayerControlled
-                || !target.Spawned || !target.Downed || !FieldTending.BleedingFast(target)
+                || !target.Spawned || !target.Downed || target.IsBurning() || !FieldTending.BleedingFast(target)
                 || doctor.WorkTypeIsDisabled(WorkTypeDefOf.Doctor) || !doctor.CanReserve(target))
                 return;
             StrongBox<int> last = lastTry.GetValue(target, _ => new StrongBox<int>(-GenDate.TicksPerHour));
@@ -288,15 +291,41 @@ namespace VanillaTuneUp
     /// Takes the target of a capture-replacing tend prisoner as the tend itself begins: a pre-init action on the
     /// toil just before FinalizeTend (vanilla's tend wait), so the doctor has arrived, fetched any medicine and is
     /// about to treat. Runs again on each repeat tend, where MakePrisoner returns at once.
+    /// <para>
+    /// Also ends any tend (vanilla in-bed ones included) once the patient catches fire. The tend job repeats while
+    /// the patient has wounds to tend, and fire adds a burn every so often, so the doctor kept tending until the
+    /// patient burned to death; a held patient (draftedTend) could not put themselves out either. The doctor then
+    /// beats out the patient's fire through vanilla's finalizer job, the same way vanilla firefighting would.
+    /// </para>
     /// </summary>
     [HarmonyPatchCategory("FieldTending")]
     [HarmonyPatch(typeof(JobDriver_TendPatient), "MakeNewToils")]
     public static class Patch_JobDriver_TendPatient_MakeNewToils
     {
+        private static readonly AccessTools.FieldRef<JobDriver, System.Func<JobCondition, Job>> finalizerJob =
+            AccessTools.FieldRefAccess<JobDriver, System.Func<JobCondition, Job>>("finalizerJobFactory");
+
         public static void Postfix(JobDriver_TendPatient __instance, ref IEnumerable<Toil> __result)
         {
-            if (__instance.job != null && Patch_Pawn_JobTracker_StartJob.IsCaptureTend(__instance.job))
-                __result = CaptureOnTendStart(__result, __instance);
+            JobDriver_TendPatient driver = __instance;
+            driver.AddEndCondition(() => PatientBurning(driver) ? JobCondition.Incompletable : JobCondition.Ongoing);
+            if (finalizerJob(driver) == null)
+                finalizerJob(driver) = condition => condition == JobCondition.Incompletable ? BeatPatientFire(driver) : null;
+            if (driver.job != null && Patch_Pawn_JobTracker_StartJob.IsCaptureTend(driver.job))
+                __result = CaptureOnTendStart(__result, driver);
+        }
+
+        private static bool PatientBurning(JobDriver driver) =>
+            driver.job.targetA.Thing is Pawn patient && patient != driver.pawn && patient.IsBurning();
+
+        private static Job BeatPatientFire(JobDriver driver)
+        {
+            if (!PatientBurning(driver))
+                return null;
+            var patient = (Pawn)driver.job.targetA.Thing;
+            if (!(patient.GetAttachment(ThingDefOf.Fire) is Fire fire) || !driver.pawn.CanReach(patient, PathEndMode.Touch, Danger.Deadly))
+                return null;
+            return JobMaker.MakeJob(JobDefOf.BeatFire, fire);
         }
 
         private static IEnumerable<Toil> CaptureOnTendStart(IEnumerable<Toil> toils, JobDriver_TendPatient driver)
