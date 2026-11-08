@@ -16,6 +16,8 @@
             <joyDuration>4000</joyDuration>
             <joyKind>Gaming_Dexterity</joyKind>
             <allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+            <!-- Keeps the weapon drawn between bursts and swings, as vanilla attack jobs do. -->
+            <alwaysShowWeapon>true</alwaysShowWeapon>
           </JobDef>
           <!-- Picked like any other recreation; same kind as horseshoes and hoopstone. -->
           <JoyGiverDef>

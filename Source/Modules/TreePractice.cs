@@ -32,6 +32,8 @@ namespace VanillaTuneUp
         public const float ClearRadius = 4f;
         // Full clearance checks per job search; the cheap checks come first.
         private const int MaxClearChecks = 15;
+        // How many of the nearest fitting targets the practice target is picked from at random.
+        private const int TargetChoices = 6;
 
         private static TuneUpModule module;
 
@@ -164,20 +166,27 @@ namespace VanillaTuneUp
             return false;
         }
 
+        /// <summary>
+        /// A random pick among the few nearest fitting targets, so practice does not always go to the same tree.
+        /// </summary>
         private static Thing FindTarget(Pawn pawn, bool ranged, ThingRequestGroup group, System.Func<Thing, bool> fits)
         {
             Map map = pawn.Map;
             bool checkArea = ranged && !Callous(pawn);
             int clearChecks = 0;
-            return GenClosest.ClosestThingReachable(pawn.Position, map, ThingRequest.ForGroup(group),
+            List<Thing> candidates = new List<Thing>(TargetChoices);
+            // The validator collects candidates and only stops the search once there are enough of them.
+            GenClosest.ClosestThingReachable(pawn.Position, map, ThingRequest.ForGroup(group),
                 PathEndMode.Touch, TraverseParms.For(pawn, Danger.None), MaxSearchDistance, t =>
                 {
                     if (!fits(t))
                         return false;
-                    if (!checkArea)
-                        return true;
-                    return clearChecks++ < MaxClearChecks && AreaClear(t.Position, map);
+                    if (checkArea && (clearChecks++ >= MaxClearChecks || !AreaClear(t.Position, map)))
+                        return false;
+                    candidates.Add(t);
+                    return candidates.Count >= TargetChoices;
                 });
+            return candidates.Count > 0 ? candidates.RandomElement() : null;
         }
 
         public static Job TryMakeJob(Pawn pawn)
@@ -185,7 +194,7 @@ namespace VanillaTuneUp
             if (PracticeFactor(pawn, out bool ranged) <= 0f || !JoyUtility.EnjoyableOutsideNow(pawn))
                 return null;
             Verb gun = ranged ? SafeGun(pawn) : null;
-            // The nearest tree, living or dead (practice does no damage); the callous look for a corpse first.
+            // A nearby tree, living or dead (practice does no damage); the callous look for a corpse first.
             Thing tree = (Callous(pawn) ? FindTarget(pawn, ranged, ThingRequestGroup.Corpse, t => IsStrangerCorpse(t, pawn)) : null)
                 ?? FindTarget(pawn, ranged, ThingRequestGroup.Plant, t => IsWildTree(t, pawn));
             if (tree == null)
