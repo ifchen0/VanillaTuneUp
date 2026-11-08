@@ -3,6 +3,7 @@ using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
 using Verse;
+using Verse.Sound;
 
 namespace VanillaTuneUp
 {
@@ -12,6 +13,8 @@ namespace VanillaTuneUp
     /// animals, colony mechs or wild animals. Slaves get their own cycle only while HideSlavesFromBar takes them off the bar;
     /// otherwise they stay in the vanilla colonist cycle. Pawns under fog are skipped so the keys never reveal them.
     /// Anything else (colonists, nothing selected, world view) runs the vanilla method unchanged.
+    /// In both cycles a quiet tick plays when the keys come back to the pawn the round started from: the pawn that
+    /// was selected when the keys were first pressed, or after the selection was changed some other way.
     /// </summary>
     public static class CycleOtherPawns
     {
@@ -28,6 +31,37 @@ namespace VanillaTuneUp
         }
 
         private static readonly List<Pawn> tmpPawns = new List<Pawn>();
+
+        // Thing IDs only, so no pawn is kept alive after its game is gone.
+        private static int lastJumpedId = -1;
+        private static int roundStartId = -1;
+
+        /// <summary>
+        /// Tracks the round and plays the tick when <paramref name="target"/> is where it started. A selection
+        /// that is not the pawn the keys last jumped to starts a new round from that pawn (or, with nothing
+        /// selected, from the first jump target).
+        /// </summary>
+        public static void NotifyJump(Pawn before, Pawn target)
+        {
+            if (before == null || before.thingIDNumber != lastJumpedId)
+                roundStartId = before != null ? before.thingIDNumber : target.thingIDNumber;
+            lastJumpedId = target.thingIDNumber;
+            if (before != null && target.thingIDNumber == roundStartId)
+                SoundDefOf.Tick_Low.PlayOneShotOnCamera();
+        }
+
+        public static Pawn FirstSelectedPawnOnMap()
+        {
+            Map map = Find.CurrentMap;
+            if (map == null)
+                return null;
+            foreach (object obj in Find.Selector.SelectedObjectsListForReading)
+            {
+                if (obj is Pawn p && p.Spawned && p.Map == map)
+                    return p;
+            }
+            return null;
+        }
 
         public static Kind KindOf(Pawn p)
         {
@@ -147,8 +181,38 @@ namespace VanillaTuneUp
                 : tmpPawns[GenMath.PositiveMod(index + step, tmpPawns.Count)];
             tmpPawns.Clear();
             if (target != null)
+            {
+                NotifyJump(current, target);
                 CameraJumper.TryJumpAndSelect(target);
+            }
             return true;
+        }
+    }
+
+    /// <summary>
+    /// Shared prefix/postfix body: our cycle replaces vanilla for other pawns; for the vanilla colonist cycle the
+    /// postfix compares the selection before and after to drive the round tick.
+    /// </summary>
+    public static class CycleOtherPawns_Patch
+    {
+        public static bool Prefix(int step, out Pawn before)
+        {
+            before = null;
+            if (CycleOtherPawns.TryCycle(step))
+                return false;
+            if (!WorldRendererUtility.WorldSelected)
+                before = CycleOtherPawns.FirstSelectedPawnOnMap();
+            return true;
+        }
+
+        public static void Postfix(bool ranOriginal, Pawn before)
+        {
+            if (!ranOriginal || WorldRendererUtility.WorldSelected)
+                return;
+            // The same pawn before and after means a lone colonist jumped to itself, which is a full round too
+            // (vanilla only leaves the selection alone when there is no colonist at all).
+            if (Find.Selector.SingleSelectedThing is Pawn after)
+                CycleOtherPawns.NotifyJump(before, after);
         }
     }
 
@@ -156,13 +220,19 @@ namespace VanillaTuneUp
     [HarmonyPatch(typeof(ThingSelectionUtility), nameof(ThingSelectionUtility.SelectNextColonist))]
     public static class CycleOtherPawns_SelectNextColonist
     {
-        public static bool Prefix() => !CycleOtherPawns.TryCycle(1);
+        public static bool Prefix(out Pawn __state) => CycleOtherPawns_Patch.Prefix(1, out __state);
+
+        public static void Postfix(bool __runOriginal, Pawn __state) =>
+            CycleOtherPawns_Patch.Postfix(__runOriginal, __state);
     }
 
     [HarmonyPatchCategory("CycleOtherPawns")]
     [HarmonyPatch(typeof(ThingSelectionUtility), nameof(ThingSelectionUtility.SelectPreviousColonist))]
     public static class CycleOtherPawns_SelectPreviousColonist
     {
-        public static bool Prefix() => !CycleOtherPawns.TryCycle(-1);
+        public static bool Prefix(out Pawn __state) => CycleOtherPawns_Patch.Prefix(-1, out __state);
+
+        public static void Postfix(bool __runOriginal, Pawn __state) =>
+            CycleOtherPawns_Patch.Postfix(__runOriginal, __state);
     }
 }
