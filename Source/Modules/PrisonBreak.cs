@@ -83,10 +83,13 @@ namespace VanillaTuneUp
 
         // ---------- Recreation ----------
 
-        /// <summary>The room a prisoner or slave takes recreation in: its own bed's room, or a prisoner's current cell.</summary>
+        /// <summary>
+        /// The room a prisoner or slave takes recreation in: its own bed's room (for a slave without one, the prisoner
+        /// bed it last slept in), or a prisoner's current cell.
+        /// </summary>
         private static Room RecreationRoom(Pawn pawn)
         {
-            Building_Bed bed = pawn.ownership?.OwnedBed;
+            Building_Bed bed = pawn.ownership?.OwnedBed ?? SlavePrisonerBeds_NoClaim.LastBed(pawn);
             if (bed != null && bed.Spawned && bed.Map == pawn.Map)
                 return bed.GetRoom();
             return pawn.IsPrisonerOfColony ? pawn.GetRoom() : null;

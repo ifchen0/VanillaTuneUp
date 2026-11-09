@@ -37,7 +37,7 @@ Small fixes and optional tweaks for vanilla RimWorld, collected in one mod.
 [*][b]Right-click to dismiss bundled letters[/b] (on by default).
 [*][b]Visitors take shelter:[/b] caravans and visitors wait indoors in cold, heat, rain or danger instead of leaving early, and sleep indoors at night.
 [*][b]Confirm before closing the game window[/b] (on by default).
-[*][b]Slaves use prisoner beds[/b] (Ideology): slaves sleep and recover in prisoner beds, so no separate slave rooms or hospital.
+[*][b]Slaves use prisoner beds[/b] (Ideology): slaves sleep and recover in prisoner beds, so no separate slave rooms or hospital; they take any free one instead of claiming it, leaving room for new prisoners.
 [*][b]Prisoners help out by personality:[/b] kind prisoners tend (without medicine) and feed bedridden cellmates; hard-working or neurotic ones clean their cell.
 [*][b]Calmer prison breaks and slave rebellions:[/b] no keys for escapees; recreation calms prisoners and raises slaves' suppression; mood, pain and traits decide how often each one starts one and whether they join; wardens arrest lone escapees, undrafted colonists can arrest prisoners out of their cell; wardens imprison slaves set to Imprison during a non-violent mental break; turrets shoot prisoners in a break. Not meant for use with other prison overhaul mods.
 [*][b]Hide slaves from the colonist bar[/b] (Ideology).

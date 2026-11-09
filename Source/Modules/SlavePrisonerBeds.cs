@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using HarmonyLib;
@@ -76,28 +77,73 @@ namespace VanillaTuneUp
     }
 
     /// <summary>
-    /// Enslaving changes the pawn's faction, and Pawn.SetFaction first calls SetGuestStatus(null): for that nested
-    /// call the pawn is neither prisoner nor slave, so Pawn_Ownership.Notify_ChangedGuestStatus drops its prisoner bed
-    /// (the role the pawn ends up with is not known yet at that point). Give the bed back once it is a slave.
+    /// Slaves do not claim prisoner beds: each sleep takes any free one, so a bed whose slave is at work or away can
+    /// take a new prisoner, and night-shift slaves leave their beds to day sleepers. Vanilla claims the bed whenever a
+    /// pawn lies down or is carried in, all through Pawn_Ownership.ClaimBedIfNonMedical; skip it for these beds and
+    /// remember the bed instead, so recreation can still find the slave's cell. Bedroom thoughts never apply to
+    /// prisoner beds, so not owning one changes no mood.
     /// </summary>
     [HarmonyPatchCategory("SlavePrisonerBeds")]
-    [HarmonyPatch(typeof(Pawn_GuestTracker), nameof(Pawn_GuestTracker.SetGuestStatus))]
-    public static class SlavePrisonerBeds_KeepBedOnEnslave
+    [HarmonyPatch(typeof(Pawn_Ownership), nameof(Pawn_Ownership.ClaimBedIfNonMedical))]
+    public static class SlavePrisonerBeds_NoClaim
     {
-        public static void Prefix(Pawn ___pawn, GuestStatus guestStatus, out Building_Bed __state)
+        private static readonly Dictionary<Pawn, Building_Bed> lastBed = new Dictionary<Pawn, Building_Bed>();
+
+        /// <summary>The prisoner bed this slave last slept in or was carried to, if still usable as one.</summary>
+        public static Building_Bed LastBed(Pawn pawn)
         {
-            __state = null;
-            Building_Bed bed = ___pawn?.ownership?.OwnedBed;
-            if (guestStatus == GuestStatus.Slave && bed != null && bed.ForPrisoners && ___pawn.IsPrisonerOfColony)
-                __state = bed;
+            if (pawn == null || !lastBed.TryGetValue(pawn, out Building_Bed bed))
+                return null;
+            if (bed.Spawned && bed.ForPrisoners && bed.Map == pawn.Map && pawn.IsSlaveOfColony)
+                return bed;
+            lastBed.Remove(pawn);
+            return null;
         }
 
-        public static void Postfix(Pawn ___pawn, Building_Bed __state)
+        public static void Remember(Pawn pawn, Building_Bed bed) => lastBed[pawn] = bed;
+
+        public static void Clear() => lastBed.Clear();
+
+        public static bool Prefix(Pawn ___pawn, Building_Bed newBed, ref bool __result)
         {
-            if (__state == null || !__state.Spawned || !__state.ForPrisoners || !___pawn.IsSlaveOfColony
-                || ___pawn.ownership.OwnedBed != null || !__state.AnyUnownedSleepingSlot)
-                return;
-            ___pawn.ownership.ClaimBedIfNonMedical(__state);
+            if (newBed == null || !newBed.ForPrisoners || ___pawn == null || !___pawn.IsSlaveOfColony)
+                return true;
+            Remember(___pawn, newBed);
+            __result = false;
+            return false;
+        }
+    }
+
+    /// <summary>Saves made before slaves stopped claiming prisoner beds still list them as owners; free those slots.</summary>
+    [HarmonyPatchCategory("SlavePrisonerBeds")]
+    [HarmonyPatch(typeof(Game), nameof(Game.FinalizeInit))]
+    public static class SlavePrisonerBeds_Load
+    {
+        public static void Postfix()
+        {
+            SlavePrisonerBeds_NoClaim.Clear();
+            int cleared = 0;
+            foreach (Map map in Find.Maps)
+            {
+                foreach (Building_Bed bed in map.listerBuildings.allBuildingsColonist.OfType<Building_Bed>())
+                {
+                    if (!bed.ForPrisoners)
+                        continue;
+                    foreach (Pawn owner in bed.OwnersForReading.ToList())
+                    {
+                        if (!owner.IsSlaveOfColony)
+                            continue;
+                        if (owner.ownership?.OwnedBed == bed)
+                            owner.ownership.UnclaimBed();
+                        else
+                            bed.CompAssignableToPawn.ForceRemovePawn(owner);
+                        SlavePrisonerBeds_NoClaim.Remember(owner, bed);
+                        cleared++;
+                    }
+                }
+            }
+            if (cleared > 0)
+                Log.Message($"[Vanilla Tune-Up] SlavePrisonerBeds: freed {cleared} prisoner bed slot(s) held by slaves; slaves now take any free prisoner bed.");
         }
     }
 

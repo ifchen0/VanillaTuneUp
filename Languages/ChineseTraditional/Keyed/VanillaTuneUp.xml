@@ -169,7 +169,7 @@
   <VTU_ConfirmCloseWindow>關閉遊戲視窗前確認</VTU_ConfirmCloseWindow>
   <VTU_ConfirmCloseWindow_Desc>遊戲進行中按下視窗的關閉按鈕（或Alt+F4）會直接關閉。開啟後改走和遊戲選單「退出遊戲」相同的流程：有尚未保存的進度時會先跳出確認視窗；永久死亡模式則會先存檔再退出。在主選單時仍會直接關閉。</VTU_ConfirmCloseWindow_Desc>
   <VTU_SlavePrisonerBeds>奴隸使用囚犯床</VTU_SlavePrisonerBeds>
-  <VTU_SlavePrisonerBeds_Desc>奴隸可以睡囚犯床，也能在囚犯醫療床上養傷，直接跟囚犯共用監獄區，不必另外蓋奴隸房間和醫院。被奴役的囚犯會保留原本牢房裡的床。</VTU_SlavePrisonerBeds_Desc>
+  <VTU_SlavePrisonerBeds_Desc>奴隸可以睡囚犯床，也能在囚犯醫療床上養傷，直接跟囚犯共用監獄區，不必另外蓋奴隸房間和醫院。奴隸不登記床位，每次睡覺找空床，所以奴隸工作中或上夜班時，他的床可以收新俘虜。</VTU_SlavePrisonerBeds_Desc>
   <VTU_PrisonerHelpers>囚犯依個性幫忙</VTU_PrisonerHelpers>
   <VTU_PrisonerHelpers_Desc>善良的囚犯會幫躺在床上的獄友包紮（一律不用藥品，品質偏低；醫生照常會來治療），也會比典獄長早一步，用牢房裡的食物或營養膏機餵食臥床的獄友。工作努力、工作達人或神經質的囚犯沒事做時會打掃自己的牢房，但遊手好閒或好逸惡勞的人不會。只有具備這些特性的囚犯會這麼做，而且只在自己的牢房裡。</VTU_PrisonerHelpers_Desc>
   <VTU_InspectTabCamera>鏡頭跳轉避開開啟中的資訊分頁</VTU_InspectTabCamera>
