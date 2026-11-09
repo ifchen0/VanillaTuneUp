@@ -16,8 +16,8 @@ namespace VanillaTuneUp
     ///   colonists do (vanilla gives neither a recreation need, so they never do), and it moves the vanilla values
     ///   the break and rebellion intervals already read: for a prisoner the "days since last prison break" (as if it had broken out 5 days ago,
     ///   x1.5 at first and back to x1 by day 10, never pulling a real recent break back), for a slave suppression
-    ///   (about +10% per full session in recreation hours; a slave slacking off below 70% in other hours only stops
-    ///   its suppression falling, so wardens are still needed). The prisoner tab tooltip gains the line vanilla
+    ///   (about +10% per full session in recreation hours; below 70% a slave slacks off in anything hours every 12
+    ///   to 3 hours, and that only stops its suppression falling while it plays, so wardens are still needed). The prisoner tab tooltip gains the line vanilla
     ///   leaves out for that factor.
     /// - Vanilla pulls every prisoner of a joining cell into a break, and every slave on the map or nearby into a
     ///   rebellion. Each one now joins with chance (initiator's vanilla interval / own vanilla interval) x mood
@@ -36,8 +36,8 @@ namespace VanillaTuneUp
         // any earlier point sits on the steep part and loses a quarter of its effect within hours of the session.
         public const float CalmedDays = 5f;
         // Outside recreation hours a prisoner plays again once its break record is this old (about x1.3 left),
-        // so roughly every 2 days, and a slave slacks off once suppression is below 70%, the level wardens suppress
-        // below, until a warden suppresses it.
+        // so roughly every 2 days, and a slave slacks off now and then once suppression is below 70%, the level
+        // wardens suppress below (see SlackEveryHours).
         public const float PrisonerRetryDays = 7f;
         public const float SlaveRetrySuppression = 0.7f;
         // Suppression gained per tick of recreation in recreation hours: +10% over a 4000-tick session (chess, poker,
@@ -240,8 +240,8 @@ namespace VanillaTuneUp
 
         /// <summary>
         /// Recreation priority for pawns without a recreation need: during recreation hours always; otherwise only
-        /// when the value recreation pushes has run down (a prisoner's break record, a slave's suppression), so
-        /// the buildings are not tied up all day and a poorly suppressed slave stops working before it rebels.
+        /// when the value recreation pushes has run down (a prisoner's break record; a slave's suppression, and then
+        /// only in its slacking hour), so the buildings are not tied up all day and a poorly suppressed slave slacks off.
         /// Never during a mental state: binges and the like keep their own jobs.
         /// </summary>
         public static float RecreationPriority(Pawn pawn)
@@ -255,7 +255,25 @@ namespace VanillaTuneUp
                 return 7f;
             if (pawn.IsPrisonerOfColony)
                 return DaysSinceCalmed(pawn) >= PrisonerRetryDays ? 6f : 0f;
-            return pawn.needs.TryGetNeed(out Need_Suppression suppression) && suppression.CurLevelPercentage < SlaveRetrySuppression ? 6f : 0f;
+            return SlacksOffAt(pawn, GenLocalDate.HourOfDay(pawn)) ? 6f : 0f;
+        }
+
+        /// <summary>
+        /// Hours between a slave's slacking sessions in anything hours: 12 at the 70% threshold down to 3 at vanilla's
+        /// 30% danger mark, so a worse suppressed slave slacks off more often but still works most of the time.
+        /// </summary>
+        public static int SlackEveryHours(float suppression) =>
+            Mathf.RoundToInt(Mathf.Lerp(3f, 12f, Mathf.InverseLerp(0.3f, SlaveRetrySuppression, suppression)));
+
+        /// <summary>
+        /// Whether a slave below the threshold starts slacking off in this hour. The slot comes from the hour and the
+        /// pawn's id, so slaves are spread over the hours instead of all stopping at once, and nothing needs saving.
+        /// </summary>
+        public static bool SlacksOffAt(Pawn pawn, int hour)
+        {
+            if (!pawn.needs.TryGetNeed(out Need_Suppression suppression) || suppression.CurLevelPercentage >= SlaveRetrySuppression)
+                return false;
+            return (hour + pawn.thingIDNumber) % SlackEveryHours(suppression.CurLevelPercentage) == 0;
         }
 
         // ---------- Joining a break ----------
