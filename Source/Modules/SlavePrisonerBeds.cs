@@ -32,7 +32,34 @@ namespace VanillaTuneUp
             // elsewhere never meets; a prisoner bed is always in a prison cell, and that is the point here.
             __result = RestUtility.CanUseBedNow(bedThing, sleeper, checkSocialProperness: false,
                 allowMedBedEvenIfSetToNoCare, GuestStatus.Prisoner);
+            if (!__result && LyingUnowned(bed, sleeper, out int slot))
+                __result = StillUsable(bed, sleeper, slot);
             return false;
+        }
+
+        // Slaves do not claim prisoner beds (SlavePrisonerBeds_NoClaim), but vanilla rejects a non-medical bed whose
+        // sleeper lies in a slot other than its assigned one, and an unowned sleeper has none: the lay-down toil
+        // checks this every tick and would kick the slave out the moment it lies down.
+        private static bool LyingUnowned(Building_Bed bed, Pawn sleeper, out int slot)
+        {
+            slot = -1;
+            if (bed.Medical || bed.IsOwner(sleeper) || sleeper.CurrentBed(out int? current) != bed || current == null)
+                return false;
+            slot = current.Value;
+            return true;
+        }
+
+        // The rest of vanilla's checks for a sleeper already in the bed, with the slot required to be unowned instead.
+        private static bool StillUsable(Building_Bed bed, Pawn sleeper, int slot)
+        {
+            if (!bed.Spawned || bed.Map != sleeper.MapHeld || bed.IsBurning() || bed.ForSlaves
+                || !RestUtility.CanUseBedEver(sleeper, bed.def) || bed.CompAssignableToPawn.IdeoligionForbids(sleeper)
+                || !bed.Position.IsInPrisonCell(bed.Map))
+                return false;
+            if (sleeper.HarmedByVacuum && bed.Position.GetVacuum(bed.Map) >= 0.5f)
+                return false;
+            // Owners take the first slots in order, so a slot past the owner count belongs to nobody.
+            return slot >= bed.OwnersForReading.Count;
         }
     }
 
