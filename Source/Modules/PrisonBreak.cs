@@ -14,11 +14,11 @@ namespace VanillaTuneUp
     /// - Escaping prisoners have no keys: they cannot open doors and have to break through them.
     /// - Prisoners use recreation buildings in the room of their own bed, and slaves pick recreation the way
     ///   colonists do (vanilla gives neither a recreation need, so they never do), and it moves the vanilla values
-    ///   the break and rebellion intervals already read: for a prisoner the "days since last prison break" (as if it had broken out 5 days ago,
-    ///   x1.5 at first and back to x1 by day 10, never pulling a real recent break back), for a slave suppression
-    ///   (about +10% per full session in recreation hours; below 70% a slave slacks off in anything hours every 12
-    ///   to 3 hours, and that only stops its suppression falling while it plays, so wardens are still needed). The prisoner tab tooltip gains the line vanilla
-    ///   leaves out for that factor.
+    ///   the break and rebellion intervals already read: for a prisoner the "days since last prison break" (as if it
+    ///   had broken out 5 days ago, x1.5 at first and back to x1 by day 10, never pulling a real recent break back), for a slave suppression
+    ///   (about +10% per full session in recreation hours; in anything hours a slave slacks off now and then, more
+    ///   often the lower its suppression, and that only stops its suppression falling while it plays, so wardens are
+    ///   still needed). The prisoner tab tooltip gains the line vanilla leaves out for that factor.
     /// - Vanilla pulls every prisoner of a joining cell into a break, and every slave on the map or nearby into a
     ///   rebellion. Each one now joins with chance (initiator's vanilla interval / own vanilla interval) x mood
     ///   (prisoners) x pain x traits, so pawns less inclined to break out than the one who started it (recreation, a
@@ -36,10 +36,12 @@ namespace VanillaTuneUp
         // any earlier point sits on the steep part and loses a quarter of its effect within hours of the session.
         public const float CalmedDays = 5f;
         // Outside recreation hours a prisoner plays again once its break record is this old (about x1.3 left),
-        // so roughly every 2 days, and a slave slacks off now and then once suppression is below 70%, the level
-        // wardens suppress below (see SlackEveryHours).
+        // so roughly every 2 days, and a slave slacks off now and then, more often the lower its suppression
+        // (see SlackChancePerHour).
         public const float PrisonerRetryDays = 7f;
-        public const float SlaveRetrySuppression = 0.7f;
+        // 8 sessions a day at 30%: 8 / 24 h / 0.7^2.
+        private const float SlackChanceScale = 8f / 24f / 0.49f;
+        private const float SlackMaxAtSuppression = 0.3f;
         // Suppression gained per tick of recreation in recreation hours: +10% over a 4000-tick session (chess, poker,
         // television). Slacking off in other hours only cancels the fall: gaining here would let recreation alone hold
         // a slave around 70-80% with no warden (measured: 3 sessions a day, 18% of the time).
@@ -255,25 +257,30 @@ namespace VanillaTuneUp
                 return 7f;
             if (pawn.IsPrisonerOfColony)
                 return DaysSinceCalmed(pawn) >= PrisonerRetryDays ? 6f : 0f;
-            return SlacksOffAt(pawn, GenLocalDate.HourOfDay(pawn)) ? 6f : 0f;
+            return SlacksOffInHour(pawn, Find.TickManager.TicksGame / GenDate.TicksPerHour) ? 6f : 0f;
         }
 
         /// <summary>
-        /// Hours between a slave's slacking sessions in anything hours: 12 at the 70% threshold down to 3 at vanilla's
-        /// 30% danger mark, so a worse suppressed slave slacks off more often but still works most of the time.
+        /// Chance per hour that a slave starts slacking off in anything hours: (1 - suppression)^2, scaled to about
+        /// 8 sessions a day at vanilla's 30% danger mark and capped there. Squared so a well suppressed slave almost
+        /// never does (90%: one in 6 days, 70%: 1.5 a day); measured on a well-run 39-slave colony about 3% of
+        /// slave work time.
         /// </summary>
-        public static int SlackEveryHours(float suppression) =>
-            Mathf.RoundToInt(Mathf.Lerp(3f, 12f, Mathf.InverseLerp(0.3f, SlaveRetrySuppression, suppression)));
+        public static float SlackChancePerHour(float suppression)
+        {
+            float lack = 1f - Mathf.Max(suppression, SlackMaxAtSuppression);
+            return SlackChanceScale * lack * lack;
+        }
 
         /// <summary>
-        /// Whether a slave below the threshold starts slacking off in this hour. The slot comes from the hour and the
-        /// pawn's id, so slaves are spread over the hours instead of all stopping at once, and nothing needs saving.
+        /// Whether a slave starts slacking off in this game hour. The roll is seeded by the hour and the pawn's id, so
+        /// it stays the same all hour, slaves are spread out instead of all stopping at once, and nothing is saved.
         /// </summary>
-        public static bool SlacksOffAt(Pawn pawn, int hour)
+        public static bool SlacksOffInHour(Pawn pawn, int gameHour)
         {
-            if (!pawn.needs.TryGetNeed(out Need_Suppression suppression) || suppression.CurLevelPercentage >= SlaveRetrySuppression)
+            if (!pawn.needs.TryGetNeed(out Need_Suppression suppression))
                 return false;
-            return (hour + pawn.thingIDNumber) % SlackEveryHours(suppression.CurLevelPercentage) == 0;
+            return Rand.ValueSeeded(Gen.HashCombineInt(pawn.thingIDNumber, gameHour)) < SlackChancePerHour(suppression.CurLevelPercentage);
         }
 
         // ---------- Joining a break ----------
