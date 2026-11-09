@@ -34,9 +34,10 @@ namespace VanillaTuneUp
         // any earlier point sits on the steep part and loses a quarter of its effect within hours of the session.
         public const float CalmedDays = 5f;
         // Outside recreation hours a prisoner plays again once its break record is this old (about x1.3 left),
-        // so roughly every 2 days, and a slave only once suppression is below vanilla's 30% mark.
+        // so roughly every 2 days, and a slave only once suppression is below 50%: halfway between vanilla's 30%
+        // danger mark and the 70% wardens suppress below, and where vanilla's rebellion factor starts to rise.
         public const float PrisonerRetryDays = 7f;
-        public const float SlaveRetrySuppression = 0.3f;
+        public const float SlaveRetrySuppression = 0.5f;
         // Suppression gained per tick of recreation: +10% over a 4000-tick session (chess, poker, television).
         public const float SuppressionPerTick = 0.1f / 4000f;
 
