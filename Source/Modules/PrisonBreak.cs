@@ -16,7 +16,9 @@ namespace VanillaTuneUp
     ///   colonists do (vanilla gives neither a recreation need, so they never do), and it moves the vanilla values
     ///   the break and rebellion intervals already read: for a prisoner the "days since last prison break" (as if it had broken out 5 days ago,
     ///   x1.5 at first and back to x1 by day 10, never pulling a real recent break back), for a slave suppression
-    ///   (about +10% per full session). The prisoner tab tooltip gains the line vanilla leaves out for that factor.
+    ///   (about +10% per full session in recreation hours; a slave slacking off below 70% in other hours only stops
+    ///   its suppression falling, so wardens are still needed). The prisoner tab tooltip gains the line vanilla
+    ///   leaves out for that factor.
     /// - Vanilla pulls every prisoner of a joining cell into a break, and every slave on the map or nearby into a
     ///   rebellion. Each one now joins with chance (initiator's vanilla interval / own vanilla interval) x mood
     ///   (prisoners) x pain x traits, so pawns less inclined to break out than the one who started it (recreation, a
@@ -34,12 +36,17 @@ namespace VanillaTuneUp
         // any earlier point sits on the steep part and loses a quarter of its effect within hours of the session.
         public const float CalmedDays = 5f;
         // Outside recreation hours a prisoner plays again once its break record is this old (about x1.3 left),
-        // so roughly every 2 days, and a slave only once suppression is below 50%: halfway between vanilla's 30%
-        // danger mark and the 70% wardens suppress below, and where vanilla's rebellion factor starts to rise.
+        // so roughly every 2 days, and a slave slacks off once suppression is below 70%, the level wardens suppress
+        // below, until a warden suppresses it.
         public const float PrisonerRetryDays = 7f;
-        public const float SlaveRetrySuppression = 0.5f;
-        // Suppression gained per tick of recreation: +10% over a 4000-tick session (chess, poker, television).
+        public const float SlaveRetrySuppression = 0.7f;
+        // Suppression gained per tick of recreation in recreation hours: +10% over a 4000-tick session (chess, poker,
+        // television). Slacking off in other hours only cancels the fall: gaining here would let recreation alone hold
+        // a slave around 70-80% with no warden (measured: 3 sessions a day, 18% of the time).
         public const float SuppressionPerTick = 0.1f / 4000f;
+        // Vanilla Need_Suppression.NeedInterval: CurLevel -= this x fall rate stat, every 150 ticks.
+        private const float VanillaFallPerInterval = 0.0025f;
+        private const float NeedIntervalTicks = 150f;
 
         private static readonly SimpleCurve DaysSinceBreakCurve =
             AccessTools.Field(typeof(PrisonBreakUtility), "PrisonBreakMTBFactorForDaysSincePrisonBreak")?.GetValue(null) as SimpleCurve;
@@ -47,7 +54,10 @@ namespace VanillaTuneUp
         public static bool UsesRules(Pawn pawn) =>
             pawn != null && pawn.needs?.joy == null && (pawn.IsPrisonerOfColony || pawn.IsSlaveOfColony);
 
-        /// <summary>One recreation tick (or several, for delta): calms a prisoner or raises a slave's suppression.</summary>
+        /// <summary>
+        /// One recreation tick (or several, for delta): calms a prisoner; raises a slave's suppression in recreation
+        /// hours, and otherwise only holds it where it is.
+        /// </summary>
         public static void NoteRecreation(Pawn pawn, int delta)
         {
             int now = Find.TickManager.TicksGame;
@@ -63,7 +73,13 @@ namespace VanillaTuneUp
                 }
             }
             else if (pawn.needs.TryGetNeed(out Need_Suppression suppression))
-                suppression.CurLevel += SuppressionPerTick * delta;
+            {
+                if (pawn.GetTimeAssignment() == TimeAssignmentDefOf.Joy)
+                    suppression.CurLevel += SuppressionPerTick * delta;
+                else
+                    suppression.CurLevel += VanillaFallPerInterval * pawn.GetStatValue(StatDefOf.SlaveSuppressionFallRate)
+                        / NeedIntervalTicks * delta;
+            }
         }
 
         /// <summary>Days since the prisoner's break record (a real break or recreation), or infinity without one.</summary>
