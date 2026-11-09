@@ -12,9 +12,9 @@ namespace VanillaTuneUp
     /// <summary>
     /// Prison breaks and slave rebellions with fewer all-at-once riots:
     /// - Escaping prisoners have no keys: they cannot open doors and have to break through them.
-    /// - Prisoners and slaves use recreation buildings in the room of their own bed (vanilla gives them no
-    ///   recreation need, so they never do), and it moves the vanilla values the break and rebellion intervals
-    ///   already read: for a prisoner the "days since last prison break" (as if it had broken out 5 days ago,
+    /// - Prisoners use recreation buildings in the room of their own bed, and slaves pick recreation the way
+    ///   colonists do (vanilla gives neither a recreation need, so they never do), and it moves the vanilla values
+    ///   the break and rebellion intervals already read: for a prisoner the "days since last prison break" (as if it had broken out 5 days ago,
     ///   x1.5 at first and back to x1 by day 10, never pulling a real recent break back), for a slave suppression
     ///   (about +10% per full session). The prisoner tab tooltip gains the line vanilla leaves out for that factor.
     /// - Vanilla pulls every prisoner of a joining cell into a break, and every slave on the map or nearby into a
@@ -83,16 +83,60 @@ namespace VanillaTuneUp
 
         // ---------- Recreation ----------
 
-        /// <summary>
-        /// The room a prisoner or slave takes recreation in: its own bed's room (for a slave without one, the prisoner
-        /// bed it last slept in), or a prisoner's current cell.
-        /// </summary>
+        /// <summary>The room a prisoner takes recreation in: its own bed's room, or its current cell.</summary>
         private static Room RecreationRoom(Pawn pawn)
         {
-            Building_Bed bed = pawn.ownership?.OwnedBed ?? SlavePrisonerBeds_NoClaim.LastBed(pawn);
+            Building_Bed bed = pawn.ownership?.OwnedBed;
             if (bed != null && bed.Spawned && bed.Map == pawn.Map)
                 return bed.GetRoom();
-            return pawn.IsPrisonerOfColony ? pawn.GetRoom() : null;
+            return pawn.GetRoom();
+        }
+
+        private static readonly System.Func<JobGiver_GetJoy, JoyGiverDef, bool> JoyGiverAllowed =
+            AccessTools.MethodDelegate<System.Func<JobGiver_GetJoy, JoyGiverDef, bool>>(
+                AccessTools.Method(typeof(JobGiver_GetJoy), "JoyGiverAllowed"));
+        private static readonly System.Func<JobGiver_GetJoy, JoyGiverDef, Pawn, Job> TryGiveJobFromJoyGiverDef =
+            AccessTools.MethodDelegate<System.Func<JobGiver_GetJoy, JoyGiverDef, Pawn, Job>>(
+                AccessTools.Method(typeof(JobGiver_GetJoy), "TryGiveJobFromJoyGiverDefDirect"));
+        private static readonly List<(JoyGiverDef def, float chance)> tmpGivers = new List<(JoyGiverDef, float)>();
+
+        /// <summary>
+        /// A slave's recreation job, picked like vanilla JobGiver_GetJoy.TryGiveJob picks a colonist's (mirror it on
+        /// game updates) without the parts that read the recreation need: its level and the boredom weighting.
+        /// Meditation is left out, its job driver reads the recreation need every tick.
+        /// </summary>
+        public static Job TryGiveSlaveRecreationJob(JobGiver_GetJoy jobGiver, Pawn pawn)
+        {
+            tmpGivers.Clear();
+            foreach (JoyGiverDef def in DefDatabase<JoyGiverDef>.AllDefsListForReading)
+            {
+                if (def.Worker is JoyGiver_Meditate || !JoyGiverAllowed(jobGiver, def) || !def.Worker.CanBeGivenTo(pawn))
+                    continue;
+                if (def.pctPawnsEverDo < 1f)
+                {
+                    Rand.PushState(pawn.thingIDNumber ^ 0x3C49C49);
+                    bool never = Rand.Value >= def.pctPawnsEverDo;
+                    Rand.PopState();
+                    if (never)
+                        continue;
+                }
+                tmpGivers.Add((def, def.Worker.GetChance(pawn)));
+            }
+            try
+            {
+                while (tmpGivers.TryRandomElementByWeight(g => g.chance, out var picked))
+                {
+                    Job job = TryGiveJobFromJoyGiverDef(jobGiver, picked.def, pawn);
+                    if (job != null)
+                        return job;
+                    tmpGivers.Remove(picked);
+                }
+                return null;
+            }
+            finally
+            {
+                tmpGivers.Clear();
+            }
         }
 
         private static readonly System.Func<JoyGiver_InteractBuilding, Pawn, Thing, Job> TryGivePlayJob =
@@ -123,8 +167,8 @@ namespace VanillaTuneUp
         }
 
         /// <summary>
-        /// A job using a recreation building in the pawn's room, picked like vanilla picks one (same joy givers, same
-        /// checks) except that the room stands in for social properness: prison cell buildings are improper for slaves.
+        /// A prisoner's job using a recreation building in its room, picked like vanilla picks one (same joy givers,
+        /// same checks) except that the room stands in for social properness.
         /// </summary>
         public static Job TryGiveRecreationJob(Pawn pawn)
         {
@@ -503,10 +547,13 @@ namespace VanillaTuneUp
         {
             if (!PrisonBreak.UsesRules(pawn))
                 return true;
-            // The in-bed variant would only ever pick from bed; these pawns get up for their room's buildings instead.
-            __result = __instance is JobGiver_GetJoyInBed || (pawn.InBed() && HealthAIUtility.ShouldSeekMedicalRest(pawn))
-                ? null
-                : PrisonBreak.TryGiveRecreationJob(pawn);
+            // The in-bed variant would only ever pick from bed; these pawns get up for recreation instead.
+            if (__instance is JobGiver_GetJoyInBed || (pawn.InBed() && HealthAIUtility.ShouldSeekMedicalRest(pawn)))
+                __result = null;
+            else
+                __result = pawn.IsPrisonerOfColony
+                    ? PrisonBreak.TryGiveRecreationJob(pawn)
+                    : PrisonBreak.TryGiveSlaveRecreationJob(__instance, pawn);
             return false;
         }
     }

@@ -106,36 +106,17 @@ namespace VanillaTuneUp
     /// <summary>
     /// Slaves do not claim prisoner beds: each sleep takes any free one, so a bed whose slave is at work or away can
     /// take a new prisoner, and night-shift slaves leave their beds to day sleepers. Vanilla claims the bed whenever a
-    /// pawn lies down or is carried in, all through Pawn_Ownership.ClaimBedIfNonMedical; skip it for these beds and
-    /// remember the bed instead, so recreation can still find the slave's cell. Bedroom thoughts never apply to
-    /// prisoner beds, so not owning one changes no mood.
+    /// pawn lies down or is carried in, all through Pawn_Ownership.ClaimBedIfNonMedical; skip it for these beds.
+    /// Bedroom thoughts never apply to prisoner beds, so not owning one changes no mood.
     /// </summary>
     [HarmonyPatchCategory("SlavePrisonerBeds")]
     [HarmonyPatch(typeof(Pawn_Ownership), nameof(Pawn_Ownership.ClaimBedIfNonMedical))]
     public static class SlavePrisonerBeds_NoClaim
     {
-        private static readonly Dictionary<Pawn, Building_Bed> lastBed = new Dictionary<Pawn, Building_Bed>();
-
-        /// <summary>The prisoner bed this slave last slept in or was carried to, if still usable as one.</summary>
-        public static Building_Bed LastBed(Pawn pawn)
-        {
-            if (pawn == null || !lastBed.TryGetValue(pawn, out Building_Bed bed))
-                return null;
-            if (bed.Spawned && bed.ForPrisoners && bed.Map == pawn.Map && pawn.IsSlaveOfColony)
-                return bed;
-            lastBed.Remove(pawn);
-            return null;
-        }
-
-        public static void Remember(Pawn pawn, Building_Bed bed) => lastBed[pawn] = bed;
-
-        public static void Clear() => lastBed.Clear();
-
         public static bool Prefix(Pawn ___pawn, Building_Bed newBed, ref bool __result)
         {
             if (newBed == null || !newBed.ForPrisoners || ___pawn == null || !___pawn.IsSlaveOfColony)
                 return true;
-            Remember(___pawn, newBed);
             __result = false;
             return false;
         }
@@ -148,7 +129,6 @@ namespace VanillaTuneUp
     {
         public static void Postfix()
         {
-            SlavePrisonerBeds_NoClaim.Clear();
             int cleared = 0;
             foreach (Map map in Find.Maps)
             {
@@ -164,7 +144,6 @@ namespace VanillaTuneUp
                             owner.ownership.UnclaimBed();
                         else
                             bed.CompAssignableToPawn.ForceRemovePawn(owner);
-                        SlavePrisonerBeds_NoClaim.Remember(owner, bed);
                         cleared++;
                     }
                 }
