@@ -19,13 +19,14 @@ namespace VanillaTuneUp
     ///   (about +10% per full session in recreation hours; in anything hours a slave slacks off now and then, more
     ///   often the lower its suppression, and that only stops its suppression falling while it plays, so wardens are
     ///   still needed). The prisoner tab tooltip gains the line vanilla leaves out for that factor. An urgently
-    ///   hungry prisoner takes no recreation (and stops a session), so it earns no cooldown while starving.
+    ///   hungry prisoner or slave takes no recreation (and stops a session), so it earns no cooldown or suppression
+    ///   while going hungry.
     /// - Vanilla pulls every prisoner of a joining cell into a break, and every slave on the map or nearby into a
-    ///   rebellion. Each one now joins with chance (initiator's vanilla interval / own vanilla interval) x mood and
-    ///   starvation (prisoners) x pain x traits, so pawns less inclined to break out than the one who started it (recreation, a
+    ///   rebellion. Each one now joins with chance (initiator's vanilla interval / own vanilla interval) x mood
+    ///   (prisoners) x malnutrition x pain x traits, so pawns less inclined to break out than the one who started it (recreation, a
     ///   recent break, high suppression, a good mood, pain, Kind / Wimp / Nervous) often stay put.
-    /// - The same mood, starvation, pain and trait factors divide each pawn's own break and rebellion interval, so a
-    ///   content, hurting or timid pawn also starts one less often (starving, Bloodlust, Brawler and Volatile more often).
+    /// - The same mood, malnutrition, pain and trait factors divide each pawn's own break and rebellion interval, so a
+    ///   content, hurting or timid pawn also starts one less often (malnourished and hungry, Bloodlust, Brawler and Volatile more often).
     /// - Wardens arrest a prisoner walking off the map on its own (not part of a break), and an undrafted colonist
     ///   can be ordered to arrest a prisoner that got out of its cell (vanilla needs a drafted colonist for both).
     ///   Wardens also imprison a slave set to "Imprison" during a non-aggressive mental break (vanilla waits it out).
@@ -371,17 +372,33 @@ namespace VanillaTuneUp
 
         public static float PainFactor(Pawn pawn) => PainCurve.Evaluate(pawn.health.hediffSet.PainTotal);
 
-        // A starving prisoner (food at zero) has nothing to lose: vanilla's interval ignores hunger, and the mood
-        // curve tops out at x1, so starvation gets its own factor. Prisoners only, like mood.
-        private const float StarvingFactor = 2f;
+        // A prisoner left urgently hungry has little to lose: vanilla's interval ignores hunger, and the mood curve
+        // tops out at x1, so hunger gets its own factor (slaves too: vanilla's rebellion interval has mood, not hunger). It counts only while urgently hungry (one that is being fed
+        // again has no reason to run, however malnourished), and its size follows malnutrition, which builds up
+        // slowly, so a late meal alone does not make a healthy pawn dangerous.
+        private static readonly SimpleCurve MalnutritionCurve = new SimpleCurve
+        {
+            new CurvePoint(0f, 1f),
+            new CurvePoint(0.4f, 2f),   // moderate stage
+            new CurvePoint(0.6f, 3f)    // severe and worse; vanilla's Moving loss already offsets part of this
+        };
 
-        public static float HungerFactor(Pawn pawn) =>
-            pawn.IsPrisoner && pawn.needs?.food != null && pawn.needs.food.CurCategory == HungerCategory.Starving
-                ? StarvingFactor : 1f;
+        public static float HungerFactor(Pawn pawn)
+        {
+            if (!(pawn.IsPrisoner || pawn.IsSlave) || !UrgentlyHungry(pawn))
+                return 1f;
+            Hediff malnutrition = pawn.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.Malnutrition);
+            return malnutrition == null ? 1f : MalnutritionCurve.Evaluate(malnutrition.Severity);
+        }
 
-        /// <summary>An urgently hungry prisoner takes no recreation, so hunger does not earn it the break cooldown.</summary>
-        public static bool TooHungryToPlay(Pawn pawn) =>
-            pawn.IsPrisonerOfColony && pawn.needs?.food != null && pawn.needs.food.CurCategory >= HungerCategory.UrgentlyHungry;
+        /// <summary>
+        /// An urgently hungry prisoner or slave takes no recreation, so hunger earns it neither the break cooldown nor
+        /// suppression.
+        /// </summary>
+        public static bool TooHungryToPlay(Pawn pawn) => (pawn.IsPrisonerOfColony || pawn.IsSlaveOfColony) && UrgentlyHungry(pawn);
+
+        private static bool UrgentlyHungry(Pawn pawn) =>
+            pawn.needs?.food != null && pawn.needs.food.CurCategory >= HungerCategory.UrgentlyHungry;
 
         /// <summary>Product of the listed traits' factors; labels gets their names when given.</summary>
         public static float TraitFactor(Pawn pawn, List<string> labels = null)
@@ -401,7 +418,7 @@ namespace VanillaTuneUp
             return factor;
         }
 
-        /// <summary>Factor on a pawn's break chances from its mood and starvation (prisoners only), pain and traits.</summary>
+        /// <summary>Factor on a pawn's break chances from its mood (prisoners only), malnutrition while urgently hungry, pain and traits.</summary>
         public static float Inclination(Pawn pawn) =>
             MoodFactor(pawn) * HungerFactor(pawn) * PainFactor(pawn) * TraitFactor(pawn);
 
@@ -432,7 +449,7 @@ namespace VanillaTuneUp
                 sb.Append(prefix + label + ": " + valuePrefix + (1f / factor).ToStringPercent());
             }
             Line("VTU_PrisonMood".Translate(), MoodFactor(pawn));
-            Line("VTU_PrisonStarving".Translate(), HungerFactor(pawn));
+            Line(HediffDefOf.Malnutrition.LabelCap, HungerFactor(pawn));
             Line("VTU_PrisonPain".Translate(), PainFactor(pawn));
             var labels = new List<string>();
             float traits = TraitFactor(pawn, labels);
@@ -672,7 +689,7 @@ namespace VanillaTuneUp
         }
     }
 
-    /// <summary>The slave's rebellion interval divided by its pain and traits (vanilla already counts its mood).</summary>
+    /// <summary>The slave's rebellion interval divided by its malnutrition, pain and traits (vanilla already counts its mood).</summary>
     [HarmonyPatchCategory("PrisonBreak")]
     [HarmonyPatch(typeof(SlaveRebellionUtility), nameof(SlaveRebellionUtility.InitiateSlaveRebellionMtbDays))]
     public static class PrisonBreak_SlaveInterval
@@ -684,7 +701,7 @@ namespace VanillaTuneUp
         }
     }
 
-    /// <summary>Lists the slave's pain and trait factors above the final interval in the suppression tooltip.</summary>
+    /// <summary>Lists the slave's malnutrition, pain and trait factors above the final interval in the suppression tooltip.</summary>
     [HarmonyPatchCategory("PrisonBreak")]
     [HarmonyPatch(typeof(SlaveRebellionUtility), nameof(SlaveRebellionUtility.GetSlaveRebellionMtbCalculationExplanation))]
     public static class PrisonBreak_SlaveTooltip
