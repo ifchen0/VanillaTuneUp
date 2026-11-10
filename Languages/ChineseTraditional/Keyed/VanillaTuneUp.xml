@@ -37,6 +37,8 @@
   <VTU_GenepackEject_Desc>從基因庫彈出的基因包（「彈出所有」、單一基因包的彈出按鈕，或基因組合機選單中的右鍵彈出）會自動關閉「自動裝載」，搬運者不會再立刻把它搬回基因庫。想再存進去時，重新打開該基因包的自動裝載即可。因基因庫被拆除、移除安裝或摧毀而掉出的基因包仍維持自動裝載，與原版相同。</VTU_GenepackEject_Desc>
   <VTU_PetFoodSearch>飢餓的寵物會在全地圖找食物</VTU_PetFoodSearch>
   <VTU_PetFoodSearch_Desc>殖民地的動物找食物時只搜尋最近的100個區塊，即使快餓死也一樣。在門和柵欄很多的大基地裡，這個範圍很小，寵物走離食物存放處太遠就可能守著滿倉的飼料餓死。現在殖民地動物在非常飢餓時若附近找不到食物，會再搜尋一次整張地圖（找不到時每2500 tick最多一次）。圈在畜欄裡的動物維持原版只在欄內找食物。</VTU_PetFoodSearch_Desc>
+  <VTU_FarskipUnload>遠程折躍回家後卸下囚犯身上的貨物</VTU_FarskipUnload>
+  <VTU_FarskipUnload_Desc>旅隊走回殖民地時，所有成員（包括囚犯）身上的貨物都會被卸下；但用遠程折躍回家時，原版只卸殖民者、馱獸和機械體的貨物，囚犯身上的貨物會一直留著。現在遠程折躍回家時，囚犯（以及不穩定的奴隸）也會被標記為要卸貨，搬運者會把貨物搬進倉庫，與一般旅隊抵達相同。</VTU_FarskipUnload_Desc>
   <VTU_TranslationFixes>官方翻譯修正</VTU_TranslationFixes>
   <VTU_TranslationFixes_Desc>修正官方翻譯中無法用翻譯檔覆蓋的錯誤（目前為繁體中文）：機械軍團哨站任務文字顯示成「ERR:」加上[標籤]，以及殘留英文的生成文字（朝聖者任務、審判指控、理念故事、藝術品描述），以及社交打架結束時多跳一則「X和X不再爭吵了」的重複訊息。</VTU_TranslationFixes_Desc>
   <VTU_XenogermQueue>異種細胞佇列</VTU_XenogermQueue>

@@ -16,6 +16,7 @@ Small fixes and optional tweaks for vanilla RimWorld, collected in one mod.
 [*][b]Banished slaves free their bed[/b] (Ideology): instead of keeping it after they leave.
 [*][b]Ejected genepacks stay out[/b] (Biotech): haulers no longer carry them straight back into the gene bank.
 [*][b]Hungry pets find food across the map:[/b] no more pets starving far from the kibble in a large base.
+[*][b]Farskip home unloads prisoners[/b] (Royalty): their caravan cargo goes to storage, like after a normal caravan arrival.
 [*][b]Aligned corner icons:[/b] the bottom-right search and codex buttons no longer push other icons off the grid.
 [*][b]Official translation fixes:[/b] quest text shown as [i]ERR:[/i] and untranslatable generated text (currently Traditional Chinese).
 [/list]

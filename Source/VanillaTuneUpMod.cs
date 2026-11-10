@@ -85,6 +85,11 @@ namespace VanillaTuneUp
                 UnavailableKey = "VTU_RequiresBiotech"
             },
             new TuneUpModule("PetFoodSearch", false, null),
+            new TuneUpModule("FarskipUnload", false, null)
+            {
+                IsAvailable = () => ModsConfig.RoyaltyActive,
+                UnavailableKey = "VTU_RequiresRoyalty"
+            },
             // Unaligned Icon Fix moves the same buttons its own way; leave them to it when it is active.
             new TuneUpModule("PlaySettingsIconGap", false, "Ilarion.UnalignedIconFix") { IsHidden = true },
             new TuneUpModule("TranslationFixes", false, null)
