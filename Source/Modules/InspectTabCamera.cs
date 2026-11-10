@@ -61,6 +61,13 @@ namespace VanillaTuneUp
         /// <summary>Map x distance from a target to the camera centre that puts the target mid-way across the uncovered screen.</summary>
         private static float OffsetFor(float tabWidth) => tabWidth / 2f / Find.CameraDriver.CellSizePixels;
 
+        /// <summary>Map x distance the camera centre sits left of a target so the open tab does not cover it; 0 without a tab.</summary>
+        internal static float CurrentTabOffset()
+        {
+            InspectTabBase tab = OpenTab(out _);
+            return tab == null ? 0f : OffsetFor(TabWidth(tab));
+        }
+
         private static void MoveCamera(Vector3 loc, bool smooth)
         {
             CameraDriver driver = Find.CameraDriver;
