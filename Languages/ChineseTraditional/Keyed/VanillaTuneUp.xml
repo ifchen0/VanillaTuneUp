@@ -79,6 +79,8 @@
   <VTU_CycleOtherPawns_Desc>選取敵人、囚犯、訪客、殖民地動物、殖民地機械體或野生動物時，上一個／下一個殖民者快速鍵（預設 , 和 .）改成在目前地圖上同一類之間輪流切換，不會跳回殖民者。倒地的敵人也算敵人，迷霧中的不會選到。開啟「殖民者肖像列不顯示奴隸」時，奴隸也有自己的輪流順序。選取殖民者或沒選東西時，快速鍵照原本運作。不論哪一類（包括殖民者），輪流一圈回到起點時會有一聲輕微的提示音。</VTU_CycleOtherPawns_Desc>
   <VTU_CameraFollow>鏡頭跳到角色後持續跟隨</VTU_CameraFollow>
   <VTU_CameraFollow_Desc>鏡頭跳到某個角色並選取他之後（上一個／下一個殖民者快速鍵、雙擊殖民者肖像列的頭像、需要救援或精神崩潰等警示、信件、訊息、任務視窗），會跟著該角色移動。自己移動鏡頭（按鍵、拖曳、畫面邊緣捲動）、改選其他東西或取消選取、或角色離開地圖時就停止跟隨。縮放不會中斷跟隨。</VTU_CameraFollow_Desc>
+  <VTU_PsychicRitualSensitivity>心靈儀式：依心靈敏感度排序</VTU_PsychicRitualSensitivity>
+  <VTU_PsychicRitualSensitivity_Desc>心靈儀式的選人視窗中，每個頭像左上角顯示該角色的心靈敏感度，「未參與」清單依敏感度由高到低排列。已指派角色的人維持原本順序。</VTU_PsychicRitualSensitivity_Desc>
   <VTU_RefugeeApparel>難民會自己換衣服</VTU_RefugeeApparel>
   <VTU_RefugeeApparel_Desc>收容難民任務的難民可以在指派分頁設定穿著計畫，並像殖民者一樣自己換掉破舊的衣服；也可以指定新到難民套用的穿著計畫。他們來時穿的衣服要等破損後才會換下，任務結束時身上穿的衣服會跟著離開。衛兵、皇室客人等其他任務寄宿者仍維持原本的穿著。</VTU_RefugeeApparel_Desc>
   <VTU_RefugeeApparelLabel>新到難民套用的穿著計畫</VTU_RefugeeApparelLabel>

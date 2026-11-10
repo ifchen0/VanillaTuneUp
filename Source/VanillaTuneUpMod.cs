@@ -153,6 +153,12 @@ namespace VanillaTuneUp
             new TuneUpModule("MusicToggle", true, null) { OnByDefault = true },
             new TuneUpModule("CycleOtherPawns", true, null),
             new TuneUpModule("CameraFollow", true, null) { OnByDefault = true },
+            new TuneUpModule("PsychicRitualSensitivity", true, null)
+            {
+                OnByDefault = true,
+                IsAvailable = () => ModsConfig.AnomalyActive,
+                UnavailableKey = "VTU_RequiresAnomaly"
+            },
             // Modules with extra settings go last, the longest at the end, so plain toggles stay near the top.
             new TuneUpModule("InspectTabCamera", true, null)
             {
