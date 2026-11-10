@@ -12,13 +12,13 @@ using Verse.AI.Group;
 namespace VanillaTuneUp
 {
     /// <summary>
-    /// Field tending and cheaper medicine:
-    /// - A downed humanlike lying outside a bed can be tended where they lie when they would bleed to death within
-    ///   6 hours, or when no bed is free for them (vanilla tends humanlikes only in bed, so they waited untended).
-    /// - With no bed free, an undrafted patient on their feet or asleep on the ground is tended where they are too,
-    ///   when bleeding or deadly ill.
-    /// - Tending a fast bleeder where they lie uses only medicine the doctor carries, or none, instead of walking
-    ///   to a stockpile first.
+    /// Field tending and cheaper medicine (vanilla tends humanlikes only in bed, so patients outside one waited):
+    /// - With a bed free, a bleeding patient outside a bed is tended where they are only until the bleeding stops;
+    ///   the tend job then ends and rescue carries them to the bed for the rest.
+    /// - With no bed free, a downed patient is tended where they lie for everything, and an undrafted patient on
+    ///   their feet or asleep on the ground for bleeding or a deadly disease.
+    /// - Tending a downed patient who would bleed to death within 6 hours uses only medicine the doctor carries,
+    ///   or none, instead of walking to a stockpile first.
     /// - Patients with no untended wound that can get infected and no disease that can kill get the cheapest
     ///   allowed medicine instead of the best one. Better medicine only raises tend quality, which lowers the
     ///   infection chance of a wound and speeds its healing (it never changes whether bleeding stops), so wounds
@@ -59,29 +59,42 @@ namespace VanillaTuneUp
             return check.HasBed;
         }
 
+        public static bool Bleeding(Pawn patient) => patient.health.hediffSet.BleedRateTotal > 0f;
+
+        /// <summary>
+        /// Bleeding: tended where they are whether a bed is free or not. Otherwise only with no bed free: a downed
+        /// patient for anything, one on their feet or asleep on the ground for a deadly disease. Cheap checks first:
+        /// work scans ask this for every pawn with any hediff, for every doctor.
+        /// </summary>
         public static bool CanTendInPlace(Pawn patient, Pawn doctor)
         {
             if (patient == doctor || !patient.Spawned || !patient.RaceProps.Humanlike || patient.InBed())
                 return false;
-            if (patient.Downed)
-                return BleedingFast(patient) || !HasBed(patient, doctor);
-            return UpAndUrgent(patient) && !HasBed(patient, doctor);
+            if (!patient.Downed && !UpPatient(patient))
+                return false;
+            if (Bleeding(patient))
+                return true;
+            return (patient.Downed || DeadlyIllNow(patient)) && !HasBed(patient, doctor);
         }
 
         /// <summary>
-        /// A patient on their feet or asleep on the ground, not drafted and not in a mental state, who is bleeding or
-        /// has a deadly disease to tend now. Vanilla only tends them once they lie in a bed, so one who keeps bleeding
-        /// with no bed to go to (or who fell asleep on the ground) waited until they collapsed. Cheap checks first:
-        /// work scans ask this for every pawn with any hediff, for every doctor.
+        /// Ends a tend outside a bed once the bleeding has stopped while a bed is free, so rescue carries the patient
+        /// to it and the rest is tended there.
         /// </summary>
-        private static bool UpAndUrgent(Pawn patient)
+        public static bool StopTendInPlace(Pawn patient, Pawn doctor) =>
+            patient != doctor && patient.Spawned && patient.RaceProps.Humanlike && !patient.InBed()
+            && !Bleeding(patient) && HasBed(patient, doctor);
+
+        /// <summary>
+        /// A patient on their feet or asleep on the ground the colony looks after, not drafted and not in a mental
+        /// state. Vanilla only tends them once they lie in a bed.
+        /// </summary>
+        private static bool UpPatient(Pawn patient) =>
+            !patient.Drafted && !patient.InMentalState
+            && (patient.Faction == Faction.OfPlayer || patient.HostFaction == Faction.OfPlayer);
+
+        private static bool DeadlyIllNow(Pawn patient)
         {
-            if (patient.Drafted || patient.InMentalState)
-                return false;
-            if (patient.Faction != Faction.OfPlayer && patient.HostFaction != Faction.OfPlayer)
-                return false;
-            if (patient.health.hediffSet.BleedRateTotal > 0f)
-                return true;
             List<Hediff> hediffs = patient.health.hediffSet.hediffs;
             for (int i = 0; i < hediffs.Count; i++)
             {
@@ -297,6 +310,11 @@ namespace VanillaTuneUp
     /// patient burned to death; a held patient (draftedTend) could not put themselves out either. The doctor then
     /// beats out the patient's fire through vanilla's finalizer job, the same way vanilla firefighting would.
     /// </para>
+    /// <para>
+    /// Also ends a tend outside a bed once the bleeding stops while a bed is free. Vanilla's tend job jumps back for
+    /// the next wound as long as the patient needs tending and never asks again whether they may be tended where
+    /// they lie, so the doctor used to treat every wound on the ground before rescue carried the patient off.
+    /// </para>
     /// </summary>
     [HarmonyPatchCategory("FieldTending")]
     [HarmonyPatch(typeof(JobDriver_TendPatient), "MakeNewToils")]
@@ -309,11 +327,27 @@ namespace VanillaTuneUp
         {
             JobDriver_TendPatient driver = __instance;
             driver.AddEndCondition(() => PatientBurning(driver) ? JobCondition.Incompletable : JobCondition.Ongoing);
+            // A tend the player ordered by hand keeps going; capture tends only need to stop the bleeding.
+            if (driver.job != null && (!driver.job.playerForced || Patch_Pawn_JobTracker_StartJob.IsCaptureTend(driver.job)))
+            {
+                driver.AddEndCondition(() => StopTend(driver) ? JobCondition.Succeeded : JobCondition.Ongoing);
+                // The doctor picked up enough medicine to treat every wound; vanilla drops what is left in hand when
+                // the job ends, so it goes back into the doctor's inventory instead.
+                driver.AddFinishAction(_ =>
+                {
+                    Thing carried = driver.pawn.carryTracker?.CarriedThing;
+                    if (carried != null && carried.def.IsMedicine && StopTend(driver))
+                        driver.pawn.carryTracker.innerContainer.TryTransferToContainer(carried, driver.pawn.inventory.innerContainer, carried.stackCount);
+                });
+            }
             if (finalizerJob(driver) == null)
                 finalizerJob(driver) = condition => condition == JobCondition.Incompletable ? BeatPatientFire(driver) : null;
             if (driver.job != null && Patch_Pawn_JobTracker_StartJob.IsCaptureTend(driver.job))
                 __result = CaptureOnTendStart(__result, driver);
         }
+
+        private static bool StopTend(JobDriver driver) =>
+            driver.job.targetA.Thing is Pawn patient && FieldTending.StopTendInPlace(patient, driver.pawn);
 
         private static bool PatientBurning(JobDriver driver) =>
             driver.job.targetA.Thing is Pawn patient && patient != driver.pawn && patient.IsBurning();
