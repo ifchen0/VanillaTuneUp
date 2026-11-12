@@ -83,6 +83,13 @@
   <VTU_CameraFollow_Desc>鏡頭跳到某個角色並選取他之後（上一個／下一個殖民者快速鍵、雙擊殖民者肖像列的頭像、需要救援或精神崩潰等警示、信件、訊息、任務視窗），會跟著該角色移動。自己移動鏡頭（按鍵、拖曳、畫面邊緣捲動）、改選其他東西或取消選取、或角色離開地圖時就停止跟隨。縮放不會中斷跟隨。</VTU_CameraFollow_Desc>
   <VTU_PsychicRitualSensitivity>心靈儀式：依心靈敏感度排序</VTU_PsychicRitualSensitivity>
   <VTU_PsychicRitualSensitivity_Desc>心靈儀式的選人視窗中，每個頭像左上角顯示該角色的心靈敏感度，「未參與」清單依敏感度由高到低排列。已指派角色的人維持原本順序。</VTU_PsychicRitualSensitivity_Desc>
+  <VTU_BillKeepCount>熔煉／銷毀bill改善</VTU_BillKeepCount>
+  <VTU_BillKeepCount_Desc>適用熔煉、銷毀、燒衣服的bill。沒有品質的物品在bill的品質過濾中視為傳說級，範圍設「極差到普通」時不會再被熔掉（原版不管範圍怎麼設都會放行）。另外多一個「每種保留X個」的重複模式：bill允許的每種物品，地圖上市場價值最高的X個會留下（價值已綜合品質、耐久、死人穿過、生物編碼），只處理多出來的。角色身上穿的、拿著的不算。</VTU_BillKeepCount_Desc>
+  <VTU_BillKeepCount_Mode>每種保留X個</VTU_BillKeepCount_Mode>
+  <VTU_BillKeepCount_Info>保留{0}</VTU_BillKeepCount_Info>
+  <VTU_BillKeepCount_Dialog>每種物品保留：{0}</VTU_BillKeepCount_Dialog>
+  <VTU_BillKeepCount_Surplus>目前可處理的多餘數量：{0}</VTU_BillKeepCount_Surplus>
+  <VTU_BillKeepCount_Note>地圖上每種物品市場價值最高的X個會留下（價值已綜合品質、耐久、死人穿過、生物編碼），不受這張bill的品質、耐久過濾影響。其餘的通過過濾才會處理。角色身上穿的、拿著的不算。</VTU_BillKeepCount_Note>
   <VTU_RefugeeApparel>難民會自己換衣服</VTU_RefugeeApparel>
   <VTU_RefugeeApparel_Desc>收容難民任務的難民可以在指派分頁設定穿著計畫，並像殖民者一樣自己換掉破舊的衣服；也可以指定新到難民套用的穿著計畫。他們來時穿的衣服要等破損後才會換下，任務結束時身上穿的衣服會跟著離開。衛兵、皇室客人等其他任務寄宿者仍維持原本的穿著。</VTU_RefugeeApparel_Desc>
   <VTU_RefugeeApparelLabel>新到難民套用的穿著計畫</VTU_RefugeeApparelLabel>
