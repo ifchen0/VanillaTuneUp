@@ -13,6 +13,8 @@ This page has the full description of every part; the same text is shown in game
   other tweaks are off until you turn them on.
 - If one part fails to load (for example after a game update), only that part is turned off.
 
+![Mod settings](Media/vtu_settings.png)
+
 ## Fixes
 
 ### Restore missing faction leaders
@@ -22,6 +24,8 @@ Fixes the "Faction leader for X is null" error by generating a new leader the wa
 ### History graph performance
 
 Removes the History tab lag in long-running colonies. The graph looks the same; peaks and dips stay visible.
+
+![History graph performance](Media/chart.png)
 
 ### Right-click menu lag
 
@@ -85,6 +89,8 @@ Fixes mistakes in the official translations that a translation file cannot overr
 
 Adds a bill-style queue to the gene assembler: do X times, until you have X, or forever. Skipping an entry keeps its progress.
 
+![Xenogerm queue](Media/xq_queue.png)
+
 ### Mute labor and birth sounds
 
 *Biotech*
@@ -113,11 +119,15 @@ When an event happens to a caravan, such as meeting another caravan, a demand fr
 
 In the categorized resource list (top left), double-click a resource to pin it. Pinned resources stay listed while their category is collapsed and are shown even when you have none. Double-click again to unpin. Pins apply to every save.
 
+![Pin resources in the resource list](Media/SmallTweaks.png)
+
 ### Nutrient paste stock
 
 *on by default*
 
 Adds a "dispense until you have X" target to nutrient paste dispensers, like a cooking bill. The number is shared by every dispenser on the map. Cooks dispense paste and drop it by the dispenser for haulers, like a bill set to drop on the floor. Paste on the ground counts toward the target as well as paste in storage, so it does not pile up before haulers arrive.
+
+![Nutrient paste stock](Media/NutrientPasteStock.png)
 
 ### Mod update notes
 
@@ -125,9 +135,13 @@ Adds a "dispense until you have X" target to nutrient paste dispensers, like a c
 
 The main menu's top-left box (translation credits) becomes a list of your active Steam Workshop mods, most recently updated first. Mods updated since you last opened them are highlighted; click one to read its change notes from the Workshop. An update left unopened for 3 game starts stops being highlighted. Works for every mod. On the first run every mod counts as read.
 
+![Mod update notes](Media/ModUpdateNotes.png)
+
 ### Break up social fights
 
 Anyone who sees a social fight nearby and is not hostile to either fighter (colonists, visitors, even raiders among themselves) may step in and try to stop it, unless they are busy with work that cannot be interrupted. A rival of either fighter, or anyone with Bloodlust, may instead join in against the fighter they like least. Success depends on their Social skill and on how much the fighters like them. When it fails, the fighter may turn on them, using the vanilla social fight formula, and the old opponent keeps going: a brawl that lasts until that fighter stops. Anyone hit by someone they are not fighting back may turn on them, so a brawl can split into several fights. Fighters remember who broke up their fight: most are grateful, but some resent it. Mood matters too: pawns in a bad mood insult others more often, start or join fights more readily, are harder to calm down and less willing to step in; a good mood works the other way (from x1.5 at 20% mood to x0.7 at 90%).
+
+![Break up social fights](Media/BreakUpFights.png)
 
 ### Short names on the map
 
@@ -163,6 +177,8 @@ When too many letters pile up, the oldest ones are folded into a single "N more.
 
 Trader caravans and visitor groups wait just outside the colony and leave early as soon as any member, pack animals included, starts getting hypothermia or heatstroke. When the temperature at their spot gets close to the limit of the most sensitive member, or enemies of some strength are active on the map (a single hunted animal fighting back does not count), they move into a barn if they brought animals, otherwise a dining room, with a storeroom as the fallback for both. The room must be at a safe temperature and reachable by all of them. While sheltering they eat inside too: they sit at a table in the room or eat standing there, and only fetch food from outside the room once urgently hungry. Rain at their spot also sends them inside, quietly, and so does night (22:00 to 6:00) so they sleep indoors, though only in a barn or storeroom, never on a dining room floor. They go back outside once the enemies, the rain and the night are gone and the weather is mild again. Checked every few in-game minutes, also while they are still walking in (they then head straight for the room); a group that is already too cold or hot by then still leaves, and guards still fight enemies that come near.
 
+![Visitors take shelter from bad weather and enemies](Media/VisitorShelter.png)
+
 ### Confirm before closing the game window
 
 *on by default*
@@ -179,9 +195,13 @@ Slaves can sleep and recover in prisoner beds, medical ones included, so they ca
 
 Kind prisoners tend cellmates lying in bed (always without medicine, so the quality is low; doctors still tend as usual) and feed bedridden cellmates a little before wardens would, from food or a nutrient paste dispenser in the cell. Hard-working, industrious or neurotic prisoners clean their cell when they have nothing else to do, unless they are also lazy. Only prisoners with these traits do it, and only inside their own cell.
 
+![Prisoners help out by personality](Media/PrisonerHelpers.png)
+
 ### Calmer prison breaks and slave rebellions
 
 Escaping prisoners have no keys: they cannot open doors and have to break doors (or walls) to get out. Prisoners use the recreation buildings (television, chess table and so on) in the room of their own bed; slaves take recreation like colonists (except meditation), but not with buildings in prison cells. Recreation calms a prisoner the way a recent break does in vanilla (about a third less likely to break out, wearing off over 5 days), so prisoners play every couple of days; in recreation hours it raises a slave's suppression (about 10% per session). In other hours a slave slacks off on recreation now and then, more often the lower its suppression (about once in 6 days at 90%, 1.5 times a day at 70%, 8 times a day at 30%); slacking only keeps suppression from falling while it lasts, so wardens are still needed. Urgently hungry prisoners and slaves take no recreation. Instead of every prisoner in the cell, or every slave nearby, joining a break or rebellion, each one joins with a chance that drops the less inclined they are than the one who started it (recreation, a recent break, high suppression), and further with a good mood (prisoners), pain, or traits: Wimp, Nervous and Kind stay put more often, Bloodlust, Brawler and Volatile join more often, and so do malnourished prisoners and slaves while they are urgently hungry. The same mood, malnutrition, pain and traits also make each one start a break or rebellion less (or more) often; the prisoner tab tooltip lists them. Wardens arrest a prisoner walking off the map on its own (not one in a break, those fight back), and an undrafted colonist can be ordered to arrest a prisoner that got out of its cell; wardens also imprison a slave set to Imprison during a mental break that is not violent (vanilla waits it out); the arrest can still be resisted as in vanilla. Turrets shoot prisoners in a break, inside the cell too (vanilla turrets skip all prisoners).
+
+![Calmer prison breaks and slave rebellions](Media/PrisonBreak.png)
 
 ### Hide slaves from the colonist bar
 
@@ -199,6 +219,8 @@ Pawns with a passion for Shooting or Melee can pass their recreation time practi
 
 Adds a music note button to the row of toggle icons in the bottom-right corner (map and world view) that turns the background music off and on. It only silences the game's music player: the music volume in the options stays as it is, and the music is back on after the game restarts. Scrolling the mouse wheel over the button changes that music volume in 5% steps (down to 5%; use the button for silence); while muted the wheel zooms the camera as usual. The button is hidden while that volume is 0, since there is no music to turn off. A key can be bound to it in Options > Keyboard (Game section); none is set by default. Music that other mods play on their own is not affected.
 
+![Background music button](Media/MusicToggle.png)
+
 ### Cycle keys for prisoners, visitors, animals and mechs
 
 With an enemy, prisoner, visitor, colony animal, colony mech or wild animal selected, the next/previous colonist keys (default , and .) cycle through the others of the same kind on the current map instead of jumping to a colonist. Downed enemies count as enemies; pawns under fog are skipped. Slaves get their own cycle while "Hide slaves from the colonist bar" is on. With a colonist or nothing selected the keys work as usual. In every cycle, colonists included, a quiet tick plays when the keys come back to the pawn you started from.
@@ -215,11 +237,15 @@ After the camera jumps to a pawn and selects it (the next/previous colonist keys
 
 In the psychic ritual dialog, every portrait shows the pawn's psychic sensitivity in its top-left corner, and the "Not participating" list is sorted from the highest sensitivity to the lowest. Pawns already assigned to a role keep their order.
 
+![Psychic rituals: sort by psychic sensitivity](Media/PsychicRitualSensitivity.png)
+
 ### Smelt and destroy bill improvements
 
 *on by default*
 
 For smelting, destroying and apparel-burning bills. Items that have no quality now count as legendary for the bill's quality filter, so a range like awful to normal no longer smelts them (vanilla lets them through any range). Adds a "Keep X of each" repeat mode: for every item type the bill allows, the X with the highest market value on the map (which weighs quality, hit points, tainted and biocoded) are left alone and only the rest are processed. Items worn or carried by pawns are not counted.
+
+![Smelt and destroy bill improvements](Media/BillKeepCount.png)
 
 ### Readers face the way their seat faces
 
@@ -233,13 +259,21 @@ A colonist reading on a chair, stool or other seat faces the way the seat faces.
 
 Jumping the camera to a colonist (the next/previous colonist keys, double-clicking a portrait on the colonist bar, letters) puts it in the middle of the screen, where an open inspect tab (log, gear, social, character, needs, health) covers the left part. While such a tab is open, the colonist is now centred in the uncovered part of the screen to the right of the tab. Only the horizontal position changes.
 
+![Camera jumps avoid the open inspect tab](Media/InspectTabCamera.png)
+
 ### Field tending and cheaper medicine
 
 A bleeding colonist or prisoner outside a bed is tended where they are until the bleeding stops, then carried to a free bed for the rest. With no bed free, a downed one is tended where they lie for everything, and one on their feet or asleep on the ground for bleeding or a deadly disease. A downed patient who would bleed to death within 6 hours gets only medicine the doctor carries, or none, so nobody walks to a stockpile first. Better medicine only lowers a wound's infection chance and speeds its healing; it does not stop bleeding any better. So patients with no untended wound that can get infected and no disease that can kill get the cheapest medicine their medical care setting allows. Wounds that can get infected (cuts, bites, gunshots, burns, frostbite) and deadly diseases (infection, flu, plague, carcinoma and the like) still get the best, even between that disease's own tends.
 
+![Field tending and cheaper medicine](Media/FieldTending.png)
+
+![Field tending and cheaper medicine](Media/MedicineChoice.png)
+
 ### Quicksave, save and quit, Continue
 
 Press F5 during play to save right away, without opening the menu. Saves are named Quicksave-1, Quicksave-2 and so on; once all of them exist, the oldest one is overwritten, the same way autosaves rotate. Pressing again before any game time has passed (for example while paused) overwrites the same file instead. The key can be changed in Options > Keyboard (Game section). In commitment mode the game's single save file is used, like autosave. The "Really quit?" confirmation gets a "Save and quit" button that quicksaves first. The main menu gets a Continue button at the top that loads your newest save (autosaves and quicksaves included), with the usual version and mod list warnings; hover it to see which save it loads, or press Enter on the main menu to do the same (key changeable in Options > Keyboard).
+
+![Quicksave, save and quit, Continue](Media/Hotkeys.png)
 
 ### Screensaver: follow random colonists when idle
 
@@ -265,6 +299,8 @@ Trader caravans, visitors and allied reinforcements, pack animals included, no l
 
 When a hunter goes after an animal with any revenge chance on harm (for that hunter, at shooting range), the nearest free colonists with a ranged weapon and hostility response set to attack come along as guards: they follow the hunter and shoot anything that attacks them. There is no upper limit on guards: more are sent for an animal with more health or one with packmates close by that would join its revenge (one guard per 3 health scale: a grizzly bear is 2.5, a megasloth 3.6, a thrumbo 8). The hunter waits at the shooting spot until every guard is close, for up to 30 seconds (strict mode below gives the hunt up instead). Guards are only picked from colonists who are not hungry, tired, hurt or busy with work that cannot be interrupted, and they go back to normal work once the animal is down and no packmate that joined its revenge is still near the hunter. Hunts you order by hand are left alone.
 
+![Guards for dangerous hunts](Media/HuntGuard.png)
+
 ### Hybrid children keep a matching xenotype
 
 *Biotech*
@@ -279,9 +315,15 @@ On load, if any two factions with settlements on the world map have colors that 
 
 Hold the right mouse button and drag to reorder the bottom bar, the architect categories and the buildings inside them.
 
+![Drag to reorder](Media/dr_bars.gif)
+
+![Drag to reorder](Media/dr_menus.gif)
+
 ### Compact colonist bar
 
 Colonist bar portraits shrink to two thirds of their height and the rows move closer together while the mouse is away and expand again when the mouse moves over the bar. Collapsed portraits show the head only.
+
+![Compact colonist bar](Media/CompactColonistBar.gif)
 
 ## Notes
 
