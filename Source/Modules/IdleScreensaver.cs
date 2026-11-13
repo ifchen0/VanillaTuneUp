@@ -18,7 +18,8 @@ namespace VanillaTuneUp
     /// fades are on), and so does a corner message about a threat, a
     /// death or a health problem; one event shot holds off others for a few seconds. Any other input, or the game
     /// becoming paused (a threat letter pauses it), ends it: the UI and selection go back to how they were, and the
-    /// camera stays where it is unless set to go back too. The input that ends it is swallowed so the waking click or key does nothing else.
+    /// camera stays where it is unless set to go back too. The input that ends it then works as usual (a click
+    /// selects, a key does its job).
     /// The letter stack and corner messages stay on screen (optional, on by default): clicking or dismissing a letter or message, and using the
     /// letter window it opens, does not end it; the shot holds while such a window pauses the game.
     /// </summary>
@@ -86,9 +87,6 @@ namespace VanillaTuneUp
         private static bool entering;
         private static Map enteringMap;
 
-        // After waking, input events are swallowed until every key and button is released.
-        private static bool swallowInput;
-        private static int releasedFrame = -1;
 
         public static void DrawSettings(Listing_Standard listing)
         {
@@ -179,15 +177,13 @@ namespace VanillaTuneUp
             if (AnyInput())
             {
                 lastInputTime = now;
+                // Ended before the interface handles this frame's events, so the waking click or key works as usual.
                 if (active || entering)
                 {
                     AbortEntering();
                     Exit(true);
-                    swallowInput = true;
-                    releasedFrame = -1;
                 }
             }
-            UpdateSwallow();
 
             if (Current.ProgramState != ProgramState.Playing)
             {
@@ -271,20 +267,6 @@ namespace VanillaTuneUp
             enteringMap = null;
             // Whatever stopped it (a pause, a map change), the idle time starts over.
             lastInputTime = Time.realtimeSinceStartup;
-        }
-
-        private static void UpdateSwallow()
-        {
-            if (!swallowInput || Input.anyKey)
-            {
-                releasedFrame = -1;
-                return;
-            }
-            // Keep swallowing for one more frame so the release events of this frame are eaten too.
-            if (releasedFrame < 0)
-                releasedFrame = Time.frameCount;
-            else if (Time.frameCount > releasedFrame)
-                swallowInput = false;
         }
 
         private static bool OnMap(Pawn pawn) => pawn != null && pawn.Spawned && pawn.Map == map;
@@ -558,7 +540,7 @@ namespace VanillaTuneUp
 
             public static void Prefix()
             {
-                if (!active && !swallowInput)
+                if (!active)
                     return;
                 Event e = Event.current;
                 if (!(e.isMouse || e.isKey || e.type == EventType.ScrollWheel) || PassesThrough(e))
@@ -571,9 +553,31 @@ namespace VanillaTuneUp
                         return;
                     // Before the map gets the click: open or dismiss the letter under the mouse.
                     if (MouseOverLetters())
+                    {
                         Find.LetterStack.LettersOnGUI(LettersBaseY);
+                        e.Use();
+                        return;
+                    }
+                }
+                // On 1.7 the interface can get a click or key before Input reports it to the frame update, so wake
+                // here too and leave the event to the interface: the waking click or key works as usual.
+                if (Wakes(e))
+                {
+                    lastInputTime = Time.realtimeSinceStartup;
+                    Exit(true);
+                    return;
                 }
                 e.Use();
+            }
+
+            private static bool Wakes(Event e)
+            {
+                if (!Application.isFocused)
+                    return false;
+                if (e.type == EventType.MouseDown)
+                    return true;
+                return e.type == EventType.KeyDown && e.keyCode != KeyCode.None && !e.alt
+                    && !Input.GetKey(KeyCode.LeftWindows) && !Input.GetKey(KeyCode.RightWindows);
             }
         }
 
