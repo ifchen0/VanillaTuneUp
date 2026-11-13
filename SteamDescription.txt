@@ -1,4 +1,5 @@
 Small fixes and optional tweaks for vanilla RimWorld, collected in one mod.
+Full description of every part: [url=https://github.com/ifchen0/VanillaTuneUp#readme]README on GitHub[/url] (the same text is shown in the mod settings).
 
 [h2]How it works[/h2][list]
 [*]Turn each part on or off in [i]Options > Mod settings > Vanilla Tune-Up[/i] (restart to apply).
@@ -24,35 +25,36 @@ Small fixes and optional tweaks for vanilla RimWorld, collected in one mod.
 [h2]Tweaks[/h2][list]
 [*][b]Xenogerm queue[/b] (Biotech): a bill-style queue for the gene assembler.
 [*][b]Mute labor and birth sounds[/b] (Biotech).
-[*][b]Remove fog of war:[/b] reveals the map except where revealing would trigger something.
+[*][b]Remove fog of war:[/b] except where revealing would trigger something.
 [*][b]Faction icons in caravan lists[/b] (on by default).
 [*][b]Caravan encounters stay on the current map[/b] (on by default).
-[*][b]Pin resources[/b] (on by default): double-click a resource to keep it shown while its category is collapsed.
+[*][b]Pin resources[/b] (on by default): double-click a resource to keep it shown.
 [*][b]Nutrient paste stock[/b] (on by default): "dispense until you have X" for paste dispensers.
-[*][b]Mod update notes[/b] (on by default, Steam): the main menu lists recently updated Workshop mods with their change notes.
-[*][b]Break up social fights:[/b] bystanders may step in; Social skill helps, a failed attempt can become a brawl; a bad mood means more insults and fights.
-[*][b]Short names on the map[/b] (on by default): long pawn names are cut so they do not cover neighbours.
+[*][b]Mod update notes[/b] (on by default, Steam): the main menu lists recently updated mods with their change notes.
+[*][b]Break up social fights:[/b] bystanders may step in, and a bad mood means more insults and fights.
+[*][b]Short names on the map[/b] (on by default): long pawn names no longer cover neighbours.
 [*][b]Ghouls can wear apparel[/b] (Anomaly): still no weapons.
-[*][b]Caravan: abandon all dead at once[/b] (on by default): one button for every human corpse and tainted apparel.
-[*][b]Taskbar letter badge[/b] (on by default, Windows): the taskbar button shows how many letters are waiting.
+[*][b]Caravan: abandon all dead at once[/b] (on by default).
+[*][b]Taskbar letter badge[/b] (on by default, Windows): shows how many letters are waiting.
 [*][b]Right-click to dismiss bundled letters[/b] (on by default).
-[*][b]Visitors take shelter:[/b] caravans and visitors wait indoors in cold, heat, rain or danger instead of leaving early, and sleep indoors at night.
+[*][b]Visitors take shelter:[/b] caravans and visitors wait indoors from bad weather or danger instead of leaving early.
 [*][b]Confirm before closing the game window[/b] (on by default).
-[*][b]Slaves use prisoner beds[/b] (Ideology): slaves sleep and recover in prisoner beds, so no separate slave rooms or hospital; they take any free one instead of claiming it, leaving room for new prisoners.
-[*][b]Prisoners help out by personality:[/b] kind prisoners tend (without medicine) and feed bedridden cellmates; hard-working or neurotic ones clean their cell.
-[*][b]Calmer prison breaks and slave rebellions:[/b] no keys for escapees; recreation (not when urgently hungry) calms prisoners and raises slaves' suppression; mood, malnutrition, pain and traits decide how often each one starts one and whether they join; wardens arrest lone escapees, undrafted colonists can arrest prisoners out of their cell; wardens imprison slaves set to Imprison during a non-violent mental break; turrets shoot prisoners in a break. Not meant for use with other prison overhaul mods.
+[*][b]Slaves use prisoner beds[/b] (Ideology): no separate slave rooms or hospital needed.
+[*][b]Prisoners help out by personality:[/b] kind ones tend and feed cellmates, hard-working ones clean.
+[*][b]Calmer prison breaks and slave rebellions:[/b] mood, pain and traits decide who breaks out; recreation calms them; wardens arrest lone escapees.
 [*][b]Hide slaves from the colonist bar[/b] (Ideology).
-[*][b]Practice on trees for recreation:[/b] Shooting or Melee passion = shoot at trees away from home with a gun or hit them with a melee weapon, without damaging them; stray shots never hit anyone. Psychopaths and bloodlust pawns also use enemy and animal corpses.
-[*][b]Background music button[/b] (on by default): a music note in the bottom-right toggle icons mutes the music (the volume setting is left alone); scroll over it to change the music volume.
-[*][b]Cycle keys for prisoners, visitors, animals and mechs:[/b] with an enemy, prisoner, visitor, animal or mech selected, [b],[/b] and [b].[/b] cycle through the others of the same kind on the map instead of jumping to a colonist.
-[*][b]Camera follows the pawn it jumped to[/b] (on by default): after [b],[/b] / [b].[/b], a portrait double-click, an alert or a letter, the camera stays on that pawn until you move it or select something else.
-[*][b]Psychic rituals sorted by psychic sensitivity[/b] (Anomaly, on by default): portraits in the psychic ritual dialog show each pawn's sensitivity, and the "Not participating" list is sorted highest first.
-[*][b]Smelt and destroy bills: keep X of each[/b] (on by default): "Keep X of each" replaces the unusable "Do until you have X"; the X most valuable of every item type stay, only the rest are smelted or destroyed. Items without quality no longer slip through a quality filter.
+[*][b]Practice on trees for recreation:[/b] Shooting or Melee passion pawns train on trees, harmlessly.
+[*][b]Background music button[/b] (on by default): mute the music or scroll to change its volume.
+[*][b]Cycle keys for prisoners, visitors, animals and mechs:[/b] [b],[/b] and [b].[/b] cycle through pawns of the selected kind.
+[*][b]Camera follows the pawn it jumped to[/b] (on by default): after [b],[/b] / [b].[/b], a portrait double-click, an alert or a letter.
+[*][b]Psychic rituals sorted by psychic sensitivity[/b] (Anomaly, on by default).
+[*][b]Smelt and destroy bills: keep X of each[/b] (on by default): the most valuable X of each item stay.
+[*][b]Readers face the way their seat faces[/b] (on by default): no more reading backwards on a chair because a dresser or end table stands next to it.
 [*][b]Camera jumps avoid the open inspect tab[/b] (on by default): the colonist is centred beside the tab, not under it.
-[*][b]Field tending and cheaper medicine:[/b] bleeding patients outside a bed get the bleeding stopped where they are, then go to a free bed; with no bed free they are tended where they are, even on their feet if bleeding or deadly ill; minor wounds get the cheapest allowed medicine.
-[*][b]Quicksave, save and quit, Continue:[/b] F5 quicksave, a "Save and quit" button and a main menu Continue button.
-[*][b]Screensaver[/b] (on by default): when idle with the game running, hides the interface like F11 and follows random awake colonists with a slow zoom and a fade between them; event letters and threat messages cut to their target; scroll zooms and the next/previous colonist keys switch colonists; any other key, click or a pause ends it. Letters stay on screen and can be opened or dismissed without ending it.
-[*][b]Refugees change their clothes[/b] (Royalty): hospitality refugees follow an apparel policy, optionally one you pick, and replace worn-out clothes.
+[*][b]Field tending and cheaper medicine:[/b] bleeding is stopped where the patient lies; minor wounds get the cheapest medicine.
+[*][b]Quicksave, save and quit, Continue:[/b] F5 quicksave plus Save and quit and Continue buttons.
+[*][b]Screensaver[/b] (on by default): when idle, hides the interface and follows random colonists, cutting to events; letters stay usable.
+[*][b]Refugees change their clothes[/b] (Royalty): hospitality refugees follow an apparel policy.
 [*][b]Default policies for new prisoners and slaves:[/b] the food policy you pick, plus an apparel policy for slaves.
 [*][b]Visitors leave colony food alone:[/b] until their own runs out and they get hungry enough.
 [*][b]Guards for dangerous hunts:[/b] armed colonists escort the hunter when the animal could fight back.
