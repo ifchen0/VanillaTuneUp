@@ -14,7 +14,8 @@ namespace VanillaTuneUp
     /// while the game is running (not paused), the UI is hidden as in screenshot mode (F11) and the camera follows a
     /// random awake colonist on the current map, switching to another one every few seconds. Camera work, each on by
     /// default and optional: a slow zoom in or out during each shot and a fade to black between colonists. An event or
-    /// threat letter that does not pause the game cuts to what it points at for one shot, and so does a corner message about a threat, a
+    /// threat letter that does not pause the game goes to what it points at for one shot (through black when
+    /// fades are on), and so does a corner message about a threat, a
     /// death or a health problem; one event shot holds off others for a few seconds. Any other input, or the game
     /// becoming paused (a threat letter pauses it), ends it: the UI and selection go back to how they were, and the
     /// camera stays where it is unless set to go back too. The input that ends it is swallowed so the waking click or key does nothing else.
@@ -65,6 +66,8 @@ namespace VanillaTuneUp
 
         // Fade to black before the next random colonist.
         private static bool fadePending;
+        // An event waiting for the screen to go black; Invalid for a random colonist.
+        private static LocalTargetInfo pendingEvent = LocalTargetInfo.Invalid;
         private static float fadeAt;
         // Our own black overlay, alpha moving from overlayFrom to overlayTo between the two times. Vanilla's ScreenFader
         // is not used: while it fades, vanilla takes control away from the player, and that also blocks the automatic
@@ -301,6 +304,17 @@ namespace VanillaTuneUp
                 if (now < fadeAt)
                     return;
                 fadePending = false;
+                LocalTargetInfo eventTarget = pendingEvent;
+                pendingEvent = LocalTargetInfo.Invalid;
+                // An event's thing that is gone by now still shows where it was.
+                if (eventTarget.HasThing && !eventTarget.Thing.SpawnedOrAnyParentSpawned)
+                    eventTarget = eventTarget.Thing.PositionHeld.IsValid ? new LocalTargetInfo(eventTarget.Thing.PositionHeld) : LocalTargetInfo.Invalid;
+                if (eventTarget.IsValid)
+                {
+                    StartShot(eventTarget, true, afterFade: true);
+                    FadeIn(now);
+                    return;
+                }
                 Pawn faded = PickPawn(map, followed);
                 if (faded == null)
                 {
@@ -363,6 +377,7 @@ namespace VanillaTuneUp
         private static void CancelFade()
         {
             fadePending = false;
+            pendingEvent = LocalTargetInfo.Invalid;
             overlayFrom = overlayTo = 0f;
             overlayStart = overlayEnd = 0f;
         }
@@ -416,7 +431,18 @@ namespace VanillaTuneUp
             if (!target.IsValid)
                 return;
             lastEventShot = now;
-            StartShot(target, true);
+            if (!VanillaTuneUpMod.Settings.idleScreensaverFade)
+            {
+                StartShot(target, true);
+                return;
+            }
+            // Fade out first, like a switch; a switch already fading out just goes to the event instead.
+            if (!fadePending)
+            {
+                FadeOut(now);
+                fadePending = true;
+            }
+            pendingEvent = target;
         }
 
         /// <summary>The first target on the screensaver's map, or Invalid.</summary>
