@@ -19,7 +19,7 @@ namespace VanillaTuneUp
     /// death or a health problem; one event shot holds off others for a few seconds. Any other input, or the game
     /// becoming paused (a threat letter pauses it), ends it: the UI and selection go back to how they were, and the
     /// camera stays where it is unless set to go back too. The input that ends it is swallowed so the waking click or key does nothing else.
-    /// The letter stack stays on screen (optional, on by default): clicking or dismissing a letter, and using the
+    /// The letter stack and corner messages stay on screen (optional, on by default): clicking or dismissing a letter or message, and using the
     /// letter window it opens, does not end it; the shot holds while such a window pauses the game.
     /// </summary>
     public static class IdleScreensaver
@@ -104,7 +104,7 @@ namespace VanillaTuneUp
             listing.CheckboxLabeled("VTU_IdleScreensaverLetters".Translate(), ref settings.idleScreensaverLetters);
         }
 
-        /// <summary>The letter stack is drawn over the screensaver and takes clicks.</summary>
+        /// <summary>The letter stack and the corner messages are drawn over the screensaver and take clicks.</summary>
         private static bool ShowLetters => active && VanillaTuneUpMod.Settings.idleScreensaverLetters && Find.CurrentMap == map;
 
         /// <summary>
@@ -123,6 +123,13 @@ namespace VanillaTuneUp
                 && mouse.y >= Find.LetterStack.LastTopY && mouse.y <= LettersBaseY;
         }
 
+        /// <summary>The mouse is on a corner message that is still showing.</summary>
+        private static bool MouseOverMessages()
+        {
+            Vector2 mouse = UI.MousePositionOnUIInverted;
+            return Messages.CollidesWithAnyMessage(new Rect(mouse.x, mouse.y, 1f, 1f), out float alpha) && alpha > 0f;
+        }
+
         /// <summary>
         /// A key press, mouse click or scroll in the focused game window. Mouse movement alone is not input, so moving
         /// across the window to work in another program keeps it idle; keys held with Alt or the Windows key are
@@ -137,7 +144,7 @@ namespace VanillaTuneUp
                 // Judged once when the press begins: a right click removes the letter on the way down, so the
                 // stack shrinks from under a cursor whose button is still held.
                 if (!mouseHeld)
-                    letterPress = ShowLetters && (Reading || MouseOverLetters());
+                    letterPress = ShowLetters && (Reading || MouseOverLetters() || MouseOverMessages());
                 mouseHeld = true;
                 return !letterPress;
             }
@@ -527,7 +534,8 @@ namespace VanillaTuneUp
         [HarmonyPatch(typeof(UIRoot_Play), nameof(UIRoot_Play.UIRootOnGUI))]
         public static class Patch_UIRootOnGUI
         {
-            // Drawn after the whole interface, so the fade covers it too while the screensaver is starting.
+            // Drawn after the whole interface, so the fade covers it too while the screensaver is starting. Windows
+            // (corner messages, tooltips, open letters) are drawn by Unity after all other GUI, so they stay on top.
             public static void Postfix()
             {
                 if (Event.current.type != EventType.Repaint)
@@ -541,7 +549,11 @@ namespace VanillaTuneUp
                 }
                 // Over the fade, so the letters stay put between shots. Clicks on them are handled in the prefix.
                 if (ShowLetters)
+                {
                     Find.LetterStack.LettersOnGUI(LettersBaseY);
+                    // Each message is a small window the window stack draws (and lets click) from the next frame on.
+                    Messages.MessagesDoGUI();
+                }
             }
 
             public static void Prefix()
@@ -553,8 +565,9 @@ namespace VanillaTuneUp
                     return;
                 if (e.isMouse && ShowLetters)
                 {
-                    // An open letter window gets the mouse.
-                    if (Reading)
+                    // An open letter window, or a message's own window (click to jump, right-click to dismiss), gets
+                    // the mouse.
+                    if (Reading || MouseOverMessages())
                         return;
                     // Before the map gets the click: open or dismiss the letter under the mouse.
                     if (MouseOverLetters())

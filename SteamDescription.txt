@@ -53,7 +53,7 @@ Full description of every part: [url=https://github.com/ifchen0/VanillaTuneUp#re
 [*][b]Camera jumps avoid the open inspect tab[/b] (on by default): the colonist is centred beside the tab, not under it.
 [*][b]Field tending and cheaper medicine:[/b] bleeding is stopped where the patient lies; minor wounds get the cheapest medicine.
 [*][b]Quicksave, save and quit, Continue:[/b] F5 quicksave plus Save and quit and Continue buttons.
-[*][b]Screensaver[/b] (on by default): when idle, hides the interface and follows random colonists, cutting to events; letters stay usable.
+[*][b]Screensaver[/b] (on by default): when idle, hides the interface and follows random colonists, cutting to events; letters and messages stay usable.
 [*][b]Refugees change their clothes[/b] (Royalty): hospitality refugees follow an apparel policy.
 [*][b]Default policies for new prisoners and slaves:[/b] the food policy you pick, plus an apparel policy for slaves.
 [*][b]Visitors leave colony food alone:[/b] until their own runs out and they get hungry enough.
