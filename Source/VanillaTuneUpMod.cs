@@ -182,6 +182,7 @@ namespace VanillaTuneUp
             },
             new TuneUpModule("IdleScreensaver", true, null)
             {
+                OnByDefault = true,
                 DrawSettings = IdleScreensaver.DrawSettings
             },
             new TuneUpModule("RefugeeApparel", true, null)
