@@ -146,7 +146,7 @@ namespace VanillaTuneUp
             }
             UpdateSwallow();
 
-            if (Current.ProgramState != ProgramState.Playing || LongEventHandler.ShouldWaitForEvent)
+            if (Current.ProgramState != ProgramState.Playing)
             {
                 AbortEntering();
                 if (active)
@@ -155,6 +155,10 @@ namespace VanillaTuneUp
                 lastInputTime = now;
                 return;
             }
+            // An autosave (or another long event) pauses the game for a moment: hold still and carry on afterwards,
+            // instead of taking it for a real pause. A save being loaded ends it through ClearAllMapsAndWorld.
+            if (LongEventHandler.AnyEventNowOrWaiting)
+                return;
 
             if (active)
             {
