@@ -165,6 +165,7 @@ namespace VanillaTuneUp
                 UnavailableKey = "VTU_RequiresAnomaly"
             },
             new TuneUpModule("BillKeepCount", true, null) { OnByDefault = true },
+            new TuneUpModule("ReadingSeatFacing", true, null) { OnByDefault = true },
             // Modules with extra settings go last, the longest at the end, so plain toggles stay near the top.
             new TuneUpModule("InspectTabCamera", true, null)
             {

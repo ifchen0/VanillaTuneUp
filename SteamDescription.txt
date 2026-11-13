@@ -48,6 +48,7 @@ Small fixes and optional tweaks for vanilla RimWorld, collected in one mod.
 [*][b]Camera follows the pawn it jumped to[/b] (on by default): after [b],[/b] / [b].[/b], a portrait double-click, an alert or a letter, the camera stays on that pawn until you move it or select something else.
 [*][b]Psychic rituals sorted by psychic sensitivity[/b] (Anomaly, on by default): portraits in the psychic ritual dialog show each pawn's sensitivity, and the "Not participating" list is sorted highest first.
 [*][b]Smelt and destroy bills: keep X of each[/b] (on by default): "Keep X of each" replaces the unusable "Do until you have X"; the X most valuable of every item type stay, only the rest are smelted or destroyed. Items without quality no longer slip through a quality filter.
+[*][b]Readers face the way their seat faces[/b] (on by default): no more reading backwards on a chair because a dresser or end table stands next to it.
 [*][b]Camera jumps avoid the open inspect tab[/b] (on by default): the colonist is centred beside the tab, not under it.
 [*][b]Field tending and cheaper medicine:[/b] bleeding patients outside a bed get the bleeding stopped where they are, then go to a free bed; with no bed free they are tended where they are, even on their feet if bleeding or deadly ill; minor wounds get the cheapest allowed medicine.
 [*][b]Quicksave, save and quit, Continue:[/b] F5 quicksave, a "Save and quit" button and a main menu Continue button.

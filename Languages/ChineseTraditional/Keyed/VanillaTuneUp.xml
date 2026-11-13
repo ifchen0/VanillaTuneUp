@@ -90,6 +90,8 @@
   <VTU_BillKeepCount_Dialog>每種物品保留：{0}</VTU_BillKeepCount_Dialog>
   <VTU_BillKeepCount_Surplus>目前可處理的多餘數量：{0}</VTU_BillKeepCount_Surplus>
   <VTU_BillKeepCount_Note>地圖上每種物品市場價值最高的X個會留下（價值已綜合品質、耐久、死人穿過、生物編碼），不受這張bill的品質、耐久過濾影響。其餘的通過過濾才會處理。角色身上穿的、拿著的不算。</VTU_BillKeepCount_Note>
+  <VTU_ReadingSeatFacing>讀書時面向座位的方向</VTU_ReadingSeatFacing>
+  <VTU_ReadingSeatFacing_Desc>坐在椅子、凳子等座位上讀書時，會面向座位朝的方向。原版會轉向座位旁的桌子、抽屜櫃、床頭櫃、置物架或工作台，就算因此背對椅子也一樣。只改變外觀，讀書效果不變。沒有座位、站著讀書的維持原版。</VTU_ReadingSeatFacing_Desc>
   <VTU_RefugeeApparel>難民會自己換衣服</VTU_RefugeeApparel>
   <VTU_RefugeeApparel_Desc>收容難民任務的難民可以在指派分頁設定穿著計畫，並像殖民者一樣自己換掉破舊的衣服；也可以指定新到難民套用的穿著計畫。他們來時穿的衣服要等破損後才會換下，任務結束時身上穿的衣服會跟著離開。衛兵、皇室客人等其他任務寄宿者仍維持原本的穿著。</VTU_RefugeeApparel_Desc>
   <VTU_RefugeeApparelLabel>新到難民套用的穿著計畫</VTU_RefugeeApparelLabel>

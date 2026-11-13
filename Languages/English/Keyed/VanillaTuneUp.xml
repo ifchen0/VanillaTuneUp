@@ -90,6 +90,8 @@
   <VTU_BillKeepCount_Dialog>Keep of each item: {0}</VTU_BillKeepCount_Dialog>
   <VTU_BillKeepCount_Surplus>Surplus to process now: {0}</VTU_BillKeepCount_Surplus>
   <VTU_BillKeepCount_Note>The X of each item type with the highest market value on the map are kept (market value weighs quality, hit points, tainted and biocoded), whatever this bill's quality and hit point filters say. The rest are processed if they pass those filters. Items worn or carried by pawns are not counted.</VTU_BillKeepCount_Note>
+  <VTU_ReadingSeatFacing>Readers face the way their seat faces</VTU_ReadingSeatFacing>
+  <VTU_ReadingSeatFacing_Desc>A colonist reading on a chair, stool or other seat faces the way the seat faces. Vanilla turns them towards any table, dresser, end table, shelf or workbench next to the seat, even when that means sitting backwards. Only the look changes; reading works the same. Readers standing without a seat are unchanged.</VTU_ReadingSeatFacing_Desc>
   <VTU_RefugeeApparel>Refugees change their clothes</VTU_RefugeeApparel>
   <VTU_RefugeeApparel_Desc>Refugees from the hospitality quest get an apparel policy in the Assign tab and replace worn-out clothes on their own, like colonists; arriving refugees can be given a policy of your choice. The clothes they arrived in stay on until they are tattered, and anything they put on leaves with them when the quest ends. Other quest lodgers, such as guards and royal guests, still keep their own outfit.</VTU_RefugeeApparel_Desc>
   <VTU_RefugeeApparelLabel>Apparel policy for arriving refugees</VTU_RefugeeApparelLabel>
