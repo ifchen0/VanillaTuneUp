@@ -180,6 +180,10 @@ namespace VanillaTuneUp
             {
                 DrawSettings = Quicksave.DrawSettings
             },
+            new TuneUpModule("IdleScreensaver", true, null)
+            {
+                DrawSettings = IdleScreensaver.DrawSettings
+            },
             new TuneUpModule("RefugeeApparel", true, null)
             {
                 IsAvailable = () => ModsConfig.RoyaltyActive,
@@ -246,6 +250,9 @@ namespace VanillaTuneUp
         public float factionColorMinDistance = FactionColors.DefaultMinDistance;
         public bool huntGuardStrict;
         public int quicksaveCount = Quicksave.DefaultCount;
+        // Screensaver: idle minutes before it starts, seconds per followed colonist.
+        public int idleScreensaverMinutes = 5;
+        public int idleScreensaverSwitchSeconds = 30;
         public bool inspectTabCameraOnOpen = true;
         public bool fieldTendBeforeCapture = true;
         public List<string> pinnedResources = new List<string>();
@@ -338,6 +345,8 @@ namespace VanillaTuneUp
             Scribe_Values.Look(ref factionColorMinDistance, "factionColorMinDistance", FactionColors.DefaultMinDistance);
             Scribe_Values.Look(ref huntGuardStrict, "huntGuardStrict", false);
             Scribe_Values.Look(ref quicksaveCount, "quicksaveCount", Quicksave.DefaultCount);
+            Scribe_Values.Look(ref idleScreensaverMinutes, "idleScreensaverMinutes", 5);
+            Scribe_Values.Look(ref idleScreensaverSwitchSeconds, "idleScreensaverSwitchSeconds", 30);
             Scribe_Values.Look(ref inspectTabCameraOnOpen, "inspectTabCameraOnOpen", true);
             Scribe_Values.Look(ref fieldTendBeforeCapture, "fieldTendBeforeCapture", true);
             Scribe_Values.Look(ref compactBarShowLabels, "compactBarShowLabels", true);

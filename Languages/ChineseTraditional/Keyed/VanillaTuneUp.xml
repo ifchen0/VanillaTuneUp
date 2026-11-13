@@ -199,6 +199,11 @@
   <VTU_QuicksaveCount>保留的快速存檔數量：{0}</VTU_QuicksaveCount>
   <VTU_QuicksaveUnavailable>目前無法存檔。</VTU_QuicksaveUnavailable>
 
+  <VTU_IdleScreensaver>螢幕保護：閒置時隨機跟隨殖民者</VTU_IdleScreensaver>
+  <VTU_IdleScreensaver_Desc>遊戲運行中（未暫停）且一段時間沒有按鍵、滑鼠點擊或滾輪操作時（移動滑鼠和Alt+Tab這類Alt或Windows鍵組合不算，可以自由切換到其他視窗），介面會像截圖模式（F11）一樣隱藏，鏡頭拉近（每位殖民者隨機遠近）並隨機跟隨目前地圖上一位醒著的殖民者，每隔一段時間換一位。執行中可以照常用滾輪縮放、用上一個／下一個殖民者快速鍵切換殖民者。按其他鍵、點擊、或遊戲暫停（威脅信件會自動暫停）時結束，介面、鏡頭位置、縮放和選取都會恢復原狀。用來結束的按鍵或點擊不會觸發其他動作。</VTU_IdleScreensaver_Desc>
+  <VTU_IdleScreensaverDelay>閒置幾分鐘後啟動：{0}</VTU_IdleScreensaverDelay>
+  <VTU_IdleScreensaverSwitch>每{0}秒換一位殖民者</VTU_IdleScreensaverSwitch>
+
   <!-- Xenogerm queue -->
   <VTU_XQ_AddToQueue>加入佇列</VTU_XQ_AddToQueue>
   <VTU_XQ_AddToQueueDesc>把這個異種細胞加入組裝機的佇列，而不是取代目前的工作。佇列中的項目會像工作台帳單一樣依序自動開始。</VTU_XQ_AddToQueueDesc>

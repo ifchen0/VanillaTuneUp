@@ -51,6 +51,7 @@ Small fixes and optional tweaks for vanilla RimWorld, collected in one mod.
 [*][b]Camera jumps avoid the open inspect tab[/b] (on by default): the colonist is centred beside the tab, not under it.
 [*][b]Field tending and cheaper medicine:[/b] bleeding patients outside a bed get the bleeding stopped where they are, then go to a free bed; with no bed free they are tended where they are, even on their feet if bleeding or deadly ill; minor wounds get the cheapest allowed medicine.
 [*][b]Quicksave, save and quit, Continue:[/b] F5 quicksave, a "Save and quit" button and a main menu Continue button.
+[*][b]Screensaver:[/b] when idle with the game running, hides the interface like F11 and follows random awake colonists; scroll zooms and the next/previous colonist keys switch colonists; any other key, click or a pause ends it.
 [*][b]Refugees change their clothes[/b] (Royalty): hospitality refugees follow an apparel policy, optionally one you pick, and replace worn-out clothes.
 [*][b]Default policies for new prisoners and slaves:[/b] the food policy you pick, plus an apparel policy for slaves.
 [*][b]Visitors leave colony food alone:[/b] until their own runs out and they get hungry enough.
