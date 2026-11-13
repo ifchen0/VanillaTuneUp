@@ -116,17 +116,16 @@ namespace VanillaTuneUp
 
         private static bool MouseOverLetters()
         {
-            Vector2 mouse = UI.MousePositionOnUIInverted;
+            Vector2 mouse = UI.MousePosUIInvertedUseEventIfCan;
             return mouse.x >= UI.screenWidth - 50f && mouse.x <= UI.screenWidth - 12f
                 && mouse.y >= Find.LetterStack.LastTopY && mouse.y <= LettersBaseY;
         }
 
-        /// <summary>The mouse is on a corner message that is still showing.</summary>
-        private static bool MouseOverMessages()
-        {
-            Vector2 mouse = UI.MousePositionOnUIInverted;
-            return Messages.CollidesWithAnyMessage(new Rect(mouse.x, mouse.y, 1f, 1f), out float alpha) && alpha > 0f;
-        }
+        /// <summary>
+        /// The mouse is on a window: a corner message, or one opened from a letter or message such as the quest tab.
+        /// Only clicks on the map itself end the screensaver.
+        /// </summary>
+        private static bool MouseOverWindow() => Find.WindowStack.GetWindowAt(UI.MousePosUIInvertedUseEventIfCan) != null;
 
         /// <summary>
         /// A key press, mouse click or scroll in the focused game window. Mouse movement alone is not input, so moving
@@ -142,7 +141,7 @@ namespace VanillaTuneUp
                 // Judged once when the press begins: a right click removes the letter on the way down, so the
                 // stack shrinks from under a cursor whose button is still held.
                 if (!mouseHeld)
-                    letterPress = ShowLetters && (Reading || MouseOverLetters() || MouseOverMessages());
+                    letterPress = ShowLetters && (Reading || MouseOverLetters() || MouseOverWindow());
                 mouseHeld = true;
                 return !letterPress;
             }
@@ -547,9 +546,9 @@ namespace VanillaTuneUp
                     return;
                 if (e.isMouse && ShowLetters)
                 {
-                    // An open letter window, or a message's own window (click to jump, right-click to dismiss), gets
-                    // the mouse.
-                    if (Reading || MouseOverMessages())
+                    // A window gets the mouse: an open letter, a message (click to jump, right-click to dismiss), or
+                    // a window opened from one, such as the quest tab.
+                    if (Reading || MouseOverWindow())
                         return;
                     // Before the map gets the click: open or dismiss the letter under the mouse.
                     if (MouseOverLetters())
@@ -570,10 +569,9 @@ namespace VanillaTuneUp
                 e.Use();
             }
 
+            // An event reaching the interface already came to the game window, so no focus check here.
             private static bool Wakes(Event e)
             {
-                if (!Application.isFocused)
-                    return false;
                 if (e.type == EventType.MouseDown)
                     return true;
                 return e.type == EventType.KeyDown && e.keyCode != KeyCode.None && !e.alt
