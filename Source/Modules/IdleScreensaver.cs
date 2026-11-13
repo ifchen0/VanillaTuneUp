@@ -10,11 +10,14 @@ using Verse.Profile;
 namespace VanillaTuneUp
 {
     /// <summary>
-    /// Screensaver: after a stretch without key, mouse button or scroll wheel input (mouse movement does not count) while the game is running (not paused), the UI is
-    /// hidden as in screenshot mode (F11) and the camera follows a random awake colonist on the current map, switching
-    /// to another one every few seconds. Any such input, or the game becoming paused (a threat letter pauses it), ends it:
-    /// the UI, camera position and selection go back to how they were. The input that ends it is swallowed so the
-    /// waking click or key does nothing else.
+    /// Screensaver: after a stretch without key, mouse button or scroll wheel input (mouse movement does not count)
+    /// while the game is running (not paused), the UI is hidden as in screenshot mode (F11) and the camera follows a
+    /// random awake colonist on the current map, switching to another one every few seconds. Camera work, each on by
+    /// default and optional: a slow zoom in or out during each shot and a fade to black between colonists. An event or
+    /// threat letter that does not pause the game cuts to what it points at for one shot, and so does a corner message about a threat, a
+    /// death or a health problem; one event shot holds off others for a few seconds. Any other input, or the game
+    /// becoming paused (a threat letter pauses it), ends it: the UI and selection go back to how they were, and the
+    /// camera stays where it is unless set to go back too. The input that ends it is swallowed so the waking click or key does nothing else.
     /// </summary>
     public static class IdleScreensaver
     {
@@ -27,11 +30,15 @@ namespace VanillaTuneUp
         private static readonly AccessTools.FieldRef<CameraDriver, float> DesiredSize =
             AccessTools.FieldRefAccess<CameraDriver, float>("desiredSize");
 
-        // Each colonist gets a random zoom from the closest zoom allowed (vanilla 11; camera mods such as SimpleCameraSetting
-        // or Camera+ lower it) up to this, close enough to see what they are doing (vanilla default is 24).
+        // Each shot gets a random zoom from the closest zoom allowed (vanilla 11; camera mods such as SimpleCameraSetting
+        // or Camera+ lower it) up to this, close enough to see what the colonist is doing (vanilla default is 24).
         private const float ZoomFar = 16f;
         // Same follow speed as CameraFollow.
         private const float Tightness = 10f;
+        private const float FadeSeconds = 0.5f;
+        // After an event shot, later events within this many seconds are ignored.
+        private const float EventShotBuffer = 5f;
+        private static float lastEventShot = -EventShotBuffer;
 
         private static float lastInputTime;
 
@@ -41,10 +48,28 @@ namespace VanillaTuneUp
         private static float savedCameraSize;
         private static bool savedScreenshotMode;
         private static readonly List<object> savedSelection = new List<object>();
+
+        // What the current shot shows: a pawn to follow, or else a letter's thing or cell.
         private static Pawn followed;
-        private static float followedSince;
-        // The followed pawn came from the next/previous colonist keys, not from a random pick.
-        private static bool pickedByPlayer;
+        private static LocalTargetInfo spot = LocalTargetInfo.Invalid;
+        private static Vector3 lastSpotPos;
+        private static float shotSince;
+        // The shot came from the next/previous colonist keys or a letter: it stays until the next switch.
+        private static bool held;
+
+        // Slow zoom during the shot; stops for the shot once the player zooms.
+        private static bool drifting;
+        private static float zoomFrom;
+        private static float zoomTo;
+        private static float lastSetSize;
+
+        // Fade to black before the next random colonist.
+        private static bool fadePending;
+        private static float fadeAt;
+        private static bool fadeUsed;
+        // Fading out before the screensaver starts; the interface is still up.
+        private static bool entering;
+        private static Map enteringMap;
 
         // After waking, input events are swallowed until every key and button is released.
         private static bool swallowInput;
@@ -58,6 +83,9 @@ namespace VanillaTuneUp
             listing.Label("VTU_IdleScreensaverSwitch".Translate(settings.idleScreensaverSwitchSeconds));
             settings.idleScreensaverSwitchSeconds =
                 Mathf.RoundToInt(listing.Slider(settings.idleScreensaverSwitchSeconds, 10f, 120f) / 5f) * 5;
+            listing.CheckboxLabeled("VTU_IdleScreensaverDrift".Translate(), ref settings.idleScreensaverZoomDrift);
+            listing.CheckboxLabeled("VTU_IdleScreensaverFade".Translate(), ref settings.idleScreensaverFade);
+            listing.CheckboxLabeled("VTU_IdleScreensaverStay".Translate(), ref settings.idleScreensaverStayOnExit);
         }
 
         /// <summary>
@@ -99,8 +127,9 @@ namespace VanillaTuneUp
             if (AnyInput())
             {
                 lastInputTime = now;
-                if (active)
+                if (active || entering)
                 {
+                    AbortEntering();
                     Exit(true);
                     swallowInput = true;
                     releasedFrame = -1;
@@ -110,6 +139,7 @@ namespace VanillaTuneUp
 
             if (Current.ProgramState != ProgramState.Playing || LongEventHandler.ShouldWaitForEvent)
             {
+                AbortEntering();
                 if (active)
                     Exit(false);
                 // Idle time only counts on the map screen: loading a save starts the count from zero.
@@ -124,7 +154,28 @@ namespace VanillaTuneUp
                     Exit(Find.CurrentMap == map);
                     return;
                 }
-                UpdateFollowed(now);
+                UpdateShot(now);
+                return;
+            }
+
+            if (entering)
+            {
+                if (Find.CurrentMap != enteringMap || WorldRendererUtility.WorldSelected || Find.TickManager.Paused)
+                {
+                    AbortEntering();
+                    return;
+                }
+                if (now < fadeAt)
+                    return;
+                entering = false;
+                Pawn faded = PickPawn(enteringMap, null);
+                if (faded == null)
+                {
+                    CancelFade();
+                    return;
+                }
+                Enter(faded, afterFade: true);
+                ScreenFader.StartFade(Color.clear, FadeSeconds);
                 return;
             }
 
@@ -133,8 +184,29 @@ namespace VanillaTuneUp
             if (Find.CurrentMap == null || WorldRendererUtility.WorldSelected || Find.TickManager.Paused)
                 return;
             Pawn first = PickPawn(Find.CurrentMap, null);
-            if (first != null)
-                Enter(first, now);
+            if (first == null)
+                return;
+            if (VanillaTuneUpMod.Settings.idleScreensaverFade)
+            {
+                // Fade out with the interface still up; the screensaver starts once the screen is black.
+                ScreenFader.StartFade(Color.black, FadeSeconds);
+                fadeUsed = true;
+                entering = true;
+                enteringMap = Find.CurrentMap;
+                fadeAt = now + FadeSeconds;
+                return;
+            }
+            Enter(first);
+        }
+
+        /// <summary>Stops a fade-out that was leading into the screensaver; the screen clears at once.</summary>
+        private static void AbortEntering()
+        {
+            if (!entering)
+                return;
+            entering = false;
+            enteringMap = null;
+            CancelFade();
         }
 
         private static void UpdateSwallow()
@@ -151,8 +223,9 @@ namespace VanillaTuneUp
                 swallowInput = false;
         }
 
-        private static bool Watchable(Pawn pawn) =>
-            pawn != null && pawn.Spawned && pawn.Map == map && !pawn.Downed && pawn.Awake();
+        private static bool OnMap(Pawn pawn) => pawn != null && pawn.Spawned && pawn.Map == map;
+
+        private static bool Watchable(Pawn pawn) => OnMap(pawn) && !pawn.Downed && pawn.Awake();
 
         /// <summary>A random awake free colonist other than <paramref name="except"/>; any colonist if none is awake.</summary>
         private static Pawn PickPawn(Map onMap, Pawn except)
@@ -166,8 +239,9 @@ namespace VanillaTuneUp
             return colonists.Where(p => p != except).RandomElementWithFallback();
         }
 
-        private static void Enter(Pawn first, float now)
+        private static void Enter(Pawn first, bool afterFade = false)
         {
+            enteringMap = null;
             map = Find.CurrentMap;
             CameraDriver driver = Find.CameraDriver;
             savedCameraPos = RootPos(driver);
@@ -175,11 +249,9 @@ namespace VanillaTuneUp
             savedScreenshotMode = Find.UIRoot.screenshotMode.Active;
             savedSelection.Clear();
             savedSelection.AddRange(Find.Selector.SelectedObjects);
-            // Selection brackets would show in the footage, and CameraFollow lets go of a pawn that is no longer selected.
-            Find.Selector.ClearSelection();
             Find.UIRoot.screenshotMode.Active = true;
             active = true;
-            SwitchTo(first, now);
+            StartShot(first, false, afterFade);
         }
 
         // Sets the fields directly: the RootSize setter zooms toward the mouse, which would pull the camera off the pawn.
@@ -187,43 +259,90 @@ namespace VanillaTuneUp
         {
             RootSizeRef(driver) = size;
             DesiredSize(driver) = size;
+            lastSetSize = size;
         }
 
-        private static void SwitchTo(Pawn pawn, float now)
+        /// <summary>Cuts to <paramref name="target"/> (a pawn is followed) with a new zoom.</summary>
+        private static void StartShot(LocalTargetInfo target, bool hold, bool afterFade = false)
         {
-            followed = pawn;
-            followedSince = now;
-            pickedByPlayer = false;
-            if (pawn == null)
-                return;
-            // A colonist picked with the next/previous keys is selected, and CameraFollow follows it; let go of it.
+            // A cut in the middle of a fade (letter) clears the screen; the end of our own fade-out keeps it black.
+            if (!afterFade)
+                CancelFade();
+            followed = target.Thing as Pawn;
+            spot = followed == null ? target : LocalTargetInfo.Invalid;
+            lastSpotPos = target.CenterVector3;
+            shotSince = Time.realtimeSinceStartup;
+            held = hold;
+            // Selection brackets would show in the footage, and CameraFollow follows a selected pawn it jumped to.
             if (Find.Selector.NumSelected > 0)
                 Find.Selector.ClearSelection();
             CameraDriver driver = Find.CameraDriver;
-            driver.JumpToCurrentMapLoc(pawn.DrawPos);
+            driver.JumpToCurrentMapLoc(target.CenterVector3);
             float near = driver.config.sizeRange.min;
             float far = Mathf.Clamp(ZoomFar, near, driver.config.sizeRange.max);
-            SetSize(driver, Rand.Range(near, far));
+            float mid = (near + far) / 2f;
+            zoomFrom = Rand.Range(near, far);
+            // Drift toward the other half of the range so every shot moves a noticeable amount, in or out.
+            zoomTo = zoomFrom < mid ? Rand.Range(mid, far) : Rand.Range(near, mid);
+            drifting = VanillaTuneUpMod.Settings.idleScreensaverZoomDrift;
+            SetSize(driver, zoomFrom);
         }
 
-        private static void UpdateFollowed(float now)
+        private static void UpdateShot(float now)
         {
-            bool due = now - followedSince >= VanillaTuneUpMod.Settings.idleScreensaverSwitchSeconds;
-            if (!due && Watchable(followed))
+            if (fadePending)
+            {
+                if (now < fadeAt)
+                    return;
+                fadePending = false;
+                Pawn faded = PickPawn(map, followed);
+                if (faded == null)
+                {
+                    Exit(true);
+                    return;
+                }
+                StartShot(faded, false, afterFade: true);
+                ScreenFader.StartFade(Color.clear, FadeSeconds);
                 return;
-            // A colonist the player picked stays on screen until the next switch, even asleep.
-            if (!due && pickedByPlayer && followed != null && followed.Spawned && followed.Map == map)
-                return;
-            if (!due && followed != null && followed.Spawned && followed.Map == map
-                && !map.mapPawns.FreeColonistsSpawned.Any(p => p != followed && !p.Downed && p.Awake()))
-                return; // Fell asleep or down, but nobody else is awake to switch to: stay until the next switch.
+            }
+
+            bool due = now - shotSince >= VanillaTuneUpMod.Settings.idleScreensaverSwitchSeconds;
+            if (!due)
+            {
+                // A picked colonist or a letter's target stays on screen until the next switch, even asleep.
+                if (held && (followed == null || OnMap(followed)))
+                    return;
+                if (Watchable(followed))
+                    return;
+                if (OnMap(followed) && !map.mapPawns.FreeColonistsSpawned.Any(p => p != followed && !p.Downed && p.Awake()))
+                    return; // Fell asleep or down, but nobody else is awake to switch to: stay until the next switch.
+            }
             Pawn next = PickPawn(map, followed);
             if (next == null)
             {
                 Exit(true);
                 return;
             }
-            SwitchTo(next, now);
+            if (VanillaTuneUpMod.Settings.idleScreensaverFade)
+            {
+                // The colonist is picked once the screen is black, so the pick is fresh.
+                ScreenFader.StartFade(Color.black, FadeSeconds);
+                fadeUsed = true;
+                fadePending = true;
+                fadeAt = now + FadeSeconds;
+                return;
+            }
+            StartShot(next, false);
+        }
+
+        /// <summary>Drops a pending fade switch and clears the screen right away if a fade of ours left it dark.</summary>
+        private static void CancelFade()
+        {
+            fadePending = false;
+            if (!fadeUsed)
+                return;
+            fadeUsed = false;
+            ScreenFader.SetColor(Color.clear);
         }
 
         /// <param name="restore">Put the camera and selection back; false when the map is gone or changed.</param>
@@ -233,12 +352,18 @@ namespace VanillaTuneUp
                 return;
             active = false;
             followed = null;
+            spot = LocalTargetInfo.Invalid;
+            drifting = false;
+            CancelFade();
             if (Find.UIRoot != null)
                 Find.UIRoot.screenshotMode.Active = savedScreenshotMode;
             if (restore && Find.CurrentMap == map && map != null)
             {
-                Find.CameraDriver.JumpToCurrentMapLoc(savedCameraPos);
-                SetSize(Find.CameraDriver, savedCameraSize);
+                if (!VanillaTuneUpMod.Settings.idleScreensaverStayOnExit)
+                {
+                    Find.CameraDriver.JumpToCurrentMapLoc(savedCameraPos);
+                    SetSize(Find.CameraDriver, savedCameraSize);
+                }
                 // Drop a colonist picked with the next/previous keys before the old selection comes back.
                 Find.Selector.ClearSelection();
                 foreach (object obj in savedSelection)
@@ -250,6 +375,47 @@ namespace VanillaTuneUp
             }
             savedSelection.Clear();
             map = null;
+        }
+
+        /// <summary>
+        /// Cuts to the first of <paramref name="lookTargets"/> on the screensaver's map for one round. A letter and a
+        /// message about the same event often arrive together, so the first event shot shuts out others for a while.
+        /// </summary>
+        private static void EventShot(LookTargets lookTargets)
+        {
+            if (!active || Find.TickManager.Paused)
+                return;
+            float now = Time.realtimeSinceStartup;
+            if (now - lastEventShot < EventShotBuffer)
+                return;
+            LocalTargetInfo target = EventTarget(lookTargets);
+            if (!target.IsValid)
+                return;
+            lastEventShot = now;
+            StartShot(target, true);
+        }
+
+        /// <summary>The first target on the screensaver's map, or Invalid.</summary>
+        private static LocalTargetInfo EventTarget(LookTargets lookTargets)
+        {
+            List<GlobalTargetInfo> targets = lookTargets?.targets;
+            if (targets == null)
+                return LocalTargetInfo.Invalid;
+            foreach (GlobalTargetInfo target in targets)
+            {
+                if (!target.IsValid || target.Map != map)
+                    continue;
+                if (target.HasThing)
+                {
+                    if (target.Thing.SpawnedOrAnyParentSpawned)
+                        return CameraJumper.GetAdjustedTarget(target).Thing is Thing adjusted && adjusted.Spawned
+                            ? new LocalTargetInfo(adjusted)
+                            : new LocalTargetInfo(target.Thing.PositionHeld);
+                }
+                else if (target.Cell.IsValid)
+                    return target.Cell;
+            }
+            return LocalTargetInfo.Invalid;
         }
 
         [HarmonyPatchCategory("IdleScreensaver")]
@@ -274,21 +440,58 @@ namespace VanillaTuneUp
         }
 
         [HarmonyPatchCategory("IdleScreensaver")]
+        [HarmonyPatch(typeof(LetterStack), nameof(LetterStack.ReceiveLetter),
+            new[] { typeof(Letter), typeof(string), typeof(int), typeof(bool) })]
+        public static class Patch_ReceiveLetter
+        {
+            // An event or threat letter that leaves the game running gets one shot of what it points at on this map.
+            // A letter that pauses the game ends the screensaver on the next frame instead.
+            public static void Postfix(LetterStack __instance, Letter let)
+            {
+                if (!active || !__instance.LettersListForReading.Contains(let))
+                    return;
+                if (let.def == LetterDefOf.NegativeEvent || let.def == LetterDefOf.ThreatSmall || let.def == LetterDefOf.ThreatBig
+                    || let.def == LetterDefOf.NeutralEvent || let.def == LetterDefOf.PositiveEvent)
+                    EventShot(let.lookTargets);
+            }
+        }
+
+        [HarmonyPatchCategory("IdleScreensaver")]
+        [HarmonyPatch(typeof(Messages), nameof(Messages.Message), new[] { typeof(Message), typeof(bool) })]
+        public static class Patch_Message
+        {
+            // Corner messages about threats, deaths and health (a social fight is a small threat) get a shot too;
+            // the many everyday ones (events, finished work, input feedback) do not.
+            public static void Postfix(Message msg)
+            {
+                if (!active)
+                    return;
+                MessageTypeDef def = msg.def;
+                if (def == MessageTypeDefOf.ThreatBig || def == MessageTypeDefOf.ThreatSmall
+                    || def == MessageTypeDefOf.PawnDeath || def == MessageTypeDefOf.NegativeHealthEvent)
+                    EventShot(msg.lookTargets);
+            }
+        }
+
+        [HarmonyPatchCategory("IdleScreensaver")]
         [HarmonyPatch(typeof(CameraJumper), nameof(CameraJumper.TryJump),
             new[] { typeof(GlobalTargetInfo), typeof(CameraJumper.MovementMode) })]
         public static class Patch_TryJump
         {
-            // The next/previous colonist keys jump the vanilla way; follow the pawn they landed on.
+            // The next/previous colonist keys jump the vanilla way; follow the pawn they landed on at the player's zoom.
             public static void Postfix(GlobalTargetInfo target)
             {
                 if (!active || !target.IsValid)
                     return;
                 GlobalTargetInfo adjusted = CameraJumper.GetAdjustedTarget(target);
-                if (adjusted.Thing is Pawn pawn && pawn.Spawned && pawn.Map == map)
+                if (adjusted.Thing is Pawn pawn && OnMap(pawn))
                 {
+                    CancelFade();
                     followed = pawn;
-                    followedSince = Time.realtimeSinceStartup;
-                    pickedByPlayer = true;
+                    spot = LocalTargetInfo.Invalid;
+                    shotSince = Time.realtimeSinceStartup;
+                    held = true;
+                    drifting = false;
                 }
             }
         }
@@ -299,14 +502,37 @@ namespace VanillaTuneUp
         {
             public static void Prefix(CameraDriver __instance)
             {
-                Pawn pawn = followed;
-                if (!active || pawn == null || !pawn.Spawned || pawn.Map != Find.CurrentMap || LongEventHandler.ShouldWaitForEvent)
+                if (!active || Find.CurrentMap != map || LongEventHandler.ShouldWaitForEvent)
                     return;
-                Vector3 target = pawn.DrawPos;
+                Vector3 target;
+                if (OnMap(followed))
+                    target = followed.DrawPos;
+                else if (spot.IsValid)
+                {
+                    // A letter's thing that is gone leaves the camera where it last was.
+                    if (!spot.HasThing || spot.Thing.SpawnedOrAnyParentSpawned)
+                        lastSpotPos = spot.CenterVector3;
+                    target = lastSpotPos;
+                }
+                else
+                    return;
+                float dt = Mathf.Min(Time.deltaTime, CameraDriver.MaxDeltaTime);
                 ref Vector3 root = ref RootPos(__instance);
-                float t = 1f - Mathf.Exp(-Tightness * Mathf.Min(Time.deltaTime, CameraDriver.MaxDeltaTime));
+                float t = 1f - Mathf.Exp(-Tightness * dt);
                 root.x = Mathf.Lerp(root.x, target.x, t);
                 root.z = Mathf.Lerp(root.z, target.z, t);
+
+                if (!drifting)
+                    return;
+                // The scroll wheel changed the zoom: keep the player's zoom for the rest of the shot.
+                if (Mathf.Abs(DesiredSize(__instance) - lastSetSize) > 0.01f)
+                {
+                    drifting = false;
+                    return;
+                }
+                float progress = Mathf.Clamp01((Time.realtimeSinceStartup - shotSince)
+                    / VanillaTuneUpMod.Settings.idleScreensaverSwitchSeconds);
+                SetSize(__instance, Mathf.Lerp(zoomFrom, zoomTo, Mathf.SmoothStep(0f, 1f, progress)));
             }
         }
 
@@ -315,7 +541,11 @@ namespace VanillaTuneUp
         public static class Patch_ClearAllMapsAndWorld
         {
             // Leaving the game: drop the state without touching a camera or selection that is going away.
-            public static void Prefix() => Exit(false);
+            public static void Prefix()
+            {
+                AbortEntering();
+                Exit(false);
+            }
         }
     }
 }

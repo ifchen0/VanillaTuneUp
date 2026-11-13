@@ -254,6 +254,9 @@ namespace VanillaTuneUp
         // Screensaver: idle minutes before it starts, seconds per followed colonist.
         public int idleScreensaverMinutes = 5;
         public int idleScreensaverSwitchSeconds = 30;
+        public bool idleScreensaverZoomDrift = true;
+        public bool idleScreensaverFade = true;
+        public bool idleScreensaverStayOnExit = true;
         public bool inspectTabCameraOnOpen = true;
         public bool fieldTendBeforeCapture = true;
         public List<string> pinnedResources = new List<string>();
@@ -348,6 +351,9 @@ namespace VanillaTuneUp
             Scribe_Values.Look(ref quicksaveCount, "quicksaveCount", Quicksave.DefaultCount);
             Scribe_Values.Look(ref idleScreensaverMinutes, "idleScreensaverMinutes", 5);
             Scribe_Values.Look(ref idleScreensaverSwitchSeconds, "idleScreensaverSwitchSeconds", 30);
+            Scribe_Values.Look(ref idleScreensaverZoomDrift, "idleScreensaverZoomDrift", true);
+            Scribe_Values.Look(ref idleScreensaverFade, "idleScreensaverFade", true);
+            Scribe_Values.Look(ref idleScreensaverStayOnExit, "idleScreensaverStayOnExit", true);
             Scribe_Values.Look(ref inspectTabCameraOnOpen, "inspectTabCameraOnOpen", true);
             Scribe_Values.Look(ref fieldTendBeforeCapture, "fieldTendBeforeCapture", true);
             Scribe_Values.Look(ref compactBarShowLabels, "compactBarShowLabels", true);

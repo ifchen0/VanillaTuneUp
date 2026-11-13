@@ -200,9 +200,12 @@ Saved {1}</VTU_MM_ContinueTip>
   <VTU_QuicksaveUnavailable>Cannot save right now.</VTU_QuicksaveUnavailable>
 
   <VTU_IdleScreensaver>Screensaver: follow random colonists when idle</VTU_IdleScreensaver>
-  <VTU_IdleScreensaver_Desc>When the game is running (not paused) and there has been no key press, mouse click or scroll for a while (moving the mouse and Alt or Windows key shortcuts such as Alt+Tab do not count, so you can switch to other windows freely), the interface is hidden like screenshot mode (F11) and the camera zooms in (a random amount per colonist) and follows a random awake colonist on the current map, switching to another one every so often. While it runs, the scroll wheel zooms and the next/previous colonist keys switch to another colonist as usual. Pressing any other key, clicking, or the game pausing (threat letters pause it) ends it, and the interface, camera position, zoom and selection go back to how they were. The key or click that ends it does nothing else.</VTU_IdleScreensaver_Desc>
+  <VTU_IdleScreensaver_Desc>When the game is running (not paused) and there has been no key press, mouse click or scroll for a while (moving the mouse and Alt or Windows key shortcuts such as Alt+Tab do not count, so you can switch to other windows freely), the interface is hidden like screenshot mode (F11) and the camera zooms in (a random amount per colonist) and follows a random awake colonist on the current map, switching to another one every so often. While it runs, the scroll wheel zooms and the next/previous colonist keys switch to another colonist as usual. Pressing any other key, clicking, or the game pausing (threat letters pause it) ends it, and the interface and selection go back to how they were; the camera stays where it is, or goes back too if you untick that option. The key or click that ends it does nothing else. A letter about an event or threat that does not pause the game cuts straight to what it points at for one round, and so does a corner message about a threat (such as a social fight), a death or a health problem.</VTU_IdleScreensaver_Desc>
   <VTU_IdleScreensaverDelay>Start after this many idle minutes: {0}</VTU_IdleScreensaverDelay>
   <VTU_IdleScreensaverSwitch>Switch to another colonist every {0} seconds</VTU_IdleScreensaverSwitch>
+  <VTU_IdleScreensaverDrift>Slowly zoom in or out while following a colonist</VTU_IdleScreensaverDrift>
+  <VTU_IdleScreensaverFade>Fade to black between colonists</VTU_IdleScreensaverFade>
+  <VTU_IdleScreensaverStay>Leave the camera where it is when the screensaver ends</VTU_IdleScreensaverStay>
 
   <!-- Xenogerm queue -->
   <VTU_XQ_AddToQueue>Add to queue</VTU_XQ_AddToQueue>
