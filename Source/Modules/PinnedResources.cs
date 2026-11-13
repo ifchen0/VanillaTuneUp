@@ -8,7 +8,7 @@ using Verse.Sound;
 namespace VanillaTuneUp
 {
     /// <summary>
-    /// Left-clicking a resource in the categorized resource readout pins it and double-clicking unpins it. A pinned resource stays listed while its
+    /// Double-clicking a resource in the categorized resource readout pins or unpins it. A pinned resource stays listed while its
     /// category is collapsed (drawn under the category row) and is shown even when the colony has none of it, in
     /// which case its categories are shown too. Pins are stored by defName in the mod settings, so they apply to
     /// every save and survive a mod being removed for a while.
@@ -38,24 +38,17 @@ namespace VanillaTuneUp
 
         public static bool IsPinned(ThingDef def) => Pinned.Contains(def);
 
-        // The resource pinned by the current click sequence, so the second click of a double-click does not unpin it.
-        private static ThingDef justPinned;
-
-        /// <summary>A single click pins; unpinning takes a double-click, so a stray click cannot drop a pin.</summary>
+        /// <summary>
+        /// A double-click pins or unpins, so a stray click changes nothing. Only the second click of a sequence
+        /// toggles; further clicks in the same sequence (clickCount 3+) are ignored.
+        /// </summary>
         public static void HandleClick(Rect rect, ThingDef def)
         {
             Event ev = Event.current;
             if (ev.type != EventType.MouseDown || ev.button != 0 || !Mouse.IsOver(rect))
                 return;
             ev.Use();
-            if (!IsPinned(def))
-            {
-                Toggle(def);
-                justPinned = def;
-            }
-            else if (ev.clickCount == 1)
-                justPinned = null;
-            else if (def != justPinned)
+            if (ev.clickCount == 2)
                 Toggle(def);
         }
 

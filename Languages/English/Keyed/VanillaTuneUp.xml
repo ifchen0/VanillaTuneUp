@@ -124,8 +124,8 @@
   <VTU_CaravanEncounterNoJump>Caravan encounters stay on the current map</VTU_CaravanEncounterNoJump>
   <VTU_CaravanEncounterNoJump_Desc>When an event happens to a caravan, such as meeting another caravan, a demand from a hostile one, or a mod event like finding ruins (Real Ruins), its dialog opens without switching from the colony map to the world map. Choosing to enter the encounter map still takes you there.</VTU_CaravanEncounterNoJump_Desc>
   <VTU_PinnedResources>Pin resources in the resource list</VTU_PinnedResources>
-  <VTU_PinnedResources_Desc>In the categorized resource list (top left), left-click a resource to pin it. Pinned resources stay listed while their category is collapsed and are shown even when you have none. Double-click to unpin. Pins apply to every save.</VTU_PinnedResources_Desc>
-  <VTU_PinnedResources_Pin>Click to pin: stays listed while its category is collapsed, even at 0.</VTU_PinnedResources_Pin>
+  <VTU_PinnedResources_Desc>In the categorized resource list (top left), double-click a resource to pin it. Pinned resources stay listed while their category is collapsed and are shown even when you have none. Double-click again to unpin. Pins apply to every save.</VTU_PinnedResources_Desc>
+  <VTU_PinnedResources_Pin>Double-click to pin: stays listed while its category is collapsed, even at 0.</VTU_PinnedResources_Pin>
   <VTU_PinnedResources_Unpin>Double-click to unpin.</VTU_PinnedResources_Unpin>
   <VTU_NutrientPasteStock>Nutrient paste stock</VTU_NutrientPasteStock>
   <VTU_NutrientPasteStock_Desc>Adds a "dispense until you have X" target to nutrient paste dispensers, like a cooking bill. The number is shared by every dispenser on the map. Cooks dispense paste and drop it by the dispenser for haulers, like a bill set to drop on the floor. Paste on the ground counts toward the target as well as paste in storage, so it does not pile up before haulers arrive.</VTU_NutrientPasteStock_Desc>

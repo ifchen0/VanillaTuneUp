@@ -27,7 +27,7 @@ Small fixes and optional tweaks for vanilla RimWorld, collected in one mod.
 [*][b]Remove fog of war:[/b] reveals the map except where revealing would trigger something.
 [*][b]Faction icons in caravan lists[/b] (on by default).
 [*][b]Caravan encounters stay on the current map[/b] (on by default).
-[*][b]Pin resources[/b] (on by default): left-click a resource to keep it shown while its category is collapsed.
+[*][b]Pin resources[/b] (on by default): double-click a resource to keep it shown while its category is collapsed.
 [*][b]Nutrient paste stock[/b] (on by default): "dispense until you have X" for paste dispensers.
 [*][b]Mod update notes[/b] (on by default, Steam): the main menu lists recently updated Workshop mods with their change notes.
 [*][b]Break up social fights:[/b] bystanders may step in; Social skill helps, a failed attempt can become a brawl; a bad mood means more insults and fights.

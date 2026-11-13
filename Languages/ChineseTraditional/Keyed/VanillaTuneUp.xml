@@ -86,7 +86,7 @@
   <VTU_BillKeepCount>熔煉／銷毀bill改善</VTU_BillKeepCount>
   <VTU_BillKeepCount_Desc>適用熔煉、銷毀、燒衣服的bill。沒有品質的物品在bill的品質過濾中視為傳說級，範圍設「極差到普通」時不會再被熔掉（原版不管範圍怎麼設都會放行）。另外多一個「每種保留X個」的重複模式：bill允許的每種物品，地圖上市場價值最高的X個會留下（價值已綜合品質、耐久、死人穿過、生物編碼），只處理多出來的。角色身上穿的、拿著的不算。</VTU_BillKeepCount_Desc>
   <VTU_BillKeepCount_Mode>每種保留X個</VTU_BillKeepCount_Mode>
-  <VTU_BillKeepCount_Info>保留{0}</VTU_BillKeepCount_Info>
+  <VTU_BillKeepCount_Info>保留 {0}</VTU_BillKeepCount_Info>
   <VTU_BillKeepCount_Dialog>每種物品保留：{0}</VTU_BillKeepCount_Dialog>
   <VTU_BillKeepCount_Surplus>目前可處理的多餘數量：{0}</VTU_BillKeepCount_Surplus>
   <VTU_BillKeepCount_Note>地圖上每種物品市場價值最高的X個會留下（價值已綜合品質、耐久、死人穿過、生物編碼），不受這張bill的品質、耐久過濾影響。其餘的通過過濾才會處理。角色身上穿的、拿著的不算。</VTU_BillKeepCount_Note>
@@ -124,8 +124,8 @@
   <VTU_CaravanEncounterNoJump>旅隊遭遇不切換到世界地圖</VTU_CaravanEncounterNoJump>
   <VTU_CaravanEncounterNoJump_Desc>旅隊遇到事件時（例如遇到其他旅隊、被敵對旅隊勒索，或mod事件如Real Ruins發現遺跡），對話框直接開啟，不會把畫面從殖民地地圖切到世界地圖。選擇進入遭遇地圖時仍會切過去。</VTU_CaravanEncounterNoJump_Desc>
   <VTU_PinnedResources>資源清單釘選</VTU_PinnedResources>
-  <VTU_PinnedResources_Desc>在左上角依分類顯示的資源清單中，左鍵點擊資源即可釘選。釘選的資源在分類摺疊時仍會顯示，數量為0也照樣顯示。點兩下取消釘選。釘選對所有存檔通用。</VTU_PinnedResources_Desc>
-  <VTU_PinnedResources_Pin>點擊釘選：分類摺疊時仍顯示，數量為0也顯示。</VTU_PinnedResources_Pin>
+  <VTU_PinnedResources_Desc>在左上角依分類顯示的資源清單中，點兩下資源即可釘選。釘選的資源在分類摺疊時仍會顯示，數量為0也照樣顯示。再點兩下取消釘選。釘選對所有存檔通用。</VTU_PinnedResources_Desc>
+  <VTU_PinnedResources_Pin>點兩下釘選：分類摺疊時仍顯示，數量為0也顯示。</VTU_PinnedResources_Pin>
   <VTU_PinnedResources_Unpin>點兩下取消釘選。</VTU_PinnedResources_Unpin>
   <VTU_NutrientPasteStock>營養膏庫存</VTU_NutrientPasteStock>
   <VTU_NutrientPasteStock_Desc>營養膏合成機多一個「取得直到有X份」的目標，用法跟料理bill一樣。同一張地圖的合成機共用這個數字。廚師取出營養膏後放在合成機旁交給搬運工，跟bill設成「丟在地上」一樣。除了倉庫裡的，地上的營養膏也會算進目標，搬運工來之前不會越堆越多。</VTU_NutrientPasteStock_Desc>
