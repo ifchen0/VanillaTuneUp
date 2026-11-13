@@ -19,6 +19,8 @@ namespace VanillaTuneUp
     /// death or a health problem; one event shot holds off others for a few seconds. Any other input, or the game
     /// becoming paused (a threat letter pauses it), ends it: the UI and selection go back to how they were, and the
     /// camera stays where it is unless set to go back too. The input that ends it is swallowed so the waking click or key does nothing else.
+    /// The letter stack stays on screen (optional, on by default): clicking or dismissing a letter, and using the
+    /// letter window it opens, does not end it; the shot holds while such a window pauses the game.
     /// </summary>
     public static class IdleScreensaver
     {
@@ -42,6 +44,10 @@ namespace VanillaTuneUp
         private static float lastEventShot = -EventShotBuffer;
 
         private static float lastInputTime;
+        private static float lastFrameTime;
+        // Whether a mouse button is held, and whether that press began on the letters or in a letter window.
+        private static bool mouseHeld;
+        private static bool letterPress;
 
         private static bool active;
         private static Map map;
@@ -95,6 +101,26 @@ namespace VanillaTuneUp
             listing.CheckboxLabeled("VTU_IdleScreensaverDrift".Translate(), ref settings.idleScreensaverZoomDrift);
             listing.CheckboxLabeled("VTU_IdleScreensaverFade".Translate(), ref settings.idleScreensaverFade);
             listing.CheckboxLabeled("VTU_IdleScreensaverStay".Translate(), ref settings.idleScreensaverStayOnExit);
+            listing.CheckboxLabeled("VTU_IdleScreensaverLetters".Translate(), ref settings.idleScreensaverLetters);
+        }
+
+        /// <summary>The letter stack is drawn over the screensaver and takes clicks.</summary>
+        private static bool ShowLetters => active && VanillaTuneUpMod.Settings.idleScreensaverLetters && Find.CurrentMap == map;
+
+        /// <summary>
+        /// A window that pauses the game is open (a letter the player opened, or one that opened itself): the player
+        /// is reading, so the screensaver holds instead of ending, and mouse input goes to the window.
+        /// </summary>
+        private static bool Reading => ShowLetters && Find.WindowStack.WindowsForcePause;
+
+        // With the rest of the interface hidden, the letters start from near the bottom of the screen.
+        private static float LettersBaseY => UI.screenHeight - 35f;
+
+        private static bool MouseOverLetters()
+        {
+            Vector2 mouse = UI.MousePositionOnUIInverted;
+            return mouse.x >= UI.screenWidth - 50f && mouse.x <= UI.screenWidth - 12f
+                && mouse.y >= Find.LetterStack.LastTopY && mouse.y <= LettersBaseY;
         }
 
         /// <summary>
@@ -107,7 +133,15 @@ namespace VanillaTuneUp
             if (!Application.isFocused)
                 return false;
             if (Input.GetMouseButton(0) || Input.GetMouseButton(1) || Input.GetMouseButton(2))
-                return true;
+            {
+                // Judged once when the press begins: a right click removes the letter on the way down, so the
+                // stack shrinks from under a cursor whose button is still held.
+                if (!mouseHeld)
+                    letterPress = ShowLetters && (Reading || MouseOverLetters());
+                mouseHeld = true;
+                return !letterPress;
+            }
+            mouseHeld = false;
             // While running, zooming and the next/previous colonist keys work as usual and keep it running.
             if (!active && Input.mouseScrollDelta != Vector2.zero)
                 return true;
@@ -133,6 +167,8 @@ namespace VanillaTuneUp
         private static void FrameUpdate()
         {
             float now = Time.realtimeSinceStartup;
+            float frameTime = now - lastFrameTime;
+            lastFrameTime = now;
             if (AnyInput())
             {
                 lastInputTime = now;
@@ -162,9 +198,17 @@ namespace VanillaTuneUp
 
             if (active)
             {
-                if (Find.CurrentMap != map || WorldRendererUtility.WorldSelected || Find.TickManager.Paused)
+                // A letter window pauses the game while open; a real pause (a threat letter) still ends it.
+                bool paused = Find.TickManager.CurTimeSpeed == TimeSpeed.Paused || (Find.TickManager.Paused && !Reading);
+                if (Find.CurrentMap != map || WorldRendererUtility.WorldSelected || paused)
                 {
                     Exit(Find.CurrentMap == map);
+                    return;
+                }
+                if (Reading && !fadePending)
+                {
+                    // The shot (and its zoom drift) waits while the player reads.
+                    shotSince += frameTime;
                     return;
                 }
                 UpdateShot(now);
@@ -489,11 +533,15 @@ namespace VanillaTuneUp
                 if (Event.current.type != EventType.Repaint)
                     return;
                 float alpha = OverlayAlpha(Time.realtimeSinceStartup);
-                if (alpha <= 0f)
-                    return;
-                GUI.color = new Color(0f, 0f, 0f, alpha);
-                GUI.DrawTexture(new Rect(0f, 0f, UI.screenWidth, UI.screenHeight), BaseContent.WhiteTex);
-                GUI.color = Color.white;
+                if (alpha > 0f)
+                {
+                    GUI.color = new Color(0f, 0f, 0f, alpha);
+                    GUI.DrawTexture(new Rect(0f, 0f, UI.screenWidth, UI.screenHeight), BaseContent.WhiteTex);
+                    GUI.color = Color.white;
+                }
+                // Over the fade, so the letters stay put between shots. Clicks on them are handled in the prefix.
+                if (ShowLetters)
+                    Find.LetterStack.LettersOnGUI(LettersBaseY);
             }
 
             public static void Prefix()
@@ -501,8 +549,18 @@ namespace VanillaTuneUp
                 if (!active && !swallowInput)
                     return;
                 Event e = Event.current;
-                if ((e.isMouse || e.isKey || e.type == EventType.ScrollWheel) && !PassesThrough(e))
-                    e.Use();
+                if (!(e.isMouse || e.isKey || e.type == EventType.ScrollWheel) || PassesThrough(e))
+                    return;
+                if (e.isMouse && ShowLetters)
+                {
+                    // An open letter window gets the mouse.
+                    if (Reading)
+                        return;
+                    // Before the map gets the click: open or dismiss the letter under the mouse.
+                    if (MouseOverLetters())
+                        Find.LetterStack.LettersOnGUI(LettersBaseY);
+                }
+                e.Use();
             }
         }
 
@@ -551,21 +609,32 @@ namespace VanillaTuneUp
             new[] { typeof(GlobalTargetInfo), typeof(CameraJumper.MovementMode) })]
         public static class Patch_TryJump
         {
-            // The next/previous colonist keys jump the vanilla way; follow the pawn they landed on at the player's zoom.
+            // The next/previous colonist keys (and a letter's jump option) jump the vanilla way; follow the pawn they
+            // landed on, or stay on the thing or cell, at the player's zoom.
             public static void Postfix(GlobalTargetInfo target)
             {
                 if (!active || !target.IsValid)
                     return;
                 GlobalTargetInfo adjusted = CameraJumper.GetAdjustedTarget(target);
+                if (adjusted.Map != map)
+                    return;
                 if (adjusted.Thing is Pawn pawn && OnMap(pawn))
                 {
-                    CancelFade();
                     followed = pawn;
                     spot = LocalTargetInfo.Invalid;
-                    shotSince = Time.realtimeSinceStartup;
-                    held = true;
-                    drifting = false;
                 }
+                else if (adjusted.HasThing ? adjusted.Thing.Spawned : adjusted.Cell.IsValid)
+                {
+                    followed = null;
+                    spot = adjusted.HasThing ? new LocalTargetInfo(adjusted.Thing) : new LocalTargetInfo(adjusted.Cell);
+                    lastSpotPos = spot.CenterVector3;
+                }
+                else
+                    return;
+                CancelFade();
+                shotSince = Time.realtimeSinceStartup;
+                held = true;
+                drifting = false;
             }
         }
 
