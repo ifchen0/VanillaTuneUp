@@ -66,7 +66,13 @@ namespace VanillaTuneUp
         // Fade to black before the next random colonist.
         private static bool fadePending;
         private static float fadeAt;
-        private static bool fadeUsed;
+        // Our own black overlay, alpha moving from overlayFrom to overlayTo between the two times. Vanilla's ScreenFader
+        // is not used: while it fades, vanilla takes control away from the player, and that also blocks the automatic
+        // pause a threat letter asks for.
+        private static float overlayFrom;
+        private static float overlayTo;
+        private static float overlayStart;
+        private static float overlayEnd;
         // Fading out before the screensaver starts; the interface is still up.
         private static bool entering;
         private static Map enteringMap;
@@ -175,7 +181,7 @@ namespace VanillaTuneUp
                     return;
                 }
                 Enter(faded, afterFade: true);
-                ScreenFader.StartFade(Color.clear, FadeSeconds);
+                FadeIn(now);
                 return;
             }
 
@@ -189,11 +195,9 @@ namespace VanillaTuneUp
             if (VanillaTuneUpMod.Settings.idleScreensaverFade)
             {
                 // Fade out with the interface still up; the screensaver starts once the screen is black.
-                ScreenFader.StartFade(Color.black, FadeSeconds);
-                fadeUsed = true;
+                FadeOut(now);
                 entering = true;
                 enteringMap = Find.CurrentMap;
-                fadeAt = now + FadeSeconds;
                 return;
             }
             Enter(first);
@@ -204,9 +208,11 @@ namespace VanillaTuneUp
         {
             if (!entering)
                 return;
+            CancelFade();
             entering = false;
             enteringMap = null;
-            CancelFade();
+            // Whatever stopped it (a pause, a map change), the idle time starts over.
+            lastInputTime = Time.realtimeSinceStartup;
         }
 
         private static void UpdateSwallow()
@@ -302,7 +308,7 @@ namespace VanillaTuneUp
                     return;
                 }
                 StartShot(faded, false, afterFade: true);
-                ScreenFader.StartFade(Color.clear, FadeSeconds);
+                FadeIn(now);
                 return;
             }
 
@@ -326,23 +332,39 @@ namespace VanillaTuneUp
             if (VanillaTuneUpMod.Settings.idleScreensaverFade)
             {
                 // The colonist is picked once the screen is black, so the pick is fresh.
-                ScreenFader.StartFade(Color.black, FadeSeconds);
-                fadeUsed = true;
+                FadeOut(now);
                 fadePending = true;
-                fadeAt = now + FadeSeconds;
                 return;
             }
             StartShot(next, false);
         }
 
-        /// <summary>Drops a pending fade switch and clears the screen right away if a fade of ours left it dark.</summary>
+        private static float OverlayAlpha(float now) => overlayEnd <= overlayStart
+            ? overlayTo
+            : Mathf.Lerp(overlayFrom, overlayTo, Mathf.InverseLerp(overlayStart, overlayEnd, now));
+
+        private static void FadeOverlay(float now, float to)
+        {
+            overlayFrom = OverlayAlpha(now);
+            overlayTo = to;
+            overlayStart = now;
+            overlayEnd = now + FadeSeconds;
+        }
+
+        private static void FadeOut(float now)
+        {
+            FadeOverlay(now, 1f);
+            fadeAt = now + FadeSeconds;
+        }
+
+        private static void FadeIn(float now) => FadeOverlay(now, 0f);
+
+        /// <summary>Drops a pending fade switch and clears the overlay right away.</summary>
         private static void CancelFade()
         {
             fadePending = false;
-            if (!fadeUsed)
-                return;
-            fadeUsed = false;
-            ScreenFader.SetColor(Color.clear);
+            overlayFrom = overlayTo = 0f;
+            overlayStart = overlayEnd = 0f;
         }
 
         /// <param name="restore">Put the camera and selection back; false when the map is gone or changed.</param>
@@ -351,6 +373,8 @@ namespace VanillaTuneUp
             if (!active)
                 return;
             active = false;
+            // Whatever ended it (a pause, a jump to another map), the idle time starts over.
+            lastInputTime = Time.realtimeSinceStartup;
             followed = null;
             spot = LocalTargetInfo.Invalid;
             drifting = false;
@@ -429,6 +453,19 @@ namespace VanillaTuneUp
         [HarmonyPatch(typeof(UIRoot_Play), nameof(UIRoot_Play.UIRootOnGUI))]
         public static class Patch_UIRootOnGUI
         {
+            // Drawn after the whole interface, so the fade covers it too while the screensaver is starting.
+            public static void Postfix()
+            {
+                if (Event.current.type != EventType.Repaint)
+                    return;
+                float alpha = OverlayAlpha(Time.realtimeSinceStartup);
+                if (alpha <= 0f)
+                    return;
+                GUI.color = new Color(0f, 0f, 0f, alpha);
+                GUI.DrawTexture(new Rect(0f, 0f, UI.screenWidth, UI.screenHeight), BaseContent.WhiteTex);
+                GUI.color = Color.white;
+            }
+
             public static void Prefix()
             {
                 if (!active && !swallowInput)
@@ -460,11 +497,17 @@ namespace VanillaTuneUp
         [HarmonyPatch(typeof(Messages), nameof(Messages.Message), new[] { typeof(Message), typeof(bool) })]
         public static class Patch_Message
         {
+            private static readonly System.Reflection.FieldInfo LiveMessagesField =
+                AccessTools.Field(typeof(Messages), "liveMessages");
+
+            private static List<Message> LiveMessages() => (List<Message>)LiveMessagesField.GetValue(null);
+
             // Corner messages about threats, deaths and health (a social fight is a small threat) get a shot too;
             // the many everyday ones (events, finished work, input feedback) do not.
             public static void Postfix(Message msg)
             {
-                if (!active)
+                // Vanilla drops duplicates and messages it does not accept; only a message on screen counts.
+                if (!active || !LiveMessages().Contains(msg))
                     return;
                 MessageTypeDef def = msg.def;
                 if (def == MessageTypeDefOf.ThreatBig || def == MessageTypeDefOf.ThreatSmall
@@ -533,6 +576,19 @@ namespace VanillaTuneUp
                 float progress = Mathf.Clamp01((Time.realtimeSinceStartup - shotSince)
                     / VanillaTuneUpMod.Settings.idleScreensaverSwitchSeconds);
                 SetSize(__instance, Mathf.Lerp(zoomFrom, zoomTo, Mathf.SmoothStep(0f, 1f, progress)));
+            }
+        }
+
+        [HarmonyPatchCategory("IdleScreensaver")]
+        [HarmonyPatch(typeof(CameraDriver), "CalculateCurInputDollyVect")]
+        public static class Patch_InputDolly
+        {
+            // Mouse movement does not end the screensaver, so a cursor left at the screen edge would scroll the
+            // camera against the follow. Keys and dragging end it before they matter.
+            public static void Postfix(ref Vector2 __result)
+            {
+                if (active)
+                    __result = Vector2.zero;
             }
         }
 
