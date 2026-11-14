@@ -15,8 +15,8 @@ namespace VanillaTuneUp
     /// random awake colonist on the current map, switching to another one every few seconds. Camera work, each on by
     /// default and optional: a slow zoom in or out during each shot and a fade to black between colonists. An event or
     /// threat letter that does not pause the game goes to what it points at for one shot (through black when
-    /// fades are on), and so does a corner message about a threat, a
-    /// death or a health problem; one event shot holds off others for a few seconds. Any other input, or the game
+    /// fades are on), and so does a corner message about a threat, a death, a health problem or an event (each of
+    /// the three groups can be switched off); one event shot holds off others for a few seconds. Any other input, or the game
     /// becoming paused (a threat letter pauses it), ends it: the UI and selection go back to how they were, and the
     /// camera stays where it is unless set to go back too. The input that ends it then works as usual (a click
     /// selects, a key does its job).
@@ -100,6 +100,10 @@ namespace VanillaTuneUp
             listing.CheckboxLabeled("VTU_IdleScreensaverFade".Translate(), ref settings.idleScreensaverFade);
             listing.CheckboxLabeled("VTU_IdleScreensaverStay".Translate(), ref settings.idleScreensaverStayOnExit);
             listing.CheckboxLabeled("VTU_IdleScreensaverLetters".Translate(), ref settings.idleScreensaverLetters);
+            listing.Label("VTU_IdleScreensaverShots".Translate());
+            listing.CheckboxLabeled("  " + "VTU_IdleScreensaverShotLetters".Translate(), ref settings.idleScreensaverShotLetters);
+            listing.CheckboxLabeled("  " + "VTU_IdleScreensaverShotThreats".Translate(), ref settings.idleScreensaverShotThreats);
+            listing.CheckboxLabeled("  " + "VTU_IdleScreensaverShotEvents".Translate(), ref settings.idleScreensaverShotEvents);
         }
 
         /// <summary>The letter stack and the corner messages are drawn over the screensaver and take clicks.</summary>
@@ -588,7 +592,7 @@ namespace VanillaTuneUp
             // A letter that pauses the game ends the screensaver on the next frame instead.
             public static void Postfix(LetterStack __instance, Letter let)
             {
-                if (!active || !__instance.LettersListForReading.Contains(let))
+                if (!active || !VanillaTuneUpMod.Settings.idleScreensaverShotLetters || !__instance.LettersListForReading.Contains(let))
                     return;
                 if (let.def == LetterDefOf.NegativeEvent || let.def == LetterDefOf.ThreatSmall || let.def == LetterDefOf.ThreatBig
                     || let.def == LetterDefOf.NeutralEvent || let.def == LetterDefOf.PositiveEvent)
@@ -605,16 +609,21 @@ namespace VanillaTuneUp
 
             private static List<Message> LiveMessages() => (List<Message>)LiveMessagesField.GetValue(null);
 
-            // Corner messages about threats, deaths and health (a social fight is a small threat) get a shot too;
-            // the many everyday ones (events, finished work, input feedback) do not.
+            // Corner messages about threats, deaths and health (a social fight is a small threat) get a shot, and so do
+            // event messages (negative, neutral, positive), each group optional; finished work, resolved situations and
+            // input feedback never do.
             public static void Postfix(Message msg)
             {
                 // Vanilla drops duplicates and messages it does not accept; only a message on screen counts.
                 if (!active || !LiveMessages().Contains(msg))
                     return;
                 MessageTypeDef def = msg.def;
-                if (def == MessageTypeDefOf.ThreatBig || def == MessageTypeDefOf.ThreatSmall
-                    || def == MessageTypeDefOf.PawnDeath || def == MessageTypeDefOf.NegativeHealthEvent)
+                TuneUpSettings settings = VanillaTuneUpMod.Settings;
+                bool threat = def == MessageTypeDefOf.ThreatBig || def == MessageTypeDefOf.ThreatSmall
+                    || def == MessageTypeDefOf.PawnDeath || def == MessageTypeDefOf.NegativeHealthEvent;
+                bool happening = def == MessageTypeDefOf.NegativeEvent || def == MessageTypeDefOf.NeutralEvent
+                    || def == MessageTypeDefOf.PositiveEvent;
+                if (threat && settings.idleScreensaverShotThreats || happening && settings.idleScreensaverShotEvents)
                     EventShot(msg.lookTargets);
             }
         }

@@ -259,6 +259,9 @@ namespace VanillaTuneUp
         public bool idleScreensaverFade = true;
         public bool idleScreensaverStayOnExit = true;
         public bool idleScreensaverLetters = true;
+        public bool idleScreensaverShotLetters = true;
+        public bool idleScreensaverShotThreats = true;
+        public bool idleScreensaverShotEvents = true;
         public bool inspectTabCameraOnOpen = true;
         public bool fieldTendBeforeCapture = true;
         public List<string> pinnedResources = new List<string>();
@@ -357,6 +360,9 @@ namespace VanillaTuneUp
             Scribe_Values.Look(ref idleScreensaverFade, "idleScreensaverFade", true);
             Scribe_Values.Look(ref idleScreensaverStayOnExit, "idleScreensaverStayOnExit", true);
             Scribe_Values.Look(ref idleScreensaverLetters, "idleScreensaverLetters", true);
+            Scribe_Values.Look(ref idleScreensaverShotLetters, "idleScreensaverShotLetters", true);
+            Scribe_Values.Look(ref idleScreensaverShotThreats, "idleScreensaverShotThreats", true);
+            Scribe_Values.Look(ref idleScreensaverShotEvents, "idleScreensaverShotEvents", true);
             Scribe_Values.Look(ref inspectTabCameraOnOpen, "inspectTabCameraOnOpen", true);
             Scribe_Values.Look(ref fieldTendBeforeCapture, "fieldTendBeforeCapture", true);
             Scribe_Values.Look(ref compactBarShowLabels, "compactBarShowLabels", true);
