@@ -90,6 +90,11 @@ namespace VanillaTuneUp
                 IsAvailable = () => ModsConfig.RoyaltyActive,
                 UnavailableKey = "VTU_RequiresRoyalty"
             },
+            new TuneUpModule("PsychicRitualOffering", false, null)
+            {
+                IsAvailable = () => ModsConfig.AnomalyActive,
+                UnavailableKey = "VTU_RequiresAnomaly"
+            },
             // Unaligned Icon Fix moves the same buttons its own way; leave them to it when it is active.
             new TuneUpModule("PlaySettingsIconGap", false, "Ilarion.UnalignedIconFix") { IsHidden = true },
             new TuneUpModule("TranslationFixes", false, null)

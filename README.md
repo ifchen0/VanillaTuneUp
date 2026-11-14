@@ -73,6 +73,12 @@ A colony animal only looks for food within its nearest 100 regions, even when st
 
 A caravan walking into your colony has everyone's cargo unloaded, prisoners included, but a farskip home only unloads colonists, pack animals and mechs. Prisoners carrying caravan goods kept them indefinitely. Farskipping home now marks prisoners (and rebellious slaves) for unloading too, so haulers take their cargo to storage like after a normal caravan arrival.
 
+### Psychic ritual invoker keeps the offering
+
+*Anomaly*
+
+An invoker who vomited during a psychic ritual (gut worms, food poisoning, ...) dropped the offering, so the ritual failed for a missing offering. Vomiting no longer makes ritual participants drop what they carry. Also, when a psychic ritual is canceled, its participants stop standing at the ritual spot instead of staring there until drafted.
+
 ### Aligned corner icons
 
 The bottom-right search and codex buttons no longer push the other toggle icons off the grid. Left to Unaligned Icon Fix when that mod is active.
