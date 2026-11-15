@@ -153,7 +153,7 @@ Anyone who sees a social fight nearby and is not hostile to either fighter (colo
 
 *on by default*
 
-Names under pawns on the map are cut to about one and a half cells wide (following the zoom), and shorter still when another pawn stands beside them in the same row, so long names do not cover their neighbours. The full name shows while the mouse is over the pawn or its name, or while the pawn is selected.
+Names under pawns on the map are cut short when another pawn stands close beside them in the same row, so long names do not cover their neighbours. Pawns with nobody beside them keep their full names. The full name shows while the mouse is over the pawn or its name, or while the pawn is selected.
 
 ### Ghouls can wear apparel
 

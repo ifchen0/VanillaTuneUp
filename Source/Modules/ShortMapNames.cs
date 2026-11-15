@@ -7,9 +7,9 @@ using Verse;
 namespace VanillaTuneUp
 {
     /// <summary>
-    /// Long names under pawns on the map (common with translated tribal names) cover their neighbours. Cut the map
-    /// label to a zoom-based width, narrower when another pawn stands in the same row close by (prisoners in beds
-    /// side by side), using the truncation vanilla already supports but never asks for here, and show the whole
+    /// Long names under pawns on the map (common with translated tribal names) cover their neighbours. When another
+    /// pawn stands in the same row close by (prisoners in beds side by side), cut the map label to the distance
+    /// between them, using the truncation vanilla already supports but never asks for here, and show the whole
     /// name while the pawn or its label is under the mouse, or while the pawn is selected. Other places that draw
     /// pawn labels (colonist bar, world map) are untouched.
     /// </summary>
@@ -29,11 +29,8 @@ namespace VanillaTuneUp
         typeof(Dictionary<string, string>), typeof(GameFont), typeof(bool), typeof(bool))]
     public static class Patch_GenMapUI_DrawPawnLabel
     {
-        // With nobody beside it a label may be 1.5 cells wide, never below MinWidth.
-        private const float WidthInCells = 1.5f;
-        private const float MinWidth = 30f;
-        // Neighbours further than this many cells never matter, even fully zoomed out.
-        private const int MaxRange = 3;
+        // Neighbours further than this many cells are not looked for; only very long names far zoomed out reach them.
+        private const int MaxRange = 5;
         // Widths are floored to this step so zooming does not add a cache entry every frame.
         private const float WidthStep = 2f;
         // Map distance from the pawn's draw position that counts as hovering it (the label sits 0.6 below).
@@ -65,18 +62,13 @@ namespace VanillaTuneUp
             string label = pawn.LabelShortCap;
             float fullWidth = label.GetWidthCached();
             float cellSize = Find.CameraDriver.CellSizePixels;
-            float maxWidth = Mathf.Max(MinWidth, cellSize * WidthInCells);
             // Text no wider than the distance to the neighbour never touches the neighbour's text, which is limited
             // the same way; only the background margins may meet. Text within one cell needs no check at all.
-            if (fullWidth > cellSize)
-            {
-                int range = Mathf.Min(MaxRange, Mathf.CeilToInt(maxWidth / cellSize));
-                int cells = HoldNeighbour(pawn, NearestNeighbourCells(pawn, range));
-                if (cells > 0)
-                    maxWidth = Mathf.Min(maxWidth, cells * cellSize);
-            }
-            maxWidth = Mathf.Floor(maxWidth / WidthStep) * WidthStep;
-            if (fullWidth <= maxWidth || truncateToWidth < maxWidth || Find.Selector.IsSelected(pawn))
+            if (fullWidth <= cellSize)
+                return true;
+            int cells = HoldNeighbour(pawn, NearestNeighbourCells(pawn, Mathf.Min(MaxRange, Mathf.CeilToInt(fullWidth / cellSize))));
+            float maxWidth = Mathf.Floor(cells * cellSize / WidthStep) * WidthStep;
+            if (cells == 0 || fullWidth <= maxWidth || truncateToWidth < maxWidth || Find.Selector.IsSelected(pawn))
                 return true;
             if (!TruncatedCaches.TryGetValue(maxWidth, out Dictionary<string, string> cache))
             {
