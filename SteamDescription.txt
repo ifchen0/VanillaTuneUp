@@ -36,6 +36,7 @@ Full description of every part: [url=https://github.com/ifchen0/VanillaTuneUp#re
 [*][b]Break up social fights:[/b] bystanders may step in, and a bad mood means more insults and fights.
 [*][b]Short names on the map[/b] (on by default): long pawn names no longer cover neighbours.
 [*][b]Ghouls can wear apparel[/b] (Anomaly): still no weapons.
+[*][b]Former colonists come to visit:[/b] they may come along with their new faction's visitors, traders or travelers.
 [*][b]Caravan: abandon all dead at once[/b] (on by default).
 [*][b]Taskbar letter badge[/b] (on by default, Windows): shows how many letters are waiting.
 [*][b]Right-click to dismiss bundled letters[/b] (on by default).

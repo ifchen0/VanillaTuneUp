@@ -132,6 +132,7 @@ namespace VanillaTuneUp
                 IsAvailable = () => ModsConfig.AnomalyActive,
                 UnavailableKey = "VTU_RequiresAnomaly"
             },
+            new TuneUpModule("FormerColonistVisits", true, null),
             new TuneUpModule("CaravanAbandonDead", true, null) { OnByDefault = true },
             new TuneUpModule("TaskbarLetterBadge", true, null)
             {

@@ -169,6 +169,10 @@ Ghouls keep their clothes when turned and can be ordered to wear clothes and arm
 
 ![Ghouls can wear apparel](Media/GhoulApparel.png)
 
+### Former colonists come to visit
+
+Former colonists who now live with a friendly or neutral faction otherwise stay out of sight in the world for good. When such a faction's visitors, trader caravan or travelers arrive, there is a 25% chance that one of its former colonists comes along, picked by how many days they spent in your colony. They come as they are, with their own gear, relationships and memories, creepjoiners included, and leave with the group. A message tells you who it is.
+
 ### Caravan: abandon all dead at once
 
 *on by default*
