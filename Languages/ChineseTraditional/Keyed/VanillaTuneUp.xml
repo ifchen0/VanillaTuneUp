@@ -158,7 +158,7 @@
   <VTU_BF_JoinedIn>{PAWN1_labelShort}趁機加入，一起圍毆{PAWN2_labelShort}！</VTU_BF_JoinedIn>
   <VTU_BF_DraggedIn>{PAWN1_labelShort}把氣出在來勸架的{PAWN2_labelShort}身上，兩人打了起來！</VTU_BF_DraggedIn>
   <VTU_ShortMapNames>地圖上的短名字</VTU_ShortMapNames>
-  <VTU_ShortMapNames_Desc>地圖上pawn底下的名字超過約一格半寬（跟著地圖縮放）就截斷，長名字不會蓋住旁邊的人。滑鼠移到pawn或名字上，或選取pawn時，顯示全名。</VTU_ShortMapNames_Desc>
+  <VTU_ShortMapNames_Desc>地圖上pawn底下的名字超過約一格半寬（跟著地圖縮放）就截斷，同一排旁邊有其他pawn時截得更短，長名字不會蓋住旁邊的人。滑鼠移到pawn或名字上，或選取pawn時，顯示全名。</VTU_ShortMapNames_Desc>
   <VTU_GhoulApparel>食屍鬼可以穿衣服</VTU_GhoulApparel>
   <VTU_GhoulApparel_Desc>食屍鬼轉化時保留身上的衣服，也可以命令它穿上衣服和裝甲（選取食屍鬼後右鍵點衣物）。食屍鬼不會自己換衣服，也依然不能使用武器。</VTU_GhoulApparel_Desc>
   <VTU_CaravanAbandonDead>旅隊一次拋棄所有死者</VTU_CaravanAbandonDead>

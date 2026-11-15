@@ -158,7 +158,7 @@ Saved {1}</VTU_MM_ContinueTip>
   <VTU_BF_JoinedIn>{PAWN1_labelShort} jumped into the fight to gang up on {PAWN2_labelShort}!</VTU_BF_JoinedIn>
   <VTU_BF_DraggedIn>{PAWN1_labelShort} turned on {PAWN2_labelShort}, who tried to break up the fight!</VTU_BF_DraggedIn>
   <VTU_ShortMapNames>Short names on the map</VTU_ShortMapNames>
-  <VTU_ShortMapNames_Desc>Names under pawns on the map are cut to about one and a half cells wide (following the zoom) so long names do not cover their neighbours. The full name shows while the mouse is over the pawn or its name, or while the pawn is selected.</VTU_ShortMapNames_Desc>
+  <VTU_ShortMapNames_Desc>Names under pawns on the map are cut to about one and a half cells wide (following the zoom), and shorter still when another pawn stands beside them in the same row, so long names do not cover their neighbours. The full name shows while the mouse is over the pawn or its name, or while the pawn is selected.</VTU_ShortMapNames_Desc>
   <VTU_GhoulApparel>Ghouls can wear apparel</VTU_GhoulApparel>
   <VTU_GhoulApparel_Desc>Ghouls keep their clothes when turned and can be ordered to wear clothes and armor (right-click the apparel with the ghoul selected). They never change clothes on their own and still cannot use weapons.</VTU_GhoulApparel_Desc>
   <VTU_CaravanAbandonDead>Caravan: abandon all dead at once</VTU_CaravanAbandonDead>
