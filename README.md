@@ -79,6 +79,10 @@ A caravan walking into your colony has everyone's cargo unloaded, prisoners incl
 
 An invoker who vomited during a psychic ritual (gut worms, food poisoning, ...) dropped the offering, so the ritual failed for a missing offering. Vomiting no longer makes ritual participants drop what they carry. Also, when a psychic ritual is canceled, its participants stop standing at the ritual spot instead of staring there until drafted.
 
+### Lost colonists can be rescued
+
+The "prisoner willing to join" rescue quest picks a former colonist first when one is out in the world, such as a kidnapped colonist who later joined the kidnappers, so you get the chance to bring them home. Vanilla only picks a former colonist who is human and of a xenotype the holding faction normally has, so a sanguophage or highmate held by pirates, or a colonist of a modded humanlike race, never showed up. Any humanlike former colonist can now be the prisoner. Vanilla also picks among former colonists evenly, so a refugee who stayed a few hours was as likely as someone who lived in your colony for years; the pick is now weighted by the days each one spent as a colonist. The prisoner is taken from their current faction into the hostile one holding them, so former colonists now living with a friendly or neutral faction (or your own) are left alone; only factionless ones and members of hostile factions are picked. Creepjoiners are still left out, as in vanilla.
+
 ### Aligned corner icons
 
 The bottom-right search and codex buttons no longer push the other toggle icons off the grid. Left to Unaligned Icon Fix when that mod is active.
@@ -125,7 +129,7 @@ When an event happens to a caravan, such as meeting another caravan, a demand fr
 
 In the categorized resource list (top left), double-click a resource to pin it. Pinned resources stay listed while their category is collapsed and are shown even when you have none. Double-click again to unpin. Pins apply to every save.
 
-![Pin resources in the resource list](Media/SmallTweaks.png)
+![Pin resources in the resource list](Media/PinTaskbar.png)
 
 ### Nutrient paste stock
 
@@ -155,11 +159,15 @@ Anyone who sees a social fight nearby and is not hostile to either fighter (colo
 
 Names under pawns on the map are cut short when another pawn stands close beside them in the same row, so long names do not cover their neighbours. Pawns with nobody beside them keep their full names. The full name shows while the mouse is over the pawn or its name, or while the pawn is selected.
 
+![Short names on the map](Media/ShortMapNames.png)
+
 ### Ghouls can wear apparel
 
 *Anomaly*
 
 Ghouls keep their clothes when turned and can be ordered to wear clothes and armor (right-click the apparel with the ghoul selected). They never change clothes on their own and still cannot use weapons.
+
+![Ghouls can wear apparel](Media/GhoulApparel.png)
 
 ### Caravan: abandon all dead at once
 

@@ -21,6 +21,7 @@ Fixes:
 - Hungry pets find food across the map: an urgently hungry colony animal that finds no food within its short search range searches the whole map, instead of starving far from the food stock in a large base.
 - Farskip home unloads prisoners (Royalty): prisoners carrying caravan goods get unloaded after a farskip home, like after a normal caravan arrival.
 - Psychic ritual invoker keeps the offering (Anomaly): vomiting during a ritual no longer drops the offering and fails it; participants of a canceled ritual no longer stay staring at the spot.
+- Lost colonists can be rescued: the "prisoner willing to join" quest, which prefers a former colonist out in the world, can now pick one of any humanlike race or xenotype (sanguophage, highmate, modded races), not only humans of a xenotype the holding faction normally has, and favours those who spent the most days as colonists; only factionless ones and members of hostile factions are picked.
 - Aligned corner icons: the search and codex buttons in the bottom-right corner no longer push the icons after them off the grid (always on, no setting).
 - Official translation fixes: fixes quest text shown as ERR and generated text left in English that a translation file cannot override, and a duplicate message after social fights (currently Traditional Chinese).
 
