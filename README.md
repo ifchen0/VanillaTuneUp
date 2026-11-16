@@ -173,6 +173,10 @@ Ghouls keep their clothes when turned and can be ordered to wear clothes and arm
 
 Former colonists who now live with a friendly or neutral faction otherwise stay out of sight in the world for good. When such a faction's visitors, trader caravan or travelers arrive, there is a 25% chance that one of its former colonists comes along, picked by how many days they spent in your colony. They come as they are, with their own gear, relationships and memories, creepjoiners included, and leave with the group. A message tells you who it is.
 
+### Clean up short-stay former colonists
+
+The game keeps everyone who was ever a colonist in the save for good, even refugees who stayed a few days and creepjoiners who left. They are never reused, so they only pile up, alive or dead, and make saves bigger and slower. Former colonists who spent under 30 days in your colony and no longer belong to your faction, and creepjoiners who left however long they stayed, are now cleaned up like any other world pawn. Anyone else who stayed 30 days or longer is still kept, and so are faction leaders, pawns tied to a quest, a log entry or a tale, and those with family in your colony.
+
 ### Caravan: abandon all dead at once
 
 *on by default*

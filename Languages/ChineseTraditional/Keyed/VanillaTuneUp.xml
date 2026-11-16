@@ -166,6 +166,8 @@
   <VTU_FormerColonistVisits>前殖民者會回來探望</VTU_FormerColonistVisits>
   <VTU_FormerColonistVisits_Desc>目前住在友好或中立派系的前殖民者，原本會一直待在世界上不再出現。現在這些派系的訪客、商隊或路過的旅人抵達時，有25%機率帶上一位該派系的前殖民者，依他在你殖民地待過的天數挑選。他會以原本的樣子出現，保留自己的裝備、人際關係和記憶（詭異避難者也一樣），並跟著隊伍一起離開。左上角會有訊息告訴你是誰。</VTU_FormerColonistVisits_Desc>
   <VTU_FormerColonistVisits_Message>曾在你的殖民地住過{DAYS}天的{PAWN_nameDef}，也在{FACTION}的隊伍中。</VTU_FormerColonistVisits_Message>
+  <VTU_ShortStayCleanup>清理短期前殖民者</VTU_ShortStayCleanup>
+  <VTU_ShortStayCleanup_Desc>遊戲會把所有當過殖民者的人永久留在存檔裡，連只住幾天的難民和已經離開的詭異避難者也一樣。這些人不會被重複利用，不論死活只會越積越多，讓存檔變大、存讀檔變慢。現在在你殖民地待不到30天、而且已經不屬於你派系的前殖民者，以及已經離開的詭異避難者（不論待了多久），會跟其他世界角色一樣被清理。其他待滿30天以上的人照樣保留，派系領袖、跟任務、紀錄或傳說有關的人，以及家人還在你殖民地的人也都會保留。</VTU_ShortStayCleanup_Desc>
   <VTU_CaravanAbandonDead>旅隊一次拋棄所有死者</VTU_CaravanAbandonDead>
   <VTU_CaravanAbandonDead_Desc>在旅隊「貨物」分頁的「指定用藥計畫」旁加一個按鈕，確認一次即可拋棄旅隊貨物中所有人類屍體和死者穿過的衣物，動物屍體保留以便帶回屠宰。確認視窗會列出其中的殖民者。活著的成員身上穿的衣物不受影響。</VTU_CaravanAbandonDead_Desc>
   <VTU_CaravanAbandonDead_Button>拋棄死者</VTU_CaravanAbandonDead_Button>
