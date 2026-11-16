@@ -96,6 +96,7 @@ namespace VanillaTuneUp
                 UnavailableKey = "VTU_RequiresAnomaly"
             },
             new TuneUpModule("FormerColonistRescue", false, null),
+            new TuneUpModule("LogKeepsNonHumans", false, null),
             // Unaligned Icon Fix moves the same buttons its own way; leave them to it when it is active.
             new TuneUpModule("PlaySettingsIconGap", false, "Ilarion.UnalignedIconFix") { IsHidden = true },
             new TuneUpModule("TranslationFixes", false, null)

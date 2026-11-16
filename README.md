@@ -83,6 +83,10 @@ An invoker who vomited during a psychic ritual (gut worms, food poisoning, ...) 
 
 The "prisoner willing to join" rescue quest picks a former colonist first when one is out in the world, such as a kidnapped colonist who later joined the kidnappers, so you get the chance to bring them home. Vanilla only picks a former colonist who is human and of a xenotype the holding faction normally has, so a sanguophage or highmate held by pirates, or a colonist of a modded humanlike race, never showed up. Any humanlike former colonist can now be the prisoner. Vanilla also picks among former colonists evenly, so a refugee who stayed a few hours was as likely as someone who lived in your colony for years; the pick is now weighted by the days each one spent as a colonist, up to 60 days, so anyone who stayed that long is equally likely. The prisoner is taken from their current faction into the hostile one holding them, so former colonists now living with a friendly or neutral faction (or your own) are left alone; only factionless ones and members of hostile factions are picked. Creepjoiners are still left out, as in vanilla.
 
+### Combat logs keep fights with animals and mechanoids
+
+The game keeps a pawn in the save while a combat or social log entry is about them, but only for humans and other humanlikes. Animals, mechanoids and insects are cleaned up soon after, and that deletes every log entry about them, so a fight with a manhunter pack or a mech raid soon shows as an empty battle in your colonists' logs. They are now kept the same way as humanlikes. The logs still expire as usual (battles after about a week, the social log after 150 entries), and then these pawns are cleaned up as before.
+
 ### Aligned corner icons
 
 The bottom-right search and codex buttons no longer push the other toggle icons off the grid. Left to Unaligned Icon Fix when that mod is active.

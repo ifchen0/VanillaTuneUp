@@ -43,6 +43,8 @@
   <VTU_PsychicRitualOffering_Desc>執行者在心靈儀式中嘔吐（腸道寄生蟲、食物中毒等）時會把祭品丟在地上，導致儀式因缺少祭品而失敗。現在儀式參與者嘔吐時不會放下手上的東西。另外，心靈儀式被取消後，參與者會離開儀式點，不再一直站著直到被徵召。</VTU_PsychicRitualOffering_Desc>
   <VTU_FormerColonistRescue>失散的殖民者可以被救回</VTU_FormerColonistRescue>
   <VTU_FormerColonistRescue_Desc>「俘虜營地」救援任務在世界上有前殖民者時（例如被綁走、後來加入綁匪的殖民者），會優先讓他當被關押的俘虜，讓你有機會把他救回來。但原版只會挑人類、而且是關押派系常見異種的前殖民者，所以被海盜關押的噬血者、高魅人，或模組人形種族的殖民者從來不會出現。現在任何人形的前殖民者都可以是那位俘虜。原版也是在前殖民者之間平均抽選，只待過幾小時的難民跟在殖民地住了好幾年的人機率一樣；現在會依每個人當殖民者的天數加權，最多算到60天，待滿60天的人機率相同。俘虜會從原本的派系被移到關押他的敵對派系，所以目前住在友好或中立派系（或你自己派系）的前殖民者不會被選上，只會挑無派系或敵對派系的人。詭異避難者仍和原版一樣不會被選上。</VTU_FormerColonistRescue_Desc>
+  <VTU_LogKeepsNonHumans>戰鬥紀錄保留與動物、機械體的戰鬥</VTU_LogKeepsNonHumans>
+  <VTU_LogKeepsNonHumans_Desc>遊戲會在戰鬥或社交紀錄還提到某個角色時把他留在存檔裡，但只限人類等人形角色。動物、機械體和蟲族很快就會被清掉，而清掉時會一併刪除所有跟他們有關的紀錄，所以跟獸群或機械族打過一仗後，殖民者的紀錄裡很快就只剩一場空的戰鬥。現在他們也會跟人形角色一樣被保留。紀錄本身仍照常過期（戰鬥約一週、社交紀錄超過150筆），之後這些角色就會照常被清理。</VTU_LogKeepsNonHumans_Desc>
   <VTU_TranslationFixes>官方翻譯修正</VTU_TranslationFixes>
   <VTU_TranslationFixes_Desc>修正官方翻譯中無法用翻譯檔覆蓋的錯誤（目前為繁體中文）：機械軍團哨站任務文字顯示成「ERR:」加上[標籤]，以及殘留英文的生成文字（朝聖者任務、審判指控、理念故事、藝術品描述），以及社交打架結束時多跳一則「X和X不再爭吵了」的重複訊息。</VTU_TranslationFixes_Desc>
   <VTU_XenogermQueue>異種細胞佇列</VTU_XenogermQueue>

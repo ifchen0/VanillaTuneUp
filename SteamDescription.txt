@@ -20,6 +20,7 @@ Full description of every part: [url=https://github.com/ifchen0/VanillaTuneUp#re
 [*][b]Farskip home unloads prisoners[/b] (Royalty): their caravan cargo goes to storage, like after a normal caravan arrival.
 [*][b]Psychic ritual invoker keeps the offering[/b] (Anomaly): vomiting no longer drops the offering and fails the ritual; a canceled ritual no longer leaves anyone staring at the spot.
 [*][b]Lost colonists can be rescued:[/b] the "prisoner willing to join" quest can bring back former colonists of any humanlike race or xenotype, not only humans, and favours those who lived in your colony longer (up to 60 days); former colonists now with friendly or neutral factions are left alone.
+[*][b]Combat logs keep fights with animals and mechanoids:[/b] no more empty battles in colonists' logs after a manhunter pack or mech raid.
 [*][b]Aligned corner icons:[/b] the bottom-right search and codex buttons no longer push other icons off the grid.
 [*][b]Official translation fixes:[/b] quest text shown as [i]ERR:[/i] and untranslatable generated text (currently Traditional Chinese).
 [/list]
