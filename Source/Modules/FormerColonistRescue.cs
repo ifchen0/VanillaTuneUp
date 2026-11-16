@@ -15,7 +15,7 @@ namespace VanillaTuneUp
     /// race, or of a xenotype that faction does not generate (a sanguophage held by pirates), was never picked.
     /// For such requests a humanlike former colonist filling a humanlike kind skips the race and xenotype set checks.
     /// Every other check (forced xenotype/genes, health, skills, age, the creepjoiner exclusion, ...) stays vanilla.
-    /// The pick among former colonists is also weighted by the days each spent as a colonist (see below), and only
+    /// The pick among former colonists is also weighted by the days each spent as a colonist, capped at 60 (see below), and only
     /// takes factionless ones or members of factions hostile to the player.
     /// </summary>
     [HarmonyPatchCategory("FormerColonistRescue")]
@@ -94,11 +94,16 @@ namespace VanillaTuneUp
         [System.ThreadStatic] internal static bool formerColonistPick;
 
         public static float DaysAsColonist(Pawn p) => p.records.GetValue(RecordDefOf.TimeAsColonistOrColonyAnimal) / GenDate.TicksPerDay;
+
+        // Days beyond this add no weight, so a few long-time colonists do not take nearly every quest.
+        public const float MaxWeightDays = 60f;
+
+        public static float PickWeight(Pawn p) => UnityEngine.Mathf.Min(DaysAsColonist(p), MaxWeightDays);
     }
 
     // Vanilla picks the former colonist at random, so a refugee who stayed a few hours is as likely as someone who
     // lived in the colony for years. While such a request is generated, a former colonist's pick weight is scaled by
-    // the days they spent as a colonist.
+    // the days they spent as a colonist, up to MaxWeightDays: anyone who stayed that long is equally likely.
     [HarmonyPatchCategory("FormerColonistRescue")]
     [HarmonyPatch(typeof(PawnGenerator), "GenerateOrRedressPawnInternal")]
     public static class FormerColonistRescue_Generate
@@ -122,7 +127,7 @@ namespace VanillaTuneUp
         public static void Postfix(Pawn p, ref float __result)
         {
             if (FormerColonistRescue.formerColonistPick && PawnUtility.EverBeenColonistOrTameAnimal(p))
-                __result *= FormerColonistRescue.DaysAsColonist(p);
+                __result *= FormerColonistRescue.PickWeight(p);
         }
     }
 }
