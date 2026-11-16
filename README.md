@@ -173,9 +173,9 @@ Ghouls keep their clothes when turned and can be ordered to wear clothes and arm
 
 ![Ghouls can wear apparel](Media/GhoulApparel.png)
 
-### Former colonists come to visit
+### Former colonists and outsiders come back into play
 
-Former colonists who now live with a friendly or neutral faction otherwise stay out of sight in the world for good. When such a faction's visitors, trader caravan or travelers arrive, there is a 25% chance that one of its former colonists comes along, picked by how many days they spent in your colony. They come as they are, with their own gear, relationships and memories, creepjoiners included, and leave with the group. A message tells you who it is.
+Vanilla only brings a faction's existing members back by fitting them into one of its usual pawn types, so former colonists are rarely seen again, and members of another race or xenotype than the faction normally has (a Miho with a human tribe, a sanguophage among pirates) or creepjoiners never come back at all. Now they come as they are, with their own gear, relationships and memories: 25% of visitor groups, trader caravans and travelers from a friendly or neutral faction bring one along, and 25% of raids bring one able to fight. When you enter one of the faction's settlements, each of them has a 25% chance to be there, even when downed, so you can rescue or capture them. Only members in good health travel or fight. Former colonists are picked more often the longer they lived in your colony, and a message tells you when one shows up.
 
 ### Clean up short-stay former colonists and former leaders
 
