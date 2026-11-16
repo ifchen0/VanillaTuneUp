@@ -37,7 +37,7 @@ Full description of every part: [url=https://github.com/ifchen0/VanillaTuneUp#re
 [*][b]Short names on the map[/b] (on by default): long pawn names no longer cover neighbours.
 [*][b]Ghouls can wear apparel[/b] (Anomaly): still no weapons.
 [*][b]Former colonists come to visit:[/b] they may come along with their new faction's visitors, traders or travelers.
-[*][b]Clean up short-stay former colonists:[/b] refugees and others who stayed under 30 days, and creepjoiners who left, no longer pile up in the save.
+[*][b]Clean up short-stay former colonists and former leaders:[/b] refugees and others who stayed under 30 days, creepjoiners who left, and faction leaders who lead no faction now no longer pile up in the save.
 [*][b]Caravan: abandon all dead at once[/b] (on by default).
 [*][b]Taskbar letter badge[/b] (on by default, Windows): shows how many letters are waiting.
 [*][b]Right-click to dismiss bundled letters[/b] (on by default).
