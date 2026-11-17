@@ -551,7 +551,7 @@ namespace VanillaTuneUp
                     continue;
                 try
                 {
-                    harmony.PatchCategory(module.Id);
+                    harmony.PatchCategory(typeof(Startup).Assembly, module.Id);
                     module.OnActivated?.Invoke();
                     module.State = ModuleState.Active;
                 }
@@ -559,13 +559,13 @@ namespace VanillaTuneUp
                 {
                     module.State = ModuleState.Failed;
                     Log.Error($"[Vanilla Tune-Up] {module.Id} failed to apply and was turned off: {e}");
-                    try { harmony.UnpatchCategory(module.Id); } catch { }
+                    try { harmony.UnpatchCategory(typeof(Startup).Assembly, module.Id); } catch { }
                 }
             }
             if (settingsChanged)
                 VanillaTuneUpMod.Save();
 #if PROFILE
-            harmony.PatchCategory("Profile");
+            harmony.PatchCategory(typeof(Startup).Assembly, "Profile");
             Log.Message("[Vanilla Tune-Up] PROFILE build: History tab timings enabled.");
 #endif
         }
