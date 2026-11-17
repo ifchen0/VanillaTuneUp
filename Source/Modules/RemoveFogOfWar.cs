@@ -9,7 +9,8 @@ namespace VanillaTuneUp
 {
     /// <summary>
     /// Clears the fog of war on every map when it is generated or loaded, except where revealing it would set something
-    /// off: a dormant or sleeping pawn (ancient dangers wake when unfogged), a TriggerUnfogged signal, a quest target, a
+    /// off: a dormant or sleeping pawn (ancient dangers wake when unfogged), a dormant hive or other dormant thing, a
+    /// TriggerUnfogged signal, a quest target, a
     /// letter-on-reveal thing, an undiscovered entity codex entry or a hidden item. The whole fogged area connected to
     /// such a thing keeps its fog, so it plays exactly as in vanilla, while the rest of the map (ruins elsewhere and so on)
     /// is still revealed. Mineable cells (rock, ore, collapsed rocks) always keep their fog, and pocket maps (labyrinth,
@@ -125,6 +126,9 @@ namespace VanillaTuneUp
                 if (pawn.GetLord()?.LordJob is LordJob_SleepThenAssaultColony)
                     return "a sleeping group";
             }
+            // Dormant things such as insect hives wake up on their own once they are no longer fogged (Hive.TickInterval).
+            if (thing.TryGetComp<CompCanBeDormant>() is CompCanBeDormant dormant && !dormant.Awake)
+                return "a dormant thing";
             // Everything below only fires the first time a thing is revealed (Thing.Notify_Unfogged).
             if (BeenRevealed(thing))
                 return null;
