@@ -43,6 +43,7 @@ Full description of every part: [url=https://github.com/ifchen0/VanillaTuneUp#re
 [*][b]Caravan: take rescued guests along[/b].
 [*][b]Friends come for wounded guests[/b].
 [*][b]Doctors rescue friendly outsiders[/b].
+[*][b]Wardens capture downed enemies[/b].
 [*][b]Taskbar letter badge[/b] (on by default, Windows): shows how many letters are waiting.
 [*][b]Right-click to dismiss bundled letters[/b] (on by default).
 [*][b]Visitors take shelter:[/b] caravans and visitors wait indoors from bad weather or danger instead of leaving early.

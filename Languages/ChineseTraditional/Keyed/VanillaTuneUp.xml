@@ -183,6 +183,8 @@
   <VTU_WoundedGuestPickup_Desc>來訪的訪問團會帶走同派系倒地的訪客，但特定派系很少來訪，無法康復的訪客可能會一直躺在殖民地。訪客在殖民地倒地滿15天（訪問團通常隔這麼久才來一次）時，他的派系會派一隊訪問團過來，照常把他帶回去。沒有派系的訪客，以及派系已敵對或從不派訪問團的訪客，維持原狀。</VTU_WoundedGuestPickup_Desc>
   <VTU_RescueOutsiders>醫生會救援友方外人</VTU_RescueOutsiders>
   <VTU_RescueOutsiders_Desc>醫生除了自己人，也會依個性主動救援倒地的外人。嗜血或心理變態：照舊只救自己人。善良，或意識形態的慈善為「必要」或「重要」：救同盟、中立派系和沒有派系的人。其他人：只救同盟。特性優先於意識形態。其他規則和手動下令救援相同：屬於醫生工作，敵人在25格內或超出活動區域時不去，需要空的床或睡覺點，事件和任務地圖也一樣。被救的外人會成為你的訪客。</VTU_RescueOutsiders_Desc>
+  <VTU_AutoCapture>獄卒自動俘虜倒地敵人</VTU_AutoCapture>
+  <VTU_AutoCapture_Desc>只要有空的囚犯床，獄卒就會自動俘虜倒地的敵人，你只需要管理空囚犯床的數量。倒地敵人比空床多時，先抓價值最高的（依市場價值，反映技能、特性、年齡和健康）。只抓敵對派系的人形單位；敵人在25格內或超出活動區域時不去。和手動下令俘虜相同，事件和任務地圖也一樣。</VTU_AutoCapture_Desc>
   <VTU_TaskbarLetterBadge>工作列信件角標</VTU_TaskbarLetterBadge>
   <VTU_TaskbarLetterBadge_Desc>把畫面右側待處理的信件以小角標顯示在工作列的遊戲圖示上：數字是信件數，顏色取最緊急的那封（大威脅紅色、小威脅橘色，依此類推）。打開或關閉信件時角標跟著更新。有紅色緊急警示（例如危及生命的病況、殖民者需要救援）時，角標也會變成紅色；沒有信件時則顯示一個紅點。沒有信件時，左上角出現的訊息會在顯示期間以對應顏色的圓點呈現。遊戲暫停時數字會換成暫停符號（顏色不變），沒有其他東西要顯示時則是灰色角標。在其他視窗時看一眼工作列就知道遊戲裡發生了事。不會跳出通知、不發出聲音也不閃爍。僅限Windows。</VTU_TaskbarLetterBadge_Desc>
   <VTU_TaskbarLetterBadge_Tip>RimWorld有{0}封待處理信件</VTU_TaskbarLetterBadge_Tip>

@@ -3,4 +3,7 @@
   <VTU_DispensePasteToStock.label>取得營養膏備用</VTU_DispensePasteToStock.label>
   <VTU_DispensePasteToStock.verb>取得</VTU_DispensePasteToStock.verb>
   <VTU_DispensePasteToStock.gerund>正在取得</VTU_DispensePasteToStock.gerund>
+  <VTU_AutoCapture.label>俘虜倒地的敵人</VTU_AutoCapture.label>
+  <VTU_AutoCapture.verb>俘虜</VTU_AutoCapture.verb>
+  <VTU_AutoCapture.gerund>正在俘虜</VTU_AutoCapture.gerund>
 </LanguageData>

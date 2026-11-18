@@ -139,6 +139,7 @@ namespace VanillaTuneUp
             new TuneUpModule("RescuedGuestsCaravan", true, null),
             new TuneUpModule("WoundedGuestPickup", true, null),
             new TuneUpModule("RescueOutsiders", true, null),
+            new TuneUpModule("AutoCapture", true, null),
             new TuneUpModule("TaskbarLetterBadge", true, null)
             {
                 OnByDefault = true,

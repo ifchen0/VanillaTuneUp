@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!-- Added even while the module is off, since XML caches do not rebuild when a mod setting changes;
+       the work giver checks the setting itself. -->
+  <Operation Class="VanillaTuneUp.PatchOperationTuneUp">
+    <module>AutoCapture</module>
+    <evenWhenOff>true</evenWhenOff>
+    <operations>
+      <li Class="PatchOperationAdd">
+        <xpath>Defs</xpath>
+        <value>
+          <WorkGiverDef>
+            <defName>VTU_AutoCapture</defName>
+            <label>capture downed enemies</label>
+            <giverClass>VanillaTuneUp.WorkGiver_AutoCapture</giverClass>
+            <workType>Warden</workType>
+            <verb>capture</verb>
+            <gerund>capturing</gerund>
+            <!-- After releasing prisoners, before taking prisoners to bed and feeding them. -->
+            <priorityInType>95</priorityInType>
+            <directOrderable>false</directOrderable>
+            <requiredCapacities>
+              <li>Manipulation</li>
+            </requiredCapacities>
+          </WorkGiverDef>
+        </value>
+      </li>
+    </operations>
+  </Operation>
+</Patch>
