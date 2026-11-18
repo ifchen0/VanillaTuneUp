@@ -40,6 +40,9 @@ Full description of every part: [url=https://github.com/ifchen0/VanillaTuneUp#re
 [*][b]Former colonists and outsiders come back into play:[/b] former colonists, and members of a race or xenotype their faction never fields, come along with its visitors and raids, or are found in its settlements.
 [*][b]Clean up short-stay former colonists and former leaders:[/b] refugees and others who stayed under 30 days, creepjoiners who left, and faction leaders who lead no faction now no longer pile up in the save.
 [*][b]Caravan: abandon all dead at once[/b] (on by default).
+[*][b]Caravan: take rescued guests along[/b].
+[*][b]Friends come for wounded guests[/b].
+[*][b]Doctors rescue friendly outsiders[/b].
 [*][b]Taskbar letter badge[/b] (on by default, Windows): shows how many letters are waiting.
 [*][b]Right-click to dismiss bundled letters[/b] (on by default).
 [*][b]Visitors take shelter:[/b] caravans and visitors wait indoors from bad weather or danger instead of leaving early.

@@ -136,6 +136,9 @@ namespace VanillaTuneUp
             new TuneUpModule("FormerColonistVisits", true, null) { OnActivated = FormerColonistVisits.Activate },
             new TuneUpModule("ShortStayCleanup", true, null),
             new TuneUpModule("CaravanAbandonDead", true, null) { OnByDefault = true },
+            new TuneUpModule("RescuedGuestsCaravan", true, null),
+            new TuneUpModule("WoundedGuestPickup", true, null),
+            new TuneUpModule("RescueOutsiders", true, null),
             new TuneUpModule("TaskbarLetterBadge", true, null)
             {
                 OnByDefault = true,

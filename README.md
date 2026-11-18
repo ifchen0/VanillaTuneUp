@@ -189,6 +189,18 @@ The game keeps two kinds of world pawns in the save for good although nothing ne
 
 Adds a button next to "Assign drug policies" on the caravan Items tab that abandons every human corpse and every tainted apparel (worn by someone who died) in the caravan inventory after one confirmation. Animal corpses are kept for butchering. Dead colonists are named in the confirmation. Apparel worn by living members is not touched.
 
+### Caravan: take rescued guests along
+
+Away from your colony (on event and quest maps, for example), downed members of friendly or neutral factions that you rescued can leave with your caravan as guests, listed under "Rescued guests" in the caravan window, instead of being captured as prisoners (which angers their faction) or left behind. They stay your guests on the way. Once they recover at the destination they leave on their own, and their faction thanks you as if they had left your colony after being rescued. Rescued pawns without a faction keep their usual chance to join your colony. Guests cannot be sold or given away when the caravan trades. Only downed guests can be added; guests tied to a quest are not. At your colony nothing changes: rescued guests recover there and leave.
+
+### Friends come for wounded guests
+
+Visitors carry off downed guests of their own faction, but a given faction rarely visits, so a guest who cannot recover may lie in your colony for good. Once a guest has been downed in your colony for 15 days (as long as visitors usually take to come), their faction sends a visitor group, which takes them home as usual. Guests without a faction, and those whose faction is hostile or never sends visitors, stay as they are.
+
+### Doctors rescue friendly outsiders
+
+Doctors also rescue downed outsiders on their own, not only their own people, depending on who they are. Bloodlust or psychopath: only their own people, as before. Kind, or following an ideoligion where charity is essential or important: allies, neutral factions and people without a faction. Everyone else: allies only. A trait decides before the ideoligion. Everything else works as when you order a rescue: it is Doctor work, nobody goes while enemies are within 25 cells or outside their allowed area, and a free bed or sleeping spot is needed, also on event and quest maps. Rescued outsiders become your guests.
+
 ### Taskbar letter badge
 
 *Windows, on by default*
