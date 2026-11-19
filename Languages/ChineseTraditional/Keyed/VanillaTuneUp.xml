@@ -116,7 +116,7 @@
   <VTU_VisitorFoodPolicyNone>任何食物</VTU_VisitorFoodPolicyNone>
   <VTU_VisitorFoodPolicyMissing>這個存檔沒有名為「{0}」的食物計畫，飢餓的訪客可以吃任何殖民地食物。</VTU_VisitorFoodPolicyMissing>
   <VTU_HybridXenotype>混種後代沿用相符的種族</VTU_HybridXenotype>
-  <VTU_HybridXenotype_Desc>被標為「混合」的後代，若種系基因與某個可遺傳種族的相符度超過80%（依基因複雜度加權，不計膚色與髮色），就改為該種族；同分時隨機選一個。出生時與每次讀檔都會檢查；基因本身不變，除非開啟下方選項，否則帶有異種基因的pawn不處理。</VTU_HybridXenotype_Desc>
+  <VTU_HybridXenotype_Desc>被標為「混合」的後代，若種系基因與某個可遺傳種族的相符度超過80%（依基因複雜度加權，不計膚色與髮色），就改為該種族；同分時隨機選一個。出生時與每次讀檔都會檢查；基因本身不變，除非開啟下方選項，否則帶有異種基因的pawn不處理。有裝Humanoid Alien Races時以外型優先：有專屬種族的外星種族一律改為其中最接近的一個，其他限定外星種族專用的種族不會被選上。</VTU_HybridXenotype_Desc>
   <VTU_HybridIncludeXenogenes>也檢查經過改造的pawn</VTU_HybridIncludeXenogenes>
   <VTU_HybridIncludeXenogenes_Desc>種系與異種基因一起算，跟所有種族（不分是否可遺傳）比對。也會處理帶有異種基因的混種，以及仍顯示預設無臉頭像的基準人（例如植入過異種基因的pawn），植入異種基因後也會立即檢查。有另選頭像的自訂種族與變異體不處理。</VTU_HybridIncludeXenogenes_Desc>
   <VTU_FactionColors>區分相近的陣營顏色</VTU_FactionColors>

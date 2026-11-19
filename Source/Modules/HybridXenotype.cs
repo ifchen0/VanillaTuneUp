@@ -16,6 +16,10 @@ namespace VanillaTuneUp
     /// An option (off by default) also takes modified pawns into account: all genes (germline and xenogenes alike,
     /// since a xenotype def does not split them) are matched against every xenotype, for hybrids with xenogenes and
     /// for Baseliners still shown with the default faceless icon, such as xenogerm implants. Mutants keep their name.
+    /// With Humanoid Alien Races loaded the body comes first: a race that lists its own xenotypes (such as Miho or
+    /// Weazel) always takes the best-matching one of those, with no threshold, since its look and meat come from the
+    /// race, not the genes. Other bodies (humans) are matched by genes only against xenotypes their race may use, so
+    /// they are never named after another race's xenotype.
     /// </summary>
     public static class HybridXenotype
     {
@@ -31,6 +35,43 @@ namespace VanillaTuneUp
             && gene.endogeneCategory != EndogeneCategory.HairColor;
 
         private static int Weight(GeneDef gene) => gene.biostatCpx < 1 ? 1 : gene.biostatCpx;
+
+        // Humanoid Alien Races restricts some xenotypes to their own race (body, head and meat come from the race
+        // ThingDef, not the xenotype). Looked up by name so HAR stays optional; null when HAR is not loaded.
+        private static readonly System.Func<XenotypeDef, ThingDef, bool> harCanUseXenotype = LookupHarCanUseXenotype();
+
+        private static System.Func<XenotypeDef, ThingDef, bool> LookupHarCanUseXenotype()
+        {
+            System.Reflection.MethodInfo method =
+                AccessTools.TypeByName("AlienRace.RaceRestrictionSettings") is System.Type type
+                    ? AccessTools.Method(type, "CanUseXenotype", new[] { typeof(XenotypeDef), typeof(ThingDef) })
+                    : null;
+            return method != null && method.ReturnType == typeof(bool)
+                ? AccessTools.MethodDelegate<System.Func<XenotypeDef, ThingDef, bool>>(method)
+                : null;
+        }
+
+        private static bool RaceCanUse(XenotypeDef xenotype, Pawn pawn) =>
+            harCanUseXenotype == null || harCanUseXenotype(xenotype, pawn.def);
+
+        private static readonly Dictionary<ThingDef, HashSet<XenotypeDef>> raceOwnXenotypes =
+            new Dictionary<ThingDef, HashSet<XenotypeDef>>();
+
+        /// <summary>
+        /// The xenotypes a Humanoid Alien Races race lists as its own (alienRace.raceRestriction.xenotypeList).
+        /// Empty for humans, for races without such a list, and when HAR is not loaded.
+        /// </summary>
+        public static HashSet<XenotypeDef> RaceOwnXenotypes(ThingDef race)
+        {
+            if (!raceOwnXenotypes.TryGetValue(race, out HashSet<XenotypeDef> own))
+            {
+                var list = Traverse.Create(race).Field("alienRace").Field("raceRestriction").Field("xenotypeList")
+                    .GetValue() as IEnumerable<XenotypeDef>;
+                own = list == null ? new HashSet<XenotypeDef>() : new HashSet<XenotypeDef>(list.Where(x => x != null));
+                raceOwnXenotypes[race] = own;
+            }
+            return own;
+        }
 
         private static List<KeyValuePair<XenotypeDef, HashSet<GeneDef>>> Candidates =>
             candidates ??= DefDatabase<XenotypeDef>.AllDefs
@@ -71,6 +112,23 @@ namespace VanillaTuneUp
             if (includeXenogenes ? !(genes.hybrid || IsFacelessBaseliner(pawn)) : !genes.hybrid || genes.Xenogenes.Count > 0)
                 return null;
 
+            XenotypeDef best = Pick(pawn, includeXenogenes);
+            if (best == null)
+                return null;
+
+            genes.hybrid = false;
+            genes.iconDef = null;
+            genes.SetXenotypeDirect(best);
+            return best;
+        }
+
+        /// <summary>
+        /// The xenotype a hybrid with this pawn's body and genes would be given, or null; the pawn is not changed.
+        /// Equal best matches are picked at random.
+        /// </summary>
+        public static XenotypeDef Pick(Pawn pawn, bool includeXenogenes)
+        {
+            Pawn_GeneTracker genes = pawn.genes;
             tmpGenes.Clear();
             int pawnWeight = 0;
             foreach (Gene gene in includeXenogenes ? genes.GenesListForReading : genes.Endogenes)
@@ -79,11 +137,17 @@ namespace VanillaTuneUp
                     pawnWeight += Weight(gene.def);
             }
 
+            // The body decides first: an alien race with its own xenotypes only ever takes one of them, chosen by genes
+            // with no threshold. Only bodies without their own xenotypes (humans) are classified by genes alone.
+            HashSet<XenotypeDef> own = RaceOwnXenotypes(pawn.def);
+            bool byRace = own.Count > 0;
+
             float bestScore = 0f;
             tmpBest.Clear();
             foreach (var candidate in Candidates)
             {
-                if (!includeXenogenes && !candidate.Key.inheritable)
+                if (!includeXenogenes && !candidate.Key.inheritable
+                    || (byRace ? !own.Contains(candidate.Key) : !RaceCanUse(candidate.Key, pawn)))
                     continue;
                 int shared = 0, xenotypeWeight = 0;
                 foreach (GeneDef gene in candidate.Value)
@@ -109,14 +173,8 @@ namespace VanillaTuneUp
             tmpGenes.Clear();
 
             // Equal best matches are picked at random; once resolved the pawn is no longer a hybrid, so this happens once.
-            XenotypeDef best = bestScore > MatchThreshold ? tmpBest.RandomElement() : null;
+            XenotypeDef best = tmpBest.Count > 0 && (byRace || bestScore > MatchThreshold) ? tmpBest.RandomElement() : null;
             tmpBest.Clear();
-            if (best == null)
-                return null;
-
-            genes.hybrid = false;
-            genes.iconDef = null;
-            genes.SetXenotypeDirect(best);
             return best;
         }
     }
