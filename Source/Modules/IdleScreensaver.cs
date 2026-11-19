@@ -157,19 +157,52 @@ namespace VanillaTuneUp
                 return false;
             if (active && (KeyBindingDefOf.NextColonist.IsDown || KeyBindingDefOf.PreviousColonist.IsDown))
                 return false;
+            // Other mods' hotkeys (an overlay toggle, say) do their job without ending it; Shift or Ctrl held on
+            // their own wait for the key that comes with them.
+            if ((active || entering) && (ModKeys().Any(k => k.IsDown) || OnlyModifiersHeld()))
+                return false;
             return !(Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)
                 || Input.GetKey(KeyCode.LeftWindows) || Input.GetKey(KeyCode.RightWindows));
         }
 
-        /// <summary>Input events that pass through while running: vanilla zoom and next/previous colonist.</summary>
+        /// <summary>
+        /// Input events that pass through while running: vanilla zoom, next/previous colonist, other mods' hotkeys and
+        /// Shift or Ctrl pressed on their own.
+        /// </summary>
         private static bool PassesThrough(Event e)
         {
             if (!active)
                 return false;
             if (e.type == EventType.ScrollWheel)
                 return true;
-            return e.type == EventType.KeyDown
-                && (KeyBindingDefOf.NextColonist.KeyDownEvent || KeyBindingDefOf.PreviousColonist.KeyDownEvent);
+            if (e.type != EventType.KeyDown)
+                return false;
+            return KeyBindingDefOf.NextColonist.KeyDownEvent || KeyBindingDefOf.PreviousColonist.KeyDownEvent
+                || IsModifier(e.keyCode) || ModKeys().Any(k => k.KeyDownEvent);
+        }
+
+        private static List<KeyBindingDef> modKeys;
+
+        /// <summary>Key bindings added by mods other than the game and its DLCs.</summary>
+        private static List<KeyBindingDef> ModKeys() => modKeys ??= DefDatabase<KeyBindingDef>.AllDefsListForReading
+            .Where(k => k.modContentPack != null && !k.modContentPack.IsOfficialMod).ToList();
+
+        private static bool IsModifier(KeyCode key) => key == KeyCode.LeftShift || key == KeyCode.RightShift
+            || key == KeyCode.LeftControl || key == KeyCode.RightControl;
+
+        // Keyboard keys only: the mouse buttons and joystick codes start at Mouse0.
+        private static readonly KeyCode[] KeyboardKeys = ((KeyCode[])System.Enum.GetValues(typeof(KeyCode)))
+            .Where(k => k > KeyCode.None && k < KeyCode.Mouse0).Distinct().ToArray();
+
+        /// <summary>The keys held down are all Shift or Ctrl. Called only while a key is held.</summary>
+        private static bool OnlyModifiersHeld()
+        {
+            foreach (KeyCode key in KeyboardKeys)
+            {
+                if (!IsModifier(key) && Input.GetKey(key))
+                    return false;
+            }
+            return true;
         }
 
         private static void FrameUpdate()
