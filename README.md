@@ -201,7 +201,7 @@ Visitors carry off downed guests of their own faction, but a given faction rarel
 
 ### Doctors rescue friendly outsiders
 
-Doctors also rescue downed outsiders on their own, not only their own people, depending on who they are. Bloodlust or psychopath: only their own people, as before. Kind, or following an ideoligion where charity is essential or important: allies, neutral factions and people without a faction. Everyone else: allies only. A trait decides before the ideoligion. Everything else works as when you order a rescue: it is Doctor work, nobody goes while enemies are within 25 cells or outside their allowed area, and a free bed or sleeping spot is needed, also on event and quest maps. Rescued outsiders become your guests.
+Doctors also rescue downed outsiders on their own, not only their own people, depending on who they are. Bloodlust or psychopath: only their own people, as before. Kind, or following an ideoligion where charity is essential or important: allies, neutral factions and people without a faction. Everyone else: allies only. A trait decides before the ideoligion. Everything else works as when you order a rescue: it is Doctor work, nobody goes while enemies are within 25 cells or outside their allowed area, and a free bed or sleeping spot is needed, also on event and quest maps. Rescued outsiders become your guests. Any doctor but a bloodlust or psychopath one also stops the bleeding of downed non-hostile outsiders where they lie, without medicine, so the ones nobody rescues do not bleed to death; after that they are left as in vanilla.
 
 ### Wardens capture downed enemies
 
