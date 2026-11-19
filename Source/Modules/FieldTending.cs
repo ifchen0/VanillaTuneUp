@@ -163,6 +163,38 @@ namespace VanillaTuneUp
         }
     }
 
+    /// <summary>
+    /// Urgent tends go to whoever bleeds out soonest: within 2 hours, then within 6 hours, then the rest. Within a
+    /// tier the closest patient comes first, as in vanilla. Colonists, prisoners and outsiders are treated alike.
+    /// WorkGiver_TendOtherUrgent overrides neither member, so the base ones are patched for that type only.
+    /// </summary>
+    [HarmonyPatchCategory("FieldTending")]
+    [HarmonyPatch(typeof(WorkGiver_Scanner), nameof(WorkGiver_Scanner.Prioritized), MethodType.Getter)]
+    public static class Patch_WorkGiver_Scanner_Prioritized
+    {
+        public static void Postfix(WorkGiver_Scanner __instance, ref bool __result)
+        {
+            if (__instance is WorkGiver_TendOtherUrgent)
+                __result = true;
+        }
+    }
+
+    [HarmonyPatchCategory("FieldTending")]
+    [HarmonyPatch(typeof(WorkGiver_Scanner), nameof(WorkGiver_Scanner.GetPriority), new[] { typeof(Pawn), typeof(TargetInfo) })]
+    public static class Patch_WorkGiver_Scanner_GetPriority
+    {
+        private const int CriticalBleedTicks = 2 * GenDate.TicksPerHour;
+        private const int FastBleedTicks = 6 * GenDate.TicksPerHour;
+
+        public static void Postfix(WorkGiver_Scanner __instance, TargetInfo t, ref float __result)
+        {
+            if (!(__instance is WorkGiver_TendOtherUrgent) || !(t.Thing is Pawn patient))
+                return;
+            int ticks = HealthUtility.TicksUntilDeathDueToBloodLoss(patient);
+            __result = ticks < CriticalBleedTicks ? 2f : ticks < FastBleedTicks ? 1f : 0f;
+        }
+    }
+
     [HarmonyPatchCategory("FieldTending")]
     [HarmonyPatch(typeof(WorkGiver_Tend), nameof(WorkGiver_Tend.GoodLayingStatusForTend))]
     public static class Patch_WorkGiver_Tend_GoodLayingStatusForTend
