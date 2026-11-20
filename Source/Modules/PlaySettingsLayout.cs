@@ -137,20 +137,52 @@ namespace VanillaTuneUp
             return true;
         }
 
+        /// <summary>
+        /// The row is left where the button ended, as vanilla would: callers work out their icon's rect from it right
+        /// after the call (the music button's mouse wheel area and tooltip, Hauler's Dream's highlight). Code that reads
+        /// the position before drawing the next button gets the right slot as long as the order is unchanged.
+        /// </summary>
         public static void AfterButton(bool entered)
         {
             if (!entered || row == null)
                 return;
             depth--;
-            PlaceForNext();
+        }
+
+        /// <summary>
+        /// ButtonIconRect asked for outside a button call is a look-ahead at the next button (Better Trees' right-click
+        /// area, the vanilla codex highlight). Answer with the slot that button will get, taken from the previous pass,
+        /// without moving the row; a hidden next button gets a rect off screen. Inside ButtonIcon it runs as usual.
+        /// </summary>
+        public static bool ButtonIconRect(WidgetRow r, float overrideSize, ref Rect result)
+        {
+            if (r != row || depth > 0)
+                return true;
+            float size = overrideSize > 0f ? overrideSize : WidgetRow.IconSize;
+            float inset = (WidgetRow.IconSize - size) / 2f;
+            int i = view.CurrentPass.Count;
+            string next = i < view.LastPass.Count ? view.LastPass[i] : null;
+            if (next != null && Hidden.Contains(next))
+            {
+                result = new Rect(OffScreenY, OffScreenY, size, size);
+                return false;
+            }
+            if (next == null || !view.Slots.TryGetValue(next, out int slot))
+                slot = view.SlotCount + extraSlots;
+            int col = slot % perRow;
+            int line = slot / perRow;
+            float x = growsLeft ? startX - col * step - WidgetRow.IconSize : startX + col * step;
+            float y = growsUp ? startY - line * step : startY + line * step;
+            result = new Rect(x + inset, y + inset, size, size);
+            return false;
         }
 
         /// <summary>Spacing between buttons comes from the grid, so gaps other code adds are dropped.</summary>
         public static bool AllowGap(WidgetRow r) => r != row || depth > 0;
 
         /// <summary>
-        /// Puts the row where the next button is expected, so code that reads the row's position before drawing its
-        /// button (Better Trees' right-click area, Hauler's Dream's highlight rect) gets that button's slot.
+        /// Puts the row where the first button is expected, so code that reads the row's position before drawing it
+        /// (Better Trees' right-click area) gets that button's slot.
         /// </summary>
         private static void PlaceForNext()
         {
@@ -443,6 +475,14 @@ namespace VanillaTuneUp
         }
 
         public static void Postfix(bool __state) => PlaySettingsLayout.AfterButton(__state);
+    }
+
+    [HarmonyPatchCategory("PlaySettingsLayout")]
+    [HarmonyPatch(typeof(WidgetRow), nameof(WidgetRow.ButtonIconRect))]
+    public static class Patch_PlaySettingsLayout_ButtonIconRect
+    {
+        public static bool Prefix(WidgetRow __instance, float overrideSize, ref Rect __result) =>
+            PlaySettingsLayout.ButtonIconRect(__instance, overrideSize, ref __result);
     }
 
     [HarmonyPatchCategory("PlaySettingsLayout")]
