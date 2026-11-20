@@ -70,6 +70,7 @@ Tweaks:
 - Guards for dangerous hunts: hunting an animal that can fight back calls nearby armed colonists along as guards, more of them for tougher animals and packs.
 - Hybrid children keep a matching xenotype: a Hybrid child whose genes closely match one heritable xenotype gets that xenotype (Biotech).
 - Tell faction colors apart: factions with nearly identical colors are nudged apart on load.
+- Hide and reorder bottom-right buttons: hide or move any toggle icon in the bottom-right corner, other mods' too, on an even grid with no gaps.
 - Drag to reorder: right-drag to reorder the bottom bar, architect categories, buildings and command buttons.
 - Compact colonist bar: the colonist bar shrinks while the mouse is away and expands on hover.
 

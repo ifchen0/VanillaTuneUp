@@ -228,6 +228,10 @@ namespace VanillaTuneUp
             {
                 DrawSettings = FactionColors.DrawSettings
             },
+            new TuneUpModule("PlaySettingsLayout", true, null)
+            {
+                DrawSettings = PlaySettingsLayout.DrawSettings
+            },
             new TuneUpModule("DragReorder", true, "ifchen0.dragreorder")
             {
                 DrawSettings = DragReorderSettings.Draw
@@ -278,6 +282,9 @@ namespace VanillaTuneUp
         public bool inspectTabCameraOnOpen = true;
         public bool fieldTendBeforeCapture = true;
         public List<string> pinnedResources = new List<string>();
+        // Bottom-right play settings buttons: player order and hidden ones, keyed "map/<assembly>:<icon>" or "world/...".
+        public List<string> playSettingsOrder = new List<string>();
+        public List<string> playSettingsHidden = new List<string>();
         // Resource readout categories left open; only used once the player has toggled one.
         public bool resourceCategoriesRecorded;
         public List<string> openResourceCategories = new List<string>();
@@ -388,6 +395,8 @@ namespace VanillaTuneUp
             Scribe_Values.Look(ref compactBarPortraitOffset, "compactBarPortraitOffset", DefaultPortraitOffset);
             Scribe_Collections.Look(ref compactBarRaceZoom, "compactBarRaceZoom", LookMode.Value, LookMode.Value);
             Scribe_Collections.Look(ref pinnedResources, "pinnedResources", LookMode.Value);
+            Scribe_Collections.Look(ref playSettingsOrder, "playSettingsOrder", LookMode.Value);
+            Scribe_Collections.Look(ref playSettingsHidden, "playSettingsHidden", LookMode.Value);
             Scribe_Values.Look(ref resourceCategoriesRecorded, "resourceCategoriesRecorded", false);
             Scribe_Collections.Look(ref openResourceCategories, "openResourceCategories", LookMode.Value);
             Scribe_Collections.Look(ref seenModUpdates, "seenModUpdates", LookMode.Value, LookMode.Value);
@@ -402,6 +411,8 @@ namespace VanillaTuneUp
                 visitorFoodPolicy ??= "";
                 compactBarRaceZoom ??= new Dictionary<string, float>();
                 pinnedResources ??= new List<string>();
+                playSettingsOrder ??= new List<string>();
+                playSettingsHidden ??= new List<string>();
                 openResourceCategories ??= new List<string>();
                 seenModUpdates ??= new Dictionary<string, int>();
                 unreadModUpdateShows ??= new Dictionary<string, int>();

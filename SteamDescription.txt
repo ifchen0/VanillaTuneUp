@@ -69,6 +69,7 @@ Full description of every part: [url=https://github.com/ifchen0/VanillaTuneUp#re
 [*][b]Guards for dangerous hunts:[/b] armed colonists escort the hunter when the animal could fight back.
 [*][b]Hybrid children keep a matching xenotype[/b] (Biotech).
 [*][b]Tell faction colors apart:[/b] near-identical faction colors are nudged apart.
+[*][b]Hide and reorder bottom-right buttons:[/b] hide or move any toggle icon in the corner, other mods' too.
 [*][b]Drag to reorder:[/b] right-drag the bottom bar, architect categories, buildings and command buttons.
 [*][b]Compact colonist bar:[/b] shrinks while the mouse is away, expands on hover.
 [/list]

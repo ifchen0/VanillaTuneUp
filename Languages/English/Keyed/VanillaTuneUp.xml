@@ -123,6 +123,14 @@
   <VTU_FactionColors_Desc>On load, if any two factions with settlements on the world map have colors that look almost the same, the close colors are nudged apart, each moving only as far as needed and keeping its own color family as much as possible. Your own faction and the Empire keep their colors, and nothing changes when no colors are too close. The new colors are saved with the game.</VTU_FactionColors_Desc>
   <VTU_FactionColorsMinDistance>Minimum color difference: {0}</VTU_FactionColorsMinDistance>
   <VTU_FactionColorsMinDistance_Desc>How different two faction colors must look (OKLab distance x 100). Higher values change more factions. Takes effect on the next load.</VTU_FactionColorsMinDistance_Desc>
+  <VTU_PlaySettingsLayout>Hide and reorder bottom-right buttons</VTU_PlaySettingsLayout>
+  <VTU_PlaySettingsLayout_Desc>Lets you hide or reorder any button in the row of toggle icons in the bottom-right corner (map and world view), including buttons other mods add there. The row is laid out on an even grid, so hidden buttons leave no gaps and no empty line is left above the last row. Hiding a button only removes the icon: its setting stays as it is and its hotkey keeps working. Buttons that a mod draws without the game's icon row cannot be moved.</VTU_PlaySettingsLayout_Desc>
+  <VTU_PlaySettingsLayout_Help>Untick a button to hide it; drag a row to move it. The list shows the buttons drawn since the game started.</VTU_PlaySettingsLayout_Help>
+  <VTU_PlaySettingsLayout_Map>Map view</VTU_PlaySettingsLayout_Map>
+  <VTU_PlaySettingsLayout_World>World view</VTU_PlaySettingsLayout_World>
+  <VTU_PlaySettingsLayout_NotSeen>Open this view once to list its buttons.</VTU_PlaySettingsLayout_NotSeen>
+  <VTU_PlaySettingsLayout_RowTip>Drag to reorder. Untick to hide.</VTU_PlaySettingsLayout_RowTip>
+  <VTU_PlaySettingsLayout_Reset>Show all, default order</VTU_PlaySettingsLayout_Reset>
   <VTU_CompactColonistBar>Compact colonist bar</VTU_CompactColonistBar>
   <VTU_CompactColonistBar_Desc>Colonist bar portraits shrink to two thirds of their height and the rows move closer together while the mouse is away and expand again when the mouse moves over the bar. Collapsed portraits show the head only.</VTU_CompactColonistBar_Desc>
   <VTU_RemoveFogOfWar>Remove fog of war</VTU_RemoveFogOfWar>
