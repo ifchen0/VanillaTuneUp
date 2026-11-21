@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Reflection;
 using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
@@ -225,6 +226,45 @@ namespace VanillaTuneUp
                 return true;
             __result = false;
             return false;
+        }
+    }
+
+    /// <summary>
+    /// Yayo's Animation picks standing animations from a fixed list of job names, so a call stood still.
+    /// It is animated like a child's radio talk on the same console; the cached job name is set back afterwards,
+    /// otherwise Yayo would see a job change every frame and recompute.
+    /// </summary>
+    [HarmonyPatchCategory("CommsChat")]
+    [HarmonyPatch]
+    public static class YayoAnimationCompat_CommsChat
+    {
+        private const string AnimatedAs = "Radiotalking";
+        private static FieldInfo jobNameField;
+
+        private static MethodBase Target()
+        {
+            if (!ModsConfig.IsActive("com.yayo.yayoAni.continued"))
+                return null;
+            return AccessTools.Method(AccessTools.TypeByName("YayoAnimation.AnimationCore"), "AniStanding");
+        }
+
+        private static bool Prepare() => Target() != null;
+
+        private static MethodBase TargetMethod() => Target();
+
+        private static void Prefix(ref string defName, out bool __state)
+        {
+            __state = defName == "VTU_CommsChat";
+            if (__state)
+                defName = AnimatedAs;
+        }
+
+        private static void Postfix(object pdd, bool __state)
+        {
+            if (!__state || pdd == null)
+                return;
+            jobNameField ??= AccessTools.Field(pdd.GetType(), "jobName");
+            jobNameField?.SetValue(pdd, "VTU_CommsChat");
         }
     }
 
