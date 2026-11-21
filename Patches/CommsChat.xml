@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!-- Both defs are added even while the module is off, so a pawn saved mid-call still loads. The recreation checks the
+       setting itself. -->
+  <Operation Class="VanillaTuneUp.PatchOperationTuneUp">
+    <module>CommsChat</module>
+    <evenWhenOff>true</evenWhenOff>
+    <operations>
+      <li Class="PatchOperationAdd">
+        <xpath>Defs</xpath>
+        <value>
+          <JobDef>
+            <defName>VTU_CommsChat</defName>
+            <driverClass>VanillaTuneUp.JobDriver_CommsChat</driverClass>
+            <reportString>chatting with TargetB over the comms console.</reportString>
+            <joyDuration>2500</joyDuration>
+            <joyKind>Social</joyKind>
+            <allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+          </JobDef>
+          <!-- Same base chance as chess; times 1 for a minor and 1.5 for a major Social passion, 0 without one. -->
+          <JoyGiverDef>
+            <defName>VTU_CommsChat</defName>
+            <giverClass>VanillaTuneUp.JoyGiver_CommsChat</giverClass>
+            <baseChance>2</baseChance>
+            <jobDef>VTU_CommsChat</jobDef>
+            <joyKind>Social</joyKind>
+            <requiredCapacities>
+              <li>Talking</li>
+              <li>Moving</li>
+            </requiredCapacities>
+          </JoyGiverDef>
+        </value>
+      </li>
+    </operations>
+  </Operation>
+</Patch>

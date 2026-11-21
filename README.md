@@ -263,6 +263,10 @@ Slaves no longer get a portrait on the colonist bar, on maps or in caravans. Ale
 
 Pawns with a passion for Shooting or Melee can pass their recreation time practicing on a tree outside the home area and growing zones: shooting at it from a few cells away with a gun, or hitting it with a melee weapon (not with a gun or bare hands). Any tree will do, living or dead: practice never damages its target, so even strong weapons keep practicing on the same one. It counts as dexterity recreation, like horseshoes, so it helps most on maps away from the colony where nothing but meditative recreation is around. Stray shots never hit anyone; practice with a gun only happens with plain guns (no explosives, fire or single-use launchers) and only where no buildings or items (other than chunks) are within 4 cells of the tree. Special trees such as the anima tree or Gauranlen trees are left alone. Brawlers only practice with a melee weapon. Psychopaths and bloodlust pawns look for the corpses of enemies and animals first (never colonists), and shoot without caring what stray shots hit.
 
+### Chat with acquaintances over the comms console
+
+Colonists with a passion for Social can spend their recreation calling someone they know in another, non-hostile faction from a powered comms console. During the call they have vanilla social interactions with that person (chitchat, deep talk, slights, insults, kind words, romance and so on), picked with vanilla chances, with the usual thoughts, opinion changes, skill gains and social log entries on both sides; a call cannot turn into a social fight. Someone they know means a relative or other relation, or someone either of them still has a memory about, such as a former visitor or a released prisoner. It counts as social recreation.
+
 ### Background music button
 
 *on by default*

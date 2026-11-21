@@ -169,6 +169,7 @@ namespace VanillaTuneUp
                 UnavailableKey = "VTU_RequiresIdeology"
             },
             new TuneUpModule("TreePractice", true, null),
+            new TuneUpModule("CommsChat", true, null),
             new TuneUpModule("MusicToggle", true, null) { OnByDefault = true },
             new TuneUpModule("CycleOtherPawns", true, null),
             new TuneUpModule("CameraFollow", true, null) { OnByDefault = true },

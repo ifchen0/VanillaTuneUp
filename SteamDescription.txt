@@ -54,6 +54,7 @@ Full description of every part: [url=https://github.com/ifchen0/VanillaTuneUp#re
 [*][b]Calmer prison breaks and slave rebellions:[/b] mood, pain and traits decide who breaks out; recreation calms them; wardens arrest lone escapees.
 [*][b]Hide slaves from the colonist bar[/b] (Ideology).
 [*][b]Practice on trees for recreation:[/b] Shooting or Melee passion pawns train on trees, harmlessly.
+[*][b]Chat with acquaintances over the comms console:[/b] Social passion pawns call people they know in other factions, with vanilla social interactions.
 [*][b]Background music button[/b] (on by default): mute the music or scroll to change its volume.
 [*][b]Cycle keys for prisoners, visitors, animals and mechs:[/b] [b],[/b] and [b].[/b] cycle through pawns of the selected kind.
 [*][b]Camera follows the pawn it jumped to[/b] (on by default): after [b],[/b] / [b].[/b], a portrait double-click, an alert or a letter.
