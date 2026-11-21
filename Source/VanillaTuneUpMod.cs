@@ -85,6 +85,7 @@ namespace VanillaTuneUp
                 UnavailableKey = "VTU_RequiresBiotech"
             },
             new TuneUpModule("PetFoodSearch", false, null),
+            new TuneUpModule("AnimalSeekWarmth", false, null),
             new TuneUpModule("FarskipUnload", false, null)
             {
                 IsAvailable = () => ModsConfig.RoyaltyActive,

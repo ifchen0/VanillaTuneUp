@@ -19,6 +19,7 @@ Fixes:
 - Banished slaves free their bed (Ideology): a banished slave no longer keeps their slave bed after leaving.
 - Ejected genepacks stay out: genepacks you eject from a gene bank get auto-load turned off, so haulers do not put them back (Biotech).
 - Hungry pets find food across the map: an urgently hungry colony animal that finds no food within its short search range searches the whole map, instead of starving far from the food stock in a large base.
+- Cold animals head indoors sooner: colony animals look for a warm (or cool) room from minor hypothermia or heatstroke instead of waiting until it is serious, and wake up for it if they fell asleep in the cold, so ducklings and other baby animals stop dying to their first frostbite on the way home.
 - Farskip home unloads prisoners (Royalty): prisoners carrying caravan goods get unloaded after a farskip home, like after a normal caravan arrival.
 - Psychic ritual invoker keeps the offering (Anomaly): vomiting during a ritual no longer drops the offering and fails it; participants of a canceled ritual no longer stay staring at the spot.
 - Lost colonists can be rescued: the "prisoner willing to join" quest, which prefers a former colonist out in the world, can now pick one of any humanlike race or xenotype (sanguophage, highmate, modded races), not only humans of a xenotype the holding faction normally has, and favours those who spent more days as colonists (up to 60 days); only factionless ones and members of hostile factions are picked.

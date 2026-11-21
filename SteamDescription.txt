@@ -17,6 +17,7 @@ Full description of every part: [url=https://github.com/ifchen0/VanillaTuneUp#re
 [*][b]Banished slaves free their bed[/b] (Ideology): instead of keeping it after they leave.
 [*][b]Ejected genepacks stay out[/b] (Biotech): haulers no longer carry them straight back into the gene bank.
 [*][b]Hungry pets find food across the map:[/b] no more pets starving far from the kibble in a large base.
+[*][b]Cold animals head indoors sooner:[/b] colony animals go for warmth at minor hypothermia, even waking up for it, before frostbite kills ducklings and other babies.
 [*][b]Farskip home unloads prisoners[/b] (Royalty): their caravan cargo goes to storage, like after a normal caravan arrival.
 [*][b]Psychic ritual invoker keeps the offering[/b] (Anomaly): vomiting no longer drops the offering and fails the ritual; a canceled ritual no longer leaves anyone staring at the spot.
 [*][b]Lost colonists can be rescued:[/b] the "prisoner willing to join" quest can bring back former colonists of any humanlike race or xenotype, not only humans, and favours those who lived in your colony longer (up to 60 days); former colonists now with friendly or neutral factions are left alone.

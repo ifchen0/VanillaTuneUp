@@ -67,6 +67,10 @@ Genepacks ejected from a gene bank (eject all, the eject button on a single pack
 
 A colony animal only looks for food within its nearest 100 regions, even when starving. In a large base full of doors and fences that is a small area, so a pet wandering far from the food stock could starve next to plenty of kibble. When an urgently hungry colony animal finds nothing nearby, it now searches the whole map once more (at most every 2500 ticks while nothing is found). Penned animals keep the vanilla search inside their pen.
 
+### Cold animals head indoors sooner
+
+A colony animal only looks for a warm (or cool) room once its hypothermia or heatstroke is serious. Frostbite starts right after that and hits as hard on a duckling as on a cow, so a baby animal could lose its head to the first frostbite before it got home. Colony animals now head for a safe temperature from minor hypothermia or heatstroke. An animal that fell asleep out in the cold also wakes up and goes there, instead of sleeping on while it freezes; if there is nowhere safe to go, it keeps sleeping as in vanilla.
+
 ### Farskip home unloads prisoners
 
 *Royalty*
