@@ -51,6 +51,10 @@ Wardens skip feeding and food delivery while a prisoner is still bleeding or has
 
 Wardens deliver food at the same hunger level as vanilla, but one trip brings enough for everyone in the cell who needs it by then, so food does not sit in the cell and spoil. Food already in the cell is counted, and only one warden delivers to a cell at a time, so wardens do not deliver twice. If a prisoner in the cell is already urgently hungry, more wardens may deliver at once to catch up, as many as the missing food needs full trips.
 
+### Wounded prisoners take their addiction drug
+
+A wounded prisoner who can still walk stays in bed to recover and never gets up to take a drug, even with a deadly addiction like luciferium and the drug in the cell, so they die of withdrawal. Now, when a deadly addiction (vanilla or modded) needs a dose, the prisoner gets up and takes the drug if they can reach it, then goes back to bed. Downed prisoners still cannot take drugs on their own, as in vanilla.
+
 ### Banished slaves free their bed
 
 *Ideology*

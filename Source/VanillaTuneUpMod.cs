@@ -74,6 +74,7 @@ namespace VanillaTuneUp
             new TuneUpModule("PrisonerFoodPolicy", false, "ifchen0.prisonpatch"),
             new TuneUpModule("PrisonerBleeding", false, "ifchen0.prisonpatch"),
             new TuneUpModule("PrisonerFoodDelivery", false, null),
+            new TuneUpModule("PrisonerDrugNeed", false, null),
             new TuneUpModule("SlaveBedOwnership", false, null)
             {
                 IsAvailable = () => ModsConfig.IdeologyActive,
