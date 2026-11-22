@@ -9,19 +9,22 @@ namespace VanillaTuneUp
 {
     /// <summary>
     /// In the prisoner think tree, medical rest (JobGiver_PatientGoToBed) comes before the needs node holding
-    /// JobGiver_SatisfyChemicalNeed, and the tree is ordered, not priority sorted. A wounded prisoner who can still
-    /// walk is sent back to bed on every think, never reaches the drug job, and dies of a deadly addiction with the
-    /// drug sitting in the cell. Colonists are not affected: their drug need sits in a priority sorter at 9.25.
+    /// JobGiver_SatisfyChemicalNeed and JobGiver_SatifyChemicalDependency, and the tree is ordered, not priority
+    /// sorted. A wounded prisoner who can still walk is sent back to bed on every think, never reaches the drug job,
+    /// and dies of a deadly addiction or genetic chemical dependency with the drug sitting in the cell. Colonists are
+    /// not affected: their drug needs sit in a priority sorter at 9.25.
     ///
-    /// When the medical rest node would send a prisoner to bed while a deadly addiction (any addiction hediff stage
-    /// that is life-threatening or has a death MTB, so modded drugs count too) is at desire or worse, the prisoner
-    /// takes the drug instead, found the same way as vanilla. The bed job checks for overrides every 211 ticks, so a
+    /// When the medical rest node would send a prisoner to bed while a deadly addiction is at desire or worse, or a
+    /// deadly chemical dependency wants a dose (vanilla thresholds), the prisoner takes the drug instead, found the
+    /// same way as vanilla. Deadly = lethal severity, or any stage that is life-threatening or has a death MTB, so
+    /// modded drugs and genes count too. The bed job checks for overrides every 211 ticks, so a
     /// prisoner already lying down gets up for it. Downed prisoners are left alone, as in vanilla.
     /// </summary>
     public static class PrisonerDrugNeed
     {
         private static readonly Dictionary<HediffDef, bool> deadly = new Dictionary<HediffDef, bool>();
         private static readonly JobGiver_SatisfyChemicalNeed giver = new JobGiver_SatisfyChemicalNeed();
+        private static readonly JobGiver_SatifyChemicalDependency dependencyGiver = new JobGiver_SatifyChemicalDependency();
         private static Func<JobGiver_SatisfyChemicalNeed, Pawn, Need_Chemical, Thing> findDrugFor;
         private static bool resolved;
 
@@ -29,8 +32,8 @@ namespace VanillaTuneUp
         {
             if (deadly.TryGetValue(def, out bool result))
                 return result;
-            result = false;
-            if (def.stages != null)
+            result = def.lethalSeverity > 0f;
+            if (!result && def.stages != null)
             {
                 foreach (HediffStage stage in def.stages)
                 {
@@ -63,6 +66,24 @@ namespace VanillaTuneUp
         {
             if (!pawn.IsPrisonerOfColony || !pawn.Spawned || pawn.Downed || pawn.needs == null)
                 return null;
+            return TryAddictionJob(pawn) ?? TryDependencyJob(pawn);
+        }
+
+        private static Job TryDependencyJob(Pawn pawn)
+        {
+            if (!ModsConfig.BiotechActive)
+                return null;
+            List<Hediff> hediffs = pawn.health.hediffSet.hediffs;
+            for (int i = 0; i < hediffs.Count; i++)
+            {
+                if (hediffs[i] is Hediff_ChemicalDependency dependency && dependency.ShouldSatify && IsDeadly(dependency.def))
+                    return dependencyGiver.TryIssueJobPackage(pawn, default).Job;
+            }
+            return null;
+        }
+
+        private static Job TryAddictionJob(Pawn pawn)
+        {
             List<Need> needs = pawn.needs.AllNeeds;
             Need_Chemical lowest = null;
             for (int i = 0; i < needs.Count; i++)

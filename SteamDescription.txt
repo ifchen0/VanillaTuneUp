@@ -14,7 +14,7 @@ Full description of every part: [url=https://github.com/ifchen0/VanillaTuneUp#re
 [*][b]Trade setup:[/b] no freeze when a trade window opens with many items, Auto Seller included.
 [*][b]Mechs in sieges:[/b] fixes [i]Exception while ticking lord with job RimWorld.LordJob_Siege[/i] with modded mechs.
 [*][b]Prisoner food and tending:[/b] wardens respect food policy during mental breaks, tend bleeding prisoners before feeding, and feed a whole cell in one trip.
-[*][b]Wounded prisoners take their addiction drug:[/b] no more dying of luciferium (or modded) withdrawal in bed with the drug in the cell.
+[*][b]Wounded prisoners take their addiction drug:[/b] no more dying in bed of luciferium withdrawal or a genetic chemical dependency with the drug in the cell.
 [*][b]Banished slaves free their bed[/b] (Ideology): instead of keeping it after they leave.
 [*][b]Ejected genepacks stay out[/b] (Biotech): haulers no longer carry them straight back into the gene bank.
 [*][b]Hungry pets find food across the map:[/b] no more pets starving far from the kibble in a large base.

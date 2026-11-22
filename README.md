@@ -53,7 +53,7 @@ Wardens deliver food at the same hunger level as vanilla, but one trip brings en
 
 ### Wounded prisoners take their addiction drug
 
-A wounded prisoner who can still walk stays in bed to recover and never gets up to take a drug, even with a deadly addiction like luciferium and the drug in the cell, so they die of withdrawal. Now, when a deadly addiction (vanilla or modded) needs a dose, the prisoner gets up and takes the drug if they can reach it, then goes back to bed. Downed prisoners still cannot take drugs on their own, as in vanilla.
+A wounded prisoner who can still walk stays in bed to recover and never gets up to take a drug, even with a deadly addiction like luciferium or a genetic chemical dependency and the drug in the cell, so they die without it. Now, when a deadly addiction or chemical dependency (vanilla or modded) needs a dose, the prisoner gets up and takes the drug if they can reach it, then goes back to bed. Downed prisoners still cannot take drugs on their own, as in vanilla.
 
 ### Banished slaves free their bed
 
