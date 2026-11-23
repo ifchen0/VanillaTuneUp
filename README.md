@@ -227,6 +227,12 @@ Shows the letters waiting on the right side of the screen as a small badge over 
 
 When too many letters pile up, the oldest ones are folded into a single "N more..." letter that ignores right-click. Right-clicking it now dismisses all the letters inside at once, like right-clicking a normal letter. Letters that still wait for your choice (such as someone asking to join or visitors at the gate) cannot be dismissed with a right click and stay.
 
+### Click a letter to jump to it
+
+*off by default*
+
+Letters that only point at something on the map (a raid, a new arrival, a finished construction, and so on) get a small jump badge on their icon. Left-clicking such a letter jumps to what it points at and dismisses it, like its "Jump to location" button, instead of opening it. The full text is still in the tooltip when you hover over it, and dismissed letters can be reopened from the History tab. Letters without the badge, such as ones that wait for a choice or link to a quest, open as usual.
+
 ### Visitors take shelter from bad weather and enemies
 
 Trader caravans and visitor groups wait just outside the colony and leave early as soon as any member, pack animals included, starts getting hypothermia or heatstroke. When the temperature at their spot gets close to the limit of the most sensitive member, or enemies of some strength are active on the map (a single hunted animal fighting back does not count), they move into a barn if they brought animals, otherwise a dining room, with a storeroom as the fallback for both. The room must be at a safe temperature and reachable by all of them. While sheltering they eat inside too: they sit at a table in the room or eat standing there, and only fetch food from outside the room once urgently hungry. Rain at their spot also sends them inside, quietly, and so does night (22:00 to 6:00) so they sleep indoors, though only in a barn or storeroom, never on a dining room floor. They go back outside once the enemies, the rain and the night are gone and the weather is mild again. Checked every few in-game minutes, also while they are still walking in (they then head straight for the room); a group that is already too cold or hot by then still leaves, and guards still fight enemies that come near.

@@ -149,6 +149,7 @@ namespace VanillaTuneUp
                 UnavailableKey = "VTU_RequiresWindows"
             },
             new TuneUpModule("BundleLetterDismiss", true, null) { OnByDefault = true },
+            new TuneUpModule("LetterJumpClick", true, null),
             new TuneUpModule("VisitorShelter", true, null),
             new TuneUpModule("ConfirmCloseWindow", true, null)
             {
