@@ -49,6 +49,7 @@ Tweaks:
 - Wardens capture downed enemies: while a prisoner bed is free, wardens capture downed enemies on their own, most valuable first.
 - Taskbar letter badge (on by default): the letters waiting on screen are shown as a small badge over the game's taskbar button, counted and coloured like the most urgent one; critical alerts turn the badge red, or show a red dot when there are no letters; with no letters, top-left messages show a coloured dot while on screen; a pause sign shows while the game is paused (Windows only).
 - Right-click to dismiss bundled letters (on by default): right-clicking the "N more..." letter dismisses all the letters folded into it; letters still waiting for a choice stay.
+- Click a letter to jump to it: letters that only point at something on the map get a small pin; left-clicking one jumps to its target and dismisses it instead of opening it (the tooltip still shows the full text).
 - Visitors take shelter: in cold, heat, rain or while enemies are around, trader caravans and visitors wait in a barn, dining room or storeroom instead of leaving early; at night they sleep in a barn or storeroom.
 - Confirm before closing the game window (on by default): closing the window during a game asks first, like Quit to OS in the menu; commitment mode saves, then quits.
 - Slaves use prisoner beds (Ideology): slaves can sleep and recover in prisoner beds, so they can share the prison wing.
