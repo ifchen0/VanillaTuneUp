@@ -10,7 +10,8 @@ namespace VanillaTuneUp
     /// <summary>
     /// A camera jump to a pawn on the current map (next/previous colonist keys, double-clicking a colonist bar
     /// portrait, alerts, letters, messages, the quest window) keeps the camera on that pawn while it moves. Following
-    /// stops as soon as the camera is moved by hand (keys, middle-mouse drag, screen edge), the pawn is no longer the
+    /// stops as soon as the camera is moved by hand (keys, middle-mouse drag, screen edge) or set directly by other
+    /// code (e.g. a minimap click), the pawn is no longer the
     /// only thing selected, or it leaves the map. Jumps that do not end with the pawn selected (scripted quest jumps)
     /// therefore stop on the next frame. Zooming keeps following. With InspectTabCamera on, an open inspect tab shifts
     /// the followed pawn into the uncovered part of the screen, like that module does for the jump itself.
@@ -88,6 +89,15 @@ namespace VanillaTuneUp
                 root.x = Mathf.Lerp(root.x, target.x, t);
                 root.z = Mathf.Lerp(root.z, target.z, t);
             }
+        }
+
+        [HarmonyPatchCategory("CameraFollow")]
+        [HarmonyPatch(typeof(CameraDriver), nameof(CameraDriver.JumpToCurrentMapLoc), new[] { typeof(Vector3) })]
+        public static class Patch_JumpToCurrentMapLoc
+        {
+            // Something set the camera position directly (e.g. a minimap click). TryJump also lands here, but its
+            // postfix runs afterwards and picks the pawn up again.
+            public static void Postfix() => Stop();
         }
 
         [HarmonyPatchCategory("CameraFollow")]
