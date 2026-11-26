@@ -22,7 +22,7 @@ namespace VanillaTuneUp
     /// Rain at an unroofed spot moves the group inside as well, for atmosphere (and the soaking wet mood): quietly,
     /// without interrupting anyone. Night does the same, so the group sleeps indoors, but only in a barn or storeroom:
     /// a dining room floor full of sleepers looks odd.
-    /// The room must be comfortably inside the safe range, reachable by every member and not already taken by another
+    /// The room must be fully roofed, comfortably inside the safe range, reachable by every member and not already taken by another
     /// sheltering group (first come, first served). The group goes back to its original spot once the threat and the
     /// rain are gone and the temperature there is well inside the range again. Without a usable room, vanilla
     /// behaviour stays.
@@ -180,11 +180,18 @@ namespace VanillaTuneUp
             // A dining room is left once night is the only reason, so nobody sleeps on its floor.
             bool diningRoom = threat || wet || !Within(outside, safe, LeaveMargin);
             Room room = current.GetRoom(map);
-            float roomDistance = room == null || room.PsychologicallyOutdoors ? float.MaxValue : Distance(room.Temperature, safe);
+            float roomDistance = room == null || !FullyRoofed(room) ? float.MaxValue : Distance(room.Temperature, safe);
             if ((diningRoom || room?.Role != DiningRoom) && (roomDistance == 0f || roomDistance < Distance(outside, safe)))
                 return;
             Shelter(toil, safe, hasAnimals, threat, outside, home, diningRoom);
         }
+
+        /// <summary>
+        /// Whether the room has a roof over every cell. Vanilla's PsychologicallyOutdoors only counts a room as outdoors
+        /// from 300 open-roof cells (or half open at the map edge), so a small walled yard would pass as a shelter and
+        /// leave the group standing in the rain.
+        /// </summary>
+        private static bool FullyRoofed(Room room) => room.OpenRoofCount == 0;
 
         private static RoomRoleDef DiningRoom => DefDatabase<RoomRoleDef>.GetNamedSilentFail("DiningRoom");
 
@@ -304,7 +311,7 @@ namespace VanillaTuneUp
                 if (role == null)
                     continue;
                 IEnumerable<Room> rooms = map.regionGrid.AllRooms
-                    .Where(r => r.Role == role && !r.PsychologicallyOutdoors && !r.Fogged && !taken.Contains(r)
+                    .Where(r => r.Role == role && FullyRoofed(r) && !r.Fogged && !taken.Contains(r)
                         && Within(r.Temperature, safe, EnterMargin))
                     .OrderByDescending(r => r.CellCount);
                 foreach (Room room in rooms)
