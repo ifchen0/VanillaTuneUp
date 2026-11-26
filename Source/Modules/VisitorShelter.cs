@@ -73,7 +73,8 @@ namespace VanillaTuneUp
                 // Also on the first tick in a toil, so a group that arrives in its shelter does not walk back out first.
                 int ticks = __instance.lord.ticksInToil;
                 if ((__instance is LordToil_DefendPoint || __instance is LordToil_Travel)
-                    && (ticks % CheckInterval == 0 || ticks == 1) && TryGetHome(__instance, out IntVec3 home))
+                    && (ticks % CheckInterval == 0 || ticks == 1) && TryGetHome(__instance, out IntVec3 home)
+                    && !(ticks == 1 && KeepShelterOnArrival(__instance, home)))
                     Check(__instance, home);
             }
             catch (Exception e)
@@ -106,6 +107,30 @@ namespace VanillaTuneUp
                 return false;
             Transition arrived = ArrivedTransition(lord.Graph);
             return arrived != null && (arrived.target == toil || toil is LordToil_Travel && arrived.sources.Contains(toil));
+        }
+
+        /// <summary>
+        /// A group sent into a shelter on the way in arrives there and enters the waiting toil, whose defend point is
+        /// still the original chill spot. Take over the shelter cell the walk ended at, silently: the move was already
+        /// announced, and the regular checks decide from here whether to stay.
+        /// </summary>
+        private static bool KeepShelterOnArrival(LordToil toil, IntVec3 home)
+        {
+            if (!(toil is LordToil_DefendPoint defend) || defend.FlagLoc != home)
+                return false;
+            Transition arrived = ArrivedTransition(toil.lord.Graph);
+            LordToil travel = arrived?.sources.FirstOrDefault(s => s is LordToil_Travel);
+            if (travel == null)
+                return false;
+            IntVec3 dest = SpotOf(travel);
+            if (!dest.IsValid || dest == home || !dest.InBounds(toil.lord.Map))
+                return false;
+            Room room = dest.GetRoom(toil.lord.Map);
+            if (room == null || room.PsychologicallyOutdoors)
+                return false;
+            defend.SetDefendPoint(dest);
+            toil.UpdateAllDuties();
+            return true;
         }
 
         private static Transition ArrivedTransition(StateGraph graph) =>
