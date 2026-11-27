@@ -191,7 +191,7 @@
   <VTU_CaravanAbandonDead_Confirm>確定要拋棄{0}具人類屍體和{1}件死者穿過的衣物嗎？</VTU_CaravanAbandonDead_Confirm>
   <VTU_CaravanAbandonDead_Colonists>其中包含以下殖民者的遺體：</VTU_CaravanAbandonDead_Colonists>
   <VTU_RescuedGuestsCaravan>旅隊帶走獲救的訪客</VTU_RescuedGuestsCaravan>
-  <VTU_RescuedGuestsCaravan_Desc>在殖民地以外的地圖（例如事件和任務地圖），你救起的友好或中立派系倒地成員，可以用訪客身分跟著旅隊離開，列在旅隊視窗的「獲救的訪客」區，不必俘虜成囚犯（會惹怒他們的派系）或留在原地。他們一路上都還是你的訪客。在目的地康復後會自行離開，他們的派系也會像他們被救後從殖民地離開一樣表示感謝。沒有派系的獲救者照常有機會加入殖民地。旅隊交易時不能賣掉或贈送訪客。只能加入倒地的訪客，和任務有關的訪客不能加入。在殖民地沒有任何改變：獲救的訪客會在那裡康復後離開。</VTU_RescuedGuestsCaravan_Desc>
+  <VTU_RescuedGuestsCaravan_Desc>在殖民地以外的地圖（例如事件和任務地圖），你救起的友好或中立派系成員，可以用訪客身分跟著旅隊離開，列在旅隊視窗的「獲救的訪客」區，不必俘虜成囚犯（會惹怒他們的派系）或留在原地。他們一路上都還是你的訪客。在目的地康復後會自行離開，他們的派系也會像他們被救後從殖民地離開一樣表示感謝。沒有派系的獲救者照常有機會加入殖民地。旅隊交易時不能賣掉或贈送訪客。已經康復、但還沒離開地圖的訪客也能加入；和任務有關的訪客不能加入。在殖民地沒有任何改變：獲救的訪客會在那裡康復後離開。</VTU_RescuedGuestsCaravan_Desc>
   <VTU_RescuedGuestsCaravan_Section>獲救的訪客</VTU_RescuedGuestsCaravan_Section>
   <VTU_WoundedGuestPickup>同伴來接受傷的訪客</VTU_WoundedGuestPickup>
   <VTU_WoundedGuestPickup_Desc>來訪的訪問團會帶走同派系倒地的訪客，但特定派系很少來訪，無法康復的訪客可能會一直躺在殖民地。訪客在殖民地倒地滿15天（訪問團通常隔這麼久才來一次）時，他的派系會派一隊訪問團過來，照常把他帶回去。沒有派系的訪客，以及派系已敵對或從不派訪問團的訪客，維持原狀。</VTU_WoundedGuestPickup_Desc>

@@ -34,10 +34,14 @@ namespace VanillaTuneUp
                 && !p.IsPrisoner && !p.IsSlave && p.Faction != Faction.OfPlayer;
         }
 
-        /// <summary>A rescued guest that may be added to a caravan formed on its map.</summary>
+        /// <summary>
+        /// A rescued guest that may be added to a caravan formed on its map. Guests that already recovered count too:
+        /// they rest in a medical bed or walk to the map edge (vanilla guest think tree, no lord), and would be lost
+        /// with the map if the caravan left before they got out.
+        /// </summary>
         public static bool CanJoinCaravan(Pawn p)
         {
-            if (!IsPlayerGuest(p) || !p.Spawned || !p.Downed || p.Dead)
+            if (!IsPlayerGuest(p) || !p.Spawned || p.Dead)
                 return false;
             if (p.Faction != null && p.Faction.HostileTo(Faction.OfPlayer))
                 return false;

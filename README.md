@@ -199,7 +199,7 @@ Adds a button next to "Assign drug policies" on the caravan Items tab that aband
 
 ### Caravan: take rescued guests along
 
-Away from your colony (on event and quest maps, for example), downed members of friendly or neutral factions that you rescued can leave with your caravan as guests, listed under "Rescued guests" in the caravan window, instead of being captured as prisoners (which angers their faction) or left behind. They stay your guests on the way. Once they recover at the destination they leave on their own, and their faction thanks you as if they had left your colony after being rescued. Rescued pawns without a faction keep their usual chance to join your colony. Guests cannot be sold or given away when the caravan trades. Only downed guests can be added; guests tied to a quest are not. At your colony nothing changes: rescued guests recover there and leave.
+Away from your colony (on event and quest maps, for example), members of friendly or neutral factions that you rescued can leave with your caravan as guests, listed under "Rescued guests" in the caravan window, instead of being captured as prisoners (which angers their faction) or left behind. They stay your guests on the way. Once they recover at the destination they leave on their own, and their faction thanks you as if they had left your colony after being rescued. Rescued pawns without a faction keep their usual chance to join your colony. Guests cannot be sold or given away when the caravan trades. Guests who are back on their feet but have not left the map yet can be added too; guests tied to a quest cannot. At your colony nothing changes: rescued guests recover there and leave.
 
 ![Caravan: take rescued guests along](Media/DownedOutsiders.png)
 
