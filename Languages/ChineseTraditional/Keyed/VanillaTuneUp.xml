@@ -104,6 +104,12 @@
   <VTU_BillKeepCount_Note>地圖上每種物品市場價值最高的X個會留下（價值已綜合品質、耐久、死人穿過、生物編碼），不受這張bill的品質、耐久過濾影響。其餘的通過過濾才會處理。角色身上穿的、拿著的不算。</VTU_BillKeepCount_Note>
   <VTU_ReadingSeatFacing>讀書時面向座位的方向</VTU_ReadingSeatFacing>
   <VTU_ReadingSeatFacing_Desc>坐在椅子、凳子等座位上讀書時，會面向座位朝的方向。原版會轉向座位旁的桌子、抽屜櫃、床頭櫃、置物架或工作台，就算因此背對椅子也一樣。只改變外觀，讀書效果不變。沒有座位、站著讀書的維持原版。</VTU_ReadingSeatFacing_Desc>
+  <VTU_BiosculpterPawnMenu>塑體艙只列出需要該療程的殖民者</VTU_BiosculpterPawnMenu>
+  <VTU_BiosculpterPawnMenu_Desc>點塑體艙療程按鈕後出現的殖民者清單，不再列出做了也沒效果的人：醫療與生物再生療程是沒有可治療的項目，回春療程是已經在成年最低年齡。名字旁會標示可治療的數量（5+1/3表示一定治好5項，再從3項中隨機治好1項）、目前年齡或心情；滑鼠移到名字上可看治療項目清單或療程後的年齡。愉悅療程列出所有人，心情最低的排最前面。已生物調諧的塑體艙維持原版。</VTU_BiosculpterPawnMenu_Desc>
+  <VTU_BiosculpterPawnMenu_AgeTag>{0}歲</VTU_BiosculpterPawnMenu_AgeTag>
+  <VTU_BiosculpterPawnMenu_Age>生理年齡：{0} → {1}</VTU_BiosculpterPawnMenu_Age>
+  <VTU_BiosculpterPawnMenu_Mood>心情：{0}</VTU_BiosculpterPawnMenu_Mood>
+  <VTU_BiosculpterPawnMenu_NoneNeed>沒有需要此療程的殖民者</VTU_BiosculpterPawnMenu_NoneNeed>
   <VTU_RefugeeApparel>難民會自己換衣服</VTU_RefugeeApparel>
   <VTU_RefugeeApparel_Desc>收容難民任務的難民可以在指派分頁設定穿著計畫，並像殖民者一樣自己換掉破舊的衣服；也可以指定新到難民套用的穿著計畫。他們來時穿的衣服要等破損後才會換下，任務結束時身上穿的衣服會跟著離開。衛兵、皇室客人等其他任務寄宿者仍維持原本的穿著。</VTU_RefugeeApparel_Desc>
   <VTU_RefugeeApparelLabel>新到難民套用的穿著計畫</VTU_RefugeeApparelLabel>

@@ -62,6 +62,7 @@ Full description of every part: [url=https://github.com/ifchen0/VanillaTuneUp#re
 [*][b]Psychic rituals sorted by psychic sensitivity[/b] (Anomaly, on by default).
 [*][b]Smelt and destroy bills: keep X of each[/b] (on by default): the most valuable X of each item stay.
 [*][b]Readers face the way their seat faces[/b] (on by default): no more reading backwards because of a dresser or end table beside the chair.
+[*][b]Biosculpter pod lists only colonists who need the cycle[/b] (Ideology, on by default): each name shows the heal count, age or mood.
 [*][b]Camera jumps avoid the open inspect tab[/b] (on by default): the colonist is centred beside the tab, not under it.
 [*][b]Field tending and cheaper medicine:[/b] bleeding is stopped where the patient lies; minor wounds get the cheapest medicine.
 [*][b]Quicksave, save and quit, Continue:[/b] F5 quicksave plus Save and quit and Continue buttons.

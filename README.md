@@ -317,6 +317,14 @@ For smelting, destroying and apparel-burning bills. Items that have no quality n
 
 A colonist reading on a chair, stool or other seat faces the way the seat faces. Vanilla turns them towards any table, dresser, end table, shelf or workbench next to the seat, even when that means sitting backwards. Only the look changes; reading works the same. Readers standing without a seat are unchanged.
 
+### Biosculpter pod lists only colonists who need the cycle
+
+*Ideology, on by default*
+
+The colonist list a biosculpter pod cycle button opens leaves out colonists the cycle would do nothing for: nothing to heal for the medic and bioregeneration cycles, already at the youngest adult age for age reversal. Each name shows how many conditions would be healed (5+1/3 means five for sure plus one random out of three), the current age, or the mood; hover a name for the list of conditions or the age after the cycle. The pleasure cycle lists everyone, lowest mood first. A biotuned pod works as in vanilla.
+
+![Biosculpter pod lists only colonists who need the cycle](Media/BiosculpterPawnMenu.png)
+
 ### Camera jumps avoid the open inspect tab
 
 *on by default*

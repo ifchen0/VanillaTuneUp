@@ -183,6 +183,12 @@ namespace VanillaTuneUp
             },
             new TuneUpModule("BillKeepCount", true, null) { OnByDefault = true },
             new TuneUpModule("ReadingSeatFacing", true, null) { OnByDefault = true },
+            new TuneUpModule("BiosculpterPawnMenu", true, null)
+            {
+                OnByDefault = true,
+                IsAvailable = () => ModsConfig.IdeologyActive,
+                UnavailableKey = "VTU_RequiresIdeology"
+            },
             // Modules with extra settings go last, the longest at the end, so plain toggles stay near the top.
             new TuneUpModule("InspectTabCamera", true, null)
             {

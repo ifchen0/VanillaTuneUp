@@ -104,6 +104,12 @@
   <VTU_BillKeepCount_Note>The X of each item type with the highest market value on the map are kept (market value weighs quality, hit points, tainted and biocoded), whatever this bill's quality and hit point filters say. The rest are processed if they pass those filters. Items worn or carried by pawns are not counted.</VTU_BillKeepCount_Note>
   <VTU_ReadingSeatFacing>Readers face the way their seat faces</VTU_ReadingSeatFacing>
   <VTU_ReadingSeatFacing_Desc>A colonist reading on a chair, stool or other seat faces the way the seat faces. Vanilla turns them towards any table, dresser, end table, shelf or workbench next to the seat, even when that means sitting backwards. Only the look changes; reading works the same. Readers standing without a seat are unchanged.</VTU_ReadingSeatFacing_Desc>
+  <VTU_BiosculpterPawnMenu>Biosculpter pod lists only colonists who need the cycle</VTU_BiosculpterPawnMenu>
+  <VTU_BiosculpterPawnMenu_Desc>The colonist list a biosculpter pod cycle button opens leaves out colonists the cycle would do nothing for: nothing to heal for the medic and bioregeneration cycles, already at the youngest adult age for age reversal. Each name shows how many conditions would be healed (5+1/3 means five for sure plus one random out of three), the current age, or the mood; hover a name for the list of conditions or the age after the cycle. The pleasure cycle lists everyone, lowest mood first. A biotuned pod works as in vanilla.</VTU_BiosculpterPawnMenu_Desc>
+  <VTU_BiosculpterPawnMenu_AgeTag>age {0}</VTU_BiosculpterPawnMenu_AgeTag>
+  <VTU_BiosculpterPawnMenu_Age>Biological age: {0} → {1}</VTU_BiosculpterPawnMenu_Age>
+  <VTU_BiosculpterPawnMenu_Mood>Mood: {0}</VTU_BiosculpterPawnMenu_Mood>
+  <VTU_BiosculpterPawnMenu_NoneNeed>No colonist needs this cycle</VTU_BiosculpterPawnMenu_NoneNeed>
   <VTU_RefugeeApparel>Refugees change their clothes</VTU_RefugeeApparel>
   <VTU_RefugeeApparel_Desc>Refugees from the hospitality quest get an apparel policy in the Assign tab and replace worn-out clothes on their own, like colonists; arriving refugees can be given a policy of your choice. The clothes they arrived in stay on until they are tattered, and anything they put on leaves with them when the quest ends. Other quest lodgers, such as guards and royal guests, still keep their own outfit.</VTU_RefugeeApparel_Desc>
   <VTU_RefugeeApparelLabel>Apparel policy for arriving refugees</VTU_RefugeeApparelLabel>
