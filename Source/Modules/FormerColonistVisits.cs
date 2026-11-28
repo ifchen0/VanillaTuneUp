@@ -149,14 +149,64 @@ namespace VanillaTuneUp
                 p.needs.food.CurLevel = p.needs.food.MaxLevel;
         }
 
-        // Former colonists get a message; other outsiders are just members of the group.
+        // Former colonists waiting to be named in the arrival letter, with their faction and the fallback message type.
+        private static readonly Dictionary<Pawn, (Faction faction, MessageTypeDef type)> pending =
+            new Dictionary<Pawn, (Faction, MessageTypeDef)>();
+
+        private static TaggedString Line(Pawn p, Faction faction) =>
+            "VTU_FormerColonistVisits_Message".Translate(p.Named("PAWN"), faction.NameColored.Named("FACTION"),
+                DaysAsColonist(p).ToString("0").Named("DAYS")).AdjustedFor(p);
+
+        /// <summary>
+        /// Former colonists are named in the vanilla arrival letter (raid, visitors, traders; travelers get one too),
+        /// which reads the pending set through <see cref="AppendToLetter"/>. Other outsiders are just members of the group.
+        /// </summary>
         public static void Announce(Pawn p, Faction faction, MessageTypeDef type)
         {
-            if (!PawnUtility.EverBeenColonistOrTameAnimal(p))
+            if (PawnUtility.EverBeenColonistOrTameAnimal(p))
+                pending[p] = (faction, type);
+        }
+
+        public static void AppendToLetter(IEnumerable<Pawn> seenPawns, ref TaggedString letterLabel, ref TaggedString letterText)
+        {
+            if (pending.Count == 0 || seenPawns == null)
                 return;
-            Messages.Message("VTU_FormerColonistVisits_Message".Translate(p.Named("PAWN"), faction.NameColored.Named("FACTION"),
-                    DaysAsColonist(p).ToString("0").Named("DAYS")).AdjustedFor(p),
-                p, type);
+            foreach (Pawn p in seenPawns)
+            {
+                if (!pending.TryGetValue(p, out var entry))
+                    continue;
+                pending.Remove(p);
+                if (letterLabel.NullOrEmpty())
+                    letterLabel = "VTU_FormerColonistVisits_LetterLabel".Translate();
+                if (!letterText.NullOrEmpty())
+                    letterText += "\n\n";
+                letterText += Line(p, entry.faction);
+            }
+        }
+
+        // Incidents from other mods may never reach the vanilla letter helper: fall back to a message on the next tick.
+        public static void Tick()
+        {
+            if (pending.Count == 0)
+                return;
+            foreach (var kv in pending)
+                if (!kv.Key.Destroyed)
+                    Messages.Message(Line(kv.Key, kv.Value.faction), kv.Key, kv.Value.type);
+            pending.Clear();
+        }
+
+        /// <summary>One letter naming every former colonist placed in a settlement as its map was generated.</summary>
+        public static void AnnounceSettlement(List<Pawn> placed, Settlement settlement)
+        {
+            List<Pawn> colonists = placed.Where(PawnUtility.EverBeenColonistOrTameAnimal).ToList();
+            if (colonists.Count == 0)
+                return;
+            TaggedString text = "VTU_FormerColonistVisits_SettlementText".Translate(settlement.Label.Named("SETTLEMENT"));
+            foreach (Pawn p in colonists)
+                text += "\n  - " + "VTU_FormerColonistVisits_SettlementLine".Translate(p.Named("PAWN"),
+                    DaysAsColonist(p).ToString("0").Named("DAYS")).AdjustedFor(p);
+            Find.LetterStack.ReceiveLetter("VTU_FormerColonistVisits_LetterLabel".Translate(), text,
+                LetterDefOf.NeutralEvent, new LookTargets(colonists));
         }
     }
 
@@ -248,8 +298,28 @@ namespace VanillaTuneUp
                 Pawn anchor = defenders.RandomElement();
                 FormerColonistVisits.Spawn(p, anchor.Position, map);
                 anchor.GetLord()?.AddPawn(p);
-                FormerColonistVisits.Announce(p, faction, MessageTypeDefOf.NeutralEvent);
             }
+            FormerColonistVisits.AnnounceSettlement(picks, __instance);
+        }
+    }
+
+    [HarmonyPatchCategory("FormerColonistVisits")]
+    [HarmonyPatch(typeof(PawnRelationUtility), nameof(PawnRelationUtility.Notify_PawnsSeenByPlayer_Letter))]
+    public static class FormerColonistVisits_Letter
+    {
+        public static void Postfix(IEnumerable<Pawn> seenPawns, ref TaggedString letterLabel, ref TaggedString letterText)
+        {
+            FormerColonistVisits.AppendToLetter(seenPawns, ref letterLabel, ref letterText);
+        }
+    }
+
+    [HarmonyPatchCategory("FormerColonistVisits")]
+    [HarmonyPatch(typeof(TickManager), nameof(TickManager.DoSingleTick))]
+    public static class FormerColonistVisits_Tick
+    {
+        public static void Postfix()
+        {
+            FormerColonistVisits.Tick();
         }
     }
 }

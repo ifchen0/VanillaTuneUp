@@ -180,8 +180,11 @@
   <VTU_GhoulApparel>食屍鬼可以穿衣服</VTU_GhoulApparel>
   <VTU_GhoulApparel_Desc>食屍鬼轉化時保留身上的衣服，也可以命令它穿上衣服和裝甲（選取食屍鬼後右鍵點衣物）。食屍鬼不會自己換衣服，也依然不能使用武器。</VTU_GhoulApparel_Desc>
   <VTU_FormerColonistVisits>前殖民者與外來成員會再度出現</VTU_FormerColonistVisits>
-  <VTU_FormerColonistVisits_Desc>原版只會把派系現有成員套進該派系常見的角色類型才讓他們出場，所以前殖民者很少再出現；而種族或異種跟該派系平常不同的成員（例如人類部落裡的Miho、海盜裡的噬血者）和詭異避難者則永遠不會出現。現在他們會以原本的樣子出現，保留自己的裝備、人際關係和記憶：友好或中立派系的訪客、商隊或路過的旅人有25%機率帶上一位；襲擊有25%機率帶上一位能戰鬥的成員。你進入該派系的據點時，每一位都有25%機率在裡面，倒地的也可能在，可以救出或俘虜。只有健康狀況良好的成員才會出門或參戰。前殖民者在你殖民地待得越久越容易被選中，出現時左上角會有訊息告訴你是誰。</VTU_FormerColonistVisits_Desc>
+  <VTU_FormerColonistVisits_Desc>原版只會把派系現有成員套進該派系常見的角色類型才讓他們出場，所以前殖民者很少再出現；而種族或異種跟該派系平常不同的成員（例如人類部落裡的Miho、海盜裡的噬血者）和詭異避難者則永遠不會出現。現在他們會以原本的樣子出現，保留自己的裝備、人際關係和記憶：友好或中立派系的訪客、商隊或路過的旅人有25%機率帶上一位；襲擊有25%機率帶上一位能戰鬥的成員。你進入該派系的據點時，每一位都有25%機率在裡面，倒地的也可能在，可以救出或俘虜。只有健康狀況良好的成員才會出門或參戰。前殖民者在你殖民地待得越久越容易被選中，跟著隊伍出現時，原版的來訪或襲擊信件會寫出是誰；進入據點時則另外發一封信列出他們。</VTU_FormerColonistVisits_Desc>
   <VTU_FormerColonistVisits_Message>曾在你的殖民地住過{DAYS}天的{PAWN_nameDef}，也在{FACTION}的隊伍中。</VTU_FormerColonistVisits_Message>
+  <VTU_FormerColonistVisits_LetterLabel>前殖民者</VTU_FormerColonistVisits_LetterLabel>
+  <VTU_FormerColonistVisits_SettlementText>{SETTLEMENT}裡有前殖民者：</VTU_FormerColonistVisits_SettlementText>
+  <VTU_FormerColonistVisits_SettlementLine>{PAWN_nameDef}，曾在你的殖民地住過{DAYS}天</VTU_FormerColonistVisits_SettlementLine>
   <VTU_ShortStayCleanup>清理短期前殖民者與前任領袖</VTU_ShortStayCleanup>
   <VTU_ShortStayCleanup_Desc>遊戲會把兩種其實用不到的世界角色永久留在存檔裡，只會越積越多，讓存檔變大、存讀檔變慢。第一種是所有當過殖民者的人，連只住幾天的難民和已經離開的詭異避難者也一樣：現在在你殖民地待不到30天、而且已經不屬於你派系的前殖民者，以及已經離開的詭異避難者（不論待了多久），會跟其他世界角色一樣被清理。第二種是遊戲產生過的每一位派系領袖，換了新領袖或派系消失後仍會保留：現在沒有領導任何派系、也從沒當過你殖民者的前任領袖，現在也會被清理。現任派系領袖、其他待滿30天以上的人、跟任務、紀錄或傳說有關的人，以及家人還在你殖民地的人都會保留。</VTU_ShortStayCleanup_Desc>
   <VTU_CaravanAbandonDead>旅隊一次拋棄所有死者</VTU_CaravanAbandonDead>
