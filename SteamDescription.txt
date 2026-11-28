@@ -3,79 +3,26 @@ Full description of every part: [url=https://github.com/ifchen0/VanillaTuneUp#re
 
 [h2]How it works[/h2][list]
 [*]Turn each part on or off in [i]Options > Mod settings > Vanilla Tune-Up[/i] (restart to apply).
-[*]Fixes are on by default. Tweaks marked (on by default) only change the interface or wait until you use them; other tweaks are off until you turn them on.
+[*]Fixes are on by default. Tweaks marked (on) only change the interface or wait until you use them; other tweaks are off until you turn them on.
 [*]If one part fails to load (for example after a game update), only that part is turned off.
 [/list]
 
 [h2]Fixes[/h2][list]
-[*][b]Faction leaders:[/b] fixes [i]Faction leader for X is null[/i] by generating a new leader.
-[*][b]History graph:[/b] removes the History tab lag in long-running colonies.
-[*][b]Right-click menu:[/b] no more stutter while a right-click menu is open on the map.
-[*][b]Trade setup:[/b] no freeze when a trade window opens with many items, Auto Seller included.
-[*][b]Mechs in sieges:[/b] fixes [i]Exception while ticking lord with job RimWorld.LordJob_Siege[/i] with modded mechs.
-[*][b]Prisoner care:[/b] wardens respect food policy during mental breaks, tend bleeders before feeding and feed a whole cell in one trip; wounded prisoners get up for a deadly drug need.
-[*][b]Banished slaves free their bed[/b] (Ideology): instead of keeping it after they leave.
-[*][b]Ejected genepacks stay out[/b] (Biotech): haulers no longer carry them straight back into the gene bank.
-[*][b]Hungry pets find food across the map:[/b] no more pets starving far from the kibble in a large base.
-[*][b]Cold animals head indoors sooner:[/b] animals seek warmth at minor hypothermia, waking up if needed, before frostbite kills babies.
-[*][b]Farskip home unloads prisoners[/b] (Royalty): their caravan cargo goes to storage, like after a normal caravan arrival.
-[*][b]Psychic ritual invoker keeps the offering[/b] (Anomaly): vomiting no longer drops the offering and fails the ritual; a canceled ritual no longer leaves anyone staring at the spot.
-[*][b]Lost colonists can be rescued:[/b] the "prisoner willing to join" quest can bring back former colonists of any humanlike race or xenotype, favouring those who lived in your colony longer (up to 60 days); former colonists now with friendly or neutral factions are left alone.
-[*][b]Combat logs keep fights with animals and mechanoids:[/b] no more empty battles in colonists' logs after a manhunter pack or mech raid.
-[*][b]Aligned corner icons:[/b] the bottom-right search and codex buttons no longer push other icons off the grid.
-[*][b]Official translation fixes:[/b] quest text shown as [i]ERR:[/i] and untranslatable generated text (currently Traditional Chinese).
+[*][b]Lag:[/b] History tab in long-running colonies; an open right-click menu on the map; trade windows with many items (Auto Seller included).
+[*][b]Errors:[/b] [i]Faction leader for X is null[/i]; [i]Exception while ticking lord with job RimWorld.LordJob_Siege[/i] (modded mechs in sieges); quest text shown as [i]ERR:[/i] and untranslatable text in the official translation (currently Traditional Chinese).
+[*][b]Prisoners and slaves:[/b] wardens respect food policy during mental breaks, tend bleeders before feeding and feed a whole cell in one trip; wounded prisoners get up for a deadly drug need; banished slaves free their bed (Ideology); farskip home unloads prisoners (Royalty).
+[*][b]Animals:[/b] hungry pets find food across the map; cold animals head indoors before frostbite kills babies.
+[*][b]Other:[/b] ejected genepacks stay out of the gene bank (Biotech); a vomiting psychic ritual invoker keeps the offering (Anomaly); the "prisoner willing to join" quest can bring back former colonists of any race or xenotype; combat logs keep fights with animals and mechs; the bottom-right search and codex buttons stay aligned.
 [/list]
 
 [h2]Tweaks[/h2][list]
-[*][b]Xenogerm queue[/b] (Biotech): a bill-style queue for the gene assembler.
-[*][b]Mute labor and birth sounds[/b] (Biotech).
-[*][b]Remove fog of war:[/b] except where revealing would trigger something.
-[*][b]Faction icons in caravan lists[/b] (on by default).
-[*][b]Caravan encounters stay on the current map[/b] (on by default).
-[*][b]Pin resources[/b] (on by default): double-click a resource to keep it shown.
-[*][b]Nutrient paste stock[/b] (on by default): "dispense until you have X" for paste dispensers.
-[*][b]Mod update notes[/b] (on by default, Steam): the main menu lists recently updated mods with their change notes.
-[*][b]Break up social fights:[/b] bystanders may step in, and a bad mood means more insults and fights.
-[*][b]Short names on the map[/b] (on by default): long pawn names no longer cover neighbours.
-[*][b]Ghouls can wear apparel[/b] (Anomaly): still no weapons.
-[*][b]Former colonists and outsiders come back into play:[/b] former colonists, and members of a race or xenotype their faction never fields, come along with its visitors and raids, or are found in its settlements.
-[*][b]Clean up short-stay former colonists and former leaders:[/b] refugees and others who stayed under 30 days, creepjoiners who left, and faction leaders without a faction no longer pile up in the save.
-[*][b]Caravan: abandon all dead at once[/b] (on by default).
-[*][b]Caravan: take rescued guests along[/b].
-[*][b]Friends come for wounded guests[/b].
-[*][b]Doctors rescue friendly outsiders[/b].
-[*][b]Wardens capture downed enemies[/b].
-[*][b]Taskbar letter badge[/b] (on by default, Windows): shows how many letters are waiting.
-[*][b]Right-click to dismiss bundled letters[/b] (on by default).
-[*][b]Click a letter to jump to it:[/b] letters with a pin jump to their target.
-[*][b]Visitors take shelter:[/b] caravans and visitors wait indoors from bad weather or danger instead of leaving early.
-[*][b]Confirm before closing the game window[/b] (on by default).
-[*][b]Slaves use prisoner beds[/b] (Ideology): no separate slave rooms or hospital needed.
-[*][b]Prisoners help out by personality:[/b] kind ones tend and feed cellmates, hard-working ones clean.
-[*][b]Calmer prison breaks and slave rebellions:[/b] mood, pain and traits decide who breaks out; recreation calms them; wardens arrest lone escapees.
-[*][b]Hide slaves from the colonist bar[/b] (Ideology).
-[*][b]Practice on trees for recreation:[/b] Shooting or Melee passion pawns train on trees, harmlessly.
-[*][b]Chat with acquaintances over the comms console:[/b] Social passion pawns call people they know in other factions, with vanilla social interactions.
-[*][b]Background music button[/b] (on by default): mute the music or scroll to change its volume.
-[*][b]Cycle keys for prisoners, visitors, animals and mechs:[/b] [b],[/b] and [b].[/b] cycle through pawns of the selected kind.
-[*][b]Camera follows the pawn it jumped to[/b] (on by default): after [b],[/b] / [b].[/b], a portrait double-click, an alert or a letter.
-[*][b]Psychic rituals sorted by psychic sensitivity[/b] (Anomaly, on by default).
-[*][b]Smelt and destroy bills: keep X of each[/b] (on by default): the most valuable X of each item stay.
-[*][b]Readers face the way their seat faces[/b] (on by default): no more reading backwards because of a dresser or end table beside the chair.
-[*][b]Biosculpter pod lists only colonists who need the cycle[/b] (Ideology, on by default): each name shows the heal count, age or mood.
-[*][b]Camera jumps avoid the open inspect tab[/b] (on by default): the colonist is centred beside the tab, not under it.
-[*][b]Field tending and cheaper medicine:[/b] bleeding is stopped where the patient lies; minor wounds get the cheapest medicine.
-[*][b]Quicksave, save and quit, Continue:[/b] F5 quicksave plus Save and quit and Continue buttons.
-[*][b]Screensaver[/b] (on by default): when idle, hides the interface and follows random colonists, cutting to events; letters and messages stay usable.
-[*][b]Refugees change their clothes[/b] (Royalty): hospitality refugees follow an apparel policy.
-[*][b]Default policies for new prisoners and slaves:[/b] the food policy you pick, plus an apparel policy for slaves.
-[*][b]Visitors leave colony food alone:[/b] until their own runs out and they get hungry enough.
-[*][b]Guards for dangerous hunts:[/b] armed colonists escort the hunter when the animal could fight back.
-[*][b]Hybrid children keep a matching xenotype[/b] (Biotech).
-[*][b]Tell faction colors apart:[/b] near-identical faction colors are nudged apart.
-[*][b]Hide and reorder bottom-right buttons:[/b] hide or move any toggle icon in the corner, other mods' too.
-[*][b]Drag to reorder:[/b] right-drag the bottom bar, architect categories, buildings and command buttons.
-[*][b]Compact colonist bar:[/b] shrinks while the mouse is away, expands on hover.
+[*][b]Interface:[/b] pin resources (on); short pawn names on the map (on); faction icons in caravan lists (on); background music button (on); hide slaves from the colonist bar (Ideology); compact colonist bar; hide and reorder bottom-right buttons; right-drag to reorder the bottom bar, architect and command buttons; tell faction colors apart; mod update notes in the main menu (on, Steam); confirm before closing the game window (on); taskbar letter badge (on, Windows).
+[*][b]Letters:[/b] right-click dismisses bundled letters (on); click a letter to jump to its target.
+[*][b]Camera and keys:[/b] [b],[/b] / [b].[/b] cycle prisoners, visitors, animals and mechs; the camera follows the pawn it jumped to (on) and avoids the open inspect tab (on); F5 quicksave, Save and quit, Continue; screensaver when idle (on); caravan encounters stay on the current map (on).
+[*][b]Colony work:[/b] xenogerm queue (Biotech); nutrient paste "until you have X" (on); smelt and destroy bills keep X of each (on); biosculpter pod lists only colonists who need the cycle, with heal count, age or mood (Ideology, on); field tending and cheaper medicine for minor wounds; armed guards for dangerous hunts; readers face the way their seat faces (on).
+[*][b]Prisoners and slaves:[/b] slaves use prisoner beds (Ideology); prisoners help out by personality; calmer prison breaks and slave rebellions; wardens capture downed enemies; default food and apparel policies for new prisoners and slaves.
+[*][b]Visitors, caravans and outsiders:[/b] visitors take shelter from bad weather or danger; visitors leave colony food alone; refugees follow an apparel policy (Royalty); caravans abandon all dead at once (on) and take rescued guests along; friends come for wounded guests; doctors rescue friendly outsiders; former colonists and outsiders come back with visitors, raids and settlements; short-stay former colonists and former leaders are cleaned out of the save.
+[*][b]Pawn life:[/b] bystanders break up social fights; Shooting or Melee passion pawns practice on trees; Social passion pawns chat over the comms console; psychic rituals sorted by psychic sensitivity (Anomaly, on); hybrid children keep a matching xenotype (Biotech); ghouls can wear apparel (Anomaly); mute labor and birth sounds (Biotech); remove fog of war.
 [/list]
 
 [h2]Notes[/h2][list]
