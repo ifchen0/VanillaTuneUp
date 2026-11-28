@@ -11,7 +11,7 @@ namespace VanillaTuneUp
     /// Left-clicking a letter in the stack jumps to what it points at and dismisses it, instead of opening it, when the
     /// letter's dialog would offer nothing but "Close" and "Jump to location". Such letters carry a small jump badge so
     /// the outcome of a click is visible beforehand, and their tooltip (which already holds the full text) ends with a
-    /// hint line. Letters with a choice, a quest link or info-card links open as usual.
+    /// hint line. Letters with a choice, a link to a running quest or info-card links open as usual.
     /// Opening from the History tab is untouched: only clicks on the letter stack are redirected.
     /// </summary>
     public static class LetterJumpClick
@@ -49,7 +49,9 @@ namespace VanillaTuneUp
             StandardLetter standard = (StandardLetter)letter;
             if (!standard.CanDismissWithRightClick || !standard.lookTargets.IsValid())
                 return false;
-            if (standard.quest != null && !standard.quest.hidden)
+            // The dialog's "View quest" option only matters while the quest is still running; letters of an ended
+            // quest (e.g. "Colonists returned") are treated like plain ones.
+            if (standard.quest != null && !standard.quest.hidden && standard.quest.State == QuestState.Ongoing)
                 return false;
             if (!standard.hyperlinkThingDefs.NullOrEmpty() || !standard.hyperlinkHediffDefs.NullOrEmpty())
                 return false;

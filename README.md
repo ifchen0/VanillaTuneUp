@@ -231,7 +231,7 @@ When too many letters pile up, the oldest ones are folded into a single "N more.
 
 *off by default*
 
-Letters that only point at something on the map (a raid, a new arrival, a finished construction, and so on) get a small jump badge on their icon. Left-clicking such a letter jumps to what it points at and dismisses it, like its "Jump to location" button, instead of opening it. The full text is still in the tooltip when you hover over it, and dismissed letters can be reopened from the History tab. Letters without the badge, such as ones that wait for a choice or link to a quest, open as usual.
+Letters that only point at something on the map (a raid, a new arrival, a finished construction, colonists back from a finished quest, and so on) get a small jump badge on their icon. Left-clicking such a letter jumps to what it points at and dismisses it, like its "Jump to location" button, instead of opening it. The full text is still in the tooltip when you hover over it, and dismissed letters can be reopened from the History tab. Letters without the badge, such as ones that wait for a choice or link to a quest still in progress, open as usual.
 
 ### Visitors take shelter from bad weather and enemies
 
